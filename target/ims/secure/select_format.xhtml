@@ -1,0 +1,33 @@
+<ui:composition xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+
+	<p:dialog header="#{msg.select_format}" widgetVar="dlgPrint"
+		modal="true" height="90" width="210" resizable="false" closeOnEscape="true" >
+		<h:panelGrid columns="5">
+
+			<h:outputLink target="_blak" value="export/pdf">
+				<h:graphicImage value="/img/pdf.gif" />
+			</h:outputLink>
+			
+			<p:spacer width="10"/>
+
+			<h:outputLink target="_blak" value="export/xls">
+				<h:graphicImage value="/img/excel.gif" />
+			</h:outputLink>
+			
+			<p:spacer width="10"/>
+
+			<h:outputLink target="_blak" value="export/rtf">
+				<h:graphicImage value="/img/word.gif" />
+			</h:outputLink>
+
+
+		</h:panelGrid>
+	</p:dialog>
+
+
+</ui:composition>

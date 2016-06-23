@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<property name="show_sql">true</property>
+
+		<!-- Disable the second-level cache -->
+		<property name="hibernate.cache.use_second_level_cache">true</property>
+		<property name="hibernate.cache.use_query_cache">true</property>
+		<property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
+
+
+
+		<!-- Drop and re-create the database schema on startup <property name="hbm2ddl.auto">create</property> -->
+		<mapping package="com.ghw" />
+
+
+		<mapping class="com.ghw.model.User" />
+		<mapping class="com.ghw.model.Permission" />
+		<mapping class="com.ghw.model.Rol" />
+		<mapping class="com.ghw.model.RolPermission" />
+		<mapping class="com.ghw.model.ConfigurationGeneral" />
+		<mapping class="com.ghw.model.LogSystem" />
+		<mapping class="com.ghw.model.Menu" />
+		<mapping class="com.ghw.model.IboTemporal" />
+		<mapping class="com.ghw.model.ConfigurationEmail" />
+		<mapping class="com.ghw.model.ConfigurationSystem" />
+		<mapping class="com.ghw.model.Thresholds" />
+		<mapping class="com.ghw.model.Skill" />
+		<mapping class="com.ghw.model.ClientApplication" />
+		<mapping class="com.ghw.model.Address" />
+		<mapping class="com.ghw.model.BankInformation" />
+		<mapping class="com.ghw.model.Country" />
+		<mapping class="com.ghw.model.Groups" />
+		<mapping class="com.ghw.model.IbosClientApplications" />
+		<mapping class="com.ghw.model.IboState" />
+		<mapping class="com.ghw.model.IboTemporal" />
+		<mapping class="com.ghw.model.IboType" />
+		<mapping class="com.ghw.model.Invoice" />
+		<mapping class="com.ghw.model.InvoiceHistory" />
+		<mapping class="com.ghw.model.InvoiceWork" />
+		<mapping class="com.ghw.model.InvoiceWorkTemp" />
+		<mapping class="com.ghw.model.Profile" />
+		<mapping class="com.ghw.model.States" />
+		<mapping class="com.ghw.model.InvoiceState" />
+		<mapping class="com.ghw.model.UserType" />
+		<mapping class="com.ghw.model.UserUtil" />
+		<mapping class="com.ghw.model.Incentive" />
+		<mapping class="com.ghw.model.Category" />
+		<mapping class="com.ghw.model.InvoiceHoursAdded" />
+		<mapping class="com.ghw.model.MessageBoard" />
+		<mapping class="com.ghw.model.MessageBoardGroup" />
+		<mapping class="com.ghw.model.ZipCode" />
+		<mapping class="com.ghw.model.Corporation" />
+		<mapping class="com.ghw.model.Event" />
+		<mapping class="com.ghw.model.ServerExisting" />
+		<mapping class="com.ghw.model.UpdatedDate" />
+		<mapping class="com.ghw.model.Schedule" />
+		<mapping class="com.ghw.model.AgentStateDetail" />
+		<mapping class="com.ghw.model.ProblemInvoice" />
+		<mapping class="com.ghw.model.Bank" />
+		<mapping class="com.ghw.model.RoutingNumbers" />
+		<mapping class="com.ghw.model.ProfesionalSkills" />
+		<mapping class="com.ghw.model.ReasonCodePay" />
+		<mapping class="com.ghw.model.SkillPhoneSystem" />
+
+
+		<mapping class="com.ghw.report.model.Report" />
+		<mapping class="com.ghw.report.model.GroupReport" />
+
+
+	</session-factory>
+</hibernate-configuration>

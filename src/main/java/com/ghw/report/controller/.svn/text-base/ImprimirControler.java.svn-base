@@ -1,0 +1,565 @@
+package reporte.controler;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.faces.event.ActionEvent;
+
+import reporte.ReportApp;
+import reporte.data.ImpresionFiltro;
+import reporte.data.ReporteTabla;
+import services.facturacion.FacturaService;
+import services.facturacion.OrdenesTrabajoService;
+import util.Context;
+import controler.configuracion.OficinaAplicacion;
+import data.configuracion.DatosOficina;
+import data.facturacion.CumplimientoPlanProduccion;
+import data.facturacion.Facturas;
+import data.facturacion.FuerzaTrabajo;
+import data.facturacion.OrdenesTrabajo;
+import data.facturacion.Piezas;
+import data.facturacion.ReporteFacturacion;
+import data.facturacion.ValesEntrega;
+import filtro.facturacion.FacturaFiltro;
+import filtro.facturacion.OrdenesTrabajoFiltro;
+
+public class ImprimirControler {
+
+	protected String listMethod = "getData";
+	protected String detailMethod = "loadAllById";
+
+	private boolean error;
+
+	public boolean isError() {
+		return error;
+	}
+
+	public void setError(boolean error) {
+		this.error = error;
+	}
+
+	/* test */
+
+	private List data;
+
+	public List getData() {
+		System.out.println("leyendo datos");
+		return data;
+	}
+
+	public void setData(List data) {
+		System.out.println("poniendo datos");
+		this.data = data;
+	}
+
+	public void imprimir(ActionEvent event) {
+
+		setError(true);
+		System.out.println("Empezando a imprimir");
+
+		if (getData() == null) {
+			System.out.println("el reporte no tiene datos");
+			Context.addErrorMessage("El reporte no tiene datos");
+			return;
+		}
+
+		try {
+
+			String sDetalle = (String) Context.getEventAttribute(event,
+					"detalle");
+
+			boolean detalle = (sDetalle != null && sDetalle
+					.equalsIgnoreCase("true"));
+
+			System.out.println("Reporteando " + ((detalle) ? "con" : "sin")
+					+ " detalle");
+
+			Integer idReporte = Integer.parseInt(Context.getEventAttribute(
+					event, "reporte").toString());
+			System.out.println("Buscando el reporte: " + idReporte);
+
+			String titulo = Context.getEventAttribute(event, "titulo")
+					.toString();
+
+			// List d = (List) Context.getEventAttribute(event, "data");
+			// System.out.println("imprimiendo " + d.size() + " lineas");
+
+			// Object[] datos = getData().toArray();
+
+			/*
+			 * Para cargar el reporte hace falta obtener el nombre del reporte,
+			 * buscar en la bd cual es el reporte por defecto (del detalle o el
+			 * listado) de esa pantalla, obtener los datos para pasarselos al JD
+			 */
+
+			// cargar el reporte
+			ImpresionFiltro iFiltro = new ImpresionFiltro();
+
+			iFiltro.setDefecto((detalle) ? 2 : 1);
+			iFiltro.setId_grupo(Integer.parseInt(Context.getEventAttribute(
+					event, "reporte").toString()));
+
+			ReportApp reportApp = new ReportApp();
+
+			// reportApp.getJasperPrint(iFiltro, datos);
+
+			reportApp.getJasperPrint(iFiltro);
+			setError(false);
+
+		} catch (Exception e) {
+			setError(true);
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * Para imprimir desde las paginas
+	 * 
+	 * @param event
+	 */
+	@SuppressWarnings("unchecked")
+	public void imprimirListado(ActionEvent event) {
+
+		setError(true);
+		System.out.println("Empezando a imprimir");
+
+		try {
+
+			String sDetalle = (String) Context.getEventAttribute(event,
+					"detalle");
+
+			boolean detalle = (sDetalle != null && sDetalle
+					.equalsIgnoreCase("true"));
+
+			System.out.println("Reporteando " + ((detalle) ? "con" : "sin")
+					+ " detalle");
+
+			Integer idReporte = Integer.parseInt(Context.getEventAttribute(
+					event, "reporte").toString());
+			System.out.println("Buscando el reporte: " + idReporte);
+
+			String titulo = (String) Context.getEventAttribute(event, "titulo");
+
+			List<Object[]> parametros = new ArrayList<Object[]>();
+			parametros.add(new Object[] {
+					"TITULO",
+					titulo != null && !titulo.isEmpty() ? Context
+							.getUIText(titulo) : null });
+			parametros
+					.add(new Object[] {
+							"TIPOREPORTE",
+							(Integer) Context.getEventAttribute(event,
+									"tipoReporte") });
+
+			/*
+			 * Para cargar el reporte hace falta obtener el nombre del reporte,
+			 * buscar en la bd cual es el reporte por defecto (del detalle o el
+			 * listado) de esa pantalla, obtener los datos para pasarselos al JD
+			 */
+
+			// cargar el reporte
+			ImpresionFiltro iFiltro = new ImpresionFiltro();
+
+			iFiltro.setDefecto((detalle) ? 2 : 1);
+			iFiltro.setId_grupo(Integer.parseInt(Context.getEventAttribute(
+					event, "reporte").toString()));
+
+			ReportApp reportApp = new ReportApp(parametros);
+
+			reportApp.getJasperPrint(iFiltro);
+			setError(false);
+
+		} catch (Exception e) {
+			setError(true);
+			e.printStackTrace();
+		}
+	}
+
+	public void imprimirListadoTabla(ActionEvent event) {
+
+		setError(true);
+		System.out.println("Empezando a imprimir");
+
+		try {
+
+			String sDetalle = (String) Context.getEventAttribute(event,
+					"detalle");
+
+			boolean detalle = (sDetalle != null && sDetalle
+					.equalsIgnoreCase("true"));
+
+			Integer idReporte = Integer.parseInt(Context.getEventAttribute(
+					event, "reporte").toString());
+
+			String titulo = (String) Context.getEventAttribute(event, "titulo");
+
+			List<Object[]> parametros = new ArrayList<Object[]>();
+			parametros.add(new Object[] {
+					"TITULO",
+					titulo != null && !titulo.isEmpty() ? Context
+							.getUIText(titulo) : null });
+			parametros
+					.add(new Object[] {
+							"TIPOREPORTE",
+							(Integer) Context.getEventAttribute(event,
+									"tipoReporte") });
+
+			/*
+			 * Para cargar el reporte hace falta obtener el nombre del reporte,
+			 * buscar en la bd cual es el reporte por defecto (del detalle o el
+			 * listado) de esa pantalla, obtener los datos para pasarselos al JD
+			 */
+
+			Integer idGrupo = Integer.parseInt(Context.getEventAttribute(event,
+					"reporte").toString());
+
+			reportear(detalle, idGrupo, parametros);
+
+		} catch (Exception e) {
+			setError(true);
+			e.printStackTrace();
+		}
+	}
+
+	private void reportear(boolean detalle, Integer idGrupo,
+			List<Object[]> parametros) {
+		try {
+			// cargar el reporte
+			ImpresionFiltro iFiltro = new ImpresionFiltro();
+			iFiltro.setDefecto((detalle) ? 2 : 1);
+			iFiltro.setId_grupo(idGrupo);
+
+			ReportApp reportApp = new ReportApp(parametros);
+
+			reportApp.getJasperPrintTabla(iFiltro);
+			setError(false);
+		} catch (Exception e) {
+			setError(true);
+			e.printStackTrace();
+		}
+	}
+
+	private void reportearSinTabla(boolean detalle, Integer idGrupo,
+			List<Object[]> parametros) {
+		try {
+			// cargar el reporte
+			ImpresionFiltro iFiltro = new ImpresionFiltro();
+			iFiltro.setDefecto((detalle) ? 2 : 1);
+			iFiltro.setId_grupo(idGrupo);
+
+			ReportApp reportApp = new ReportApp(parametros);
+
+			reportApp.getJasperPrint(iFiltro);
+			setError(false);
+		} catch (Exception e) {
+			setError(true);
+			e.printStackTrace();
+		}
+	}
+
+	public void imprimirOrdenDetalles(ActionEvent event) {
+
+		setError(true);
+		System.out.println("Empezando a imprimir");
+
+		try {
+
+			String sDetalle = (String) Context.getEventAttribute(event,
+					"detalle");
+
+			boolean detalle = (sDetalle != null && sDetalle
+					.equalsIgnoreCase("true"));
+
+			System.out.println("Reporteando " + ((detalle) ? "con" : "sin")
+					+ " detalle");
+
+			Integer idReporte = Integer.parseInt(Context.getEventAttribute(
+					event, "reporte").toString());
+			System.out.println("Buscando el reporte: " + idReporte);
+
+			/*
+			 * Para cargar el reporte hace falta obtener el nombre del reporte,
+			 * buscar en la bd cual es el reporte por defecto (del detalle o el
+			 * listado) de esa pantalla, obtener los datos para pasarselos al JD
+			 */
+
+			// cargar el reporte
+			ImpresionFiltro iFiltro = new ImpresionFiltro();
+
+			iFiltro.setDefecto((detalle) ? 2 : 1);
+			iFiltro.setId_grupo(Integer.parseInt(Context.getEventAttribute(
+					event, "reporte").toString()));
+
+			OrdenesTrabajoService ordenesTrabajoService = new OrdenesTrabajoService(
+					Context.getUser());
+			OrdenesTrabajoFiltro filtro = (OrdenesTrabajoFiltro) Context
+					.getBean("ordenesTrabajoFiltro");
+
+			List<OrdenesTrabajo> listOT = ordenesTrabajoService
+					.loadAllById(filtro);
+			int i = 1;
+			for (OrdenesTrabajo orden : listOT) {
+
+				for (FuerzaTrabajo ft : orden.getFuerzaTrabajo()) {
+					orden.setTotalTrabaj(orden.getTotalTrabaj()
+							+ ((Short) ft.getCantTrab()).intValue());
+					orden.setTotalHoras(orden.getTotalHoras()
+							+ ((Short) ft.getHoras()).intValue());
+					orden.setTotalImporte(orden.getTotalImporte()
+							+ ft.getPrecio());
+				}
+
+				for (ValesEntrega ve : orden.getValesEntrega()) {
+					for (Piezas pieza : ve.getPiezas()) {
+						orden.setTotalCUC(orden.getTotalCUC()
+								+ pieza.getImporteCUC());
+						orden.setTotalCUP(orden.getTotalCUP()
+								+ pieza.getImporteMN());
+						orden.setTotalPiezas(orden.getTotalPiezas()
+								+ pieza.getCantidad());
+					}
+				}
+				orden.setNumOrdenFicticio(i);
+				i++;
+
+			}
+
+			List<Object[]> parametros = new ArrayList<Object[]>();
+			parametros.add(new Object[] { "TITULO",
+					Context.getUIText("datos_orden") });
+			parametros
+					.add(new Object[] {
+							"TIPOREPORTE",
+							(Integer) Context.getEventAttribute(event,
+									"tipoReporte") });
+			parametros.add(new Object[] { "totalregistros", listOT.size() });
+
+			/*
+			 * Para cargar el reporte hace falta obtener el nombre del reporte,
+			 * buscar en la bd cual es el reporte por defecto (del detalle o el
+			 * listado) de esa pantalla, obtener los datos para pasarselos al JD
+			 */
+
+			ReportApp reportApp = new ReportApp(parametros);
+
+			// reportApp.getJasperPrint(iFiltro);
+			// setError(false);
+
+			reportApp.getJasperPrint(iFiltro, listOT.toArray());
+
+			setError(false);
+
+		} catch (Exception e) {
+			setError(true);
+			e.printStackTrace();
+		}
+	}
+
+	public void imprimirCumplimientoPlan(ActionEvent event) {
+
+		setError(true);
+		System.out.println("Empezando a imprimir");
+
+		try {
+
+			String sDetalle = (String) Context.getEventAttribute(event,
+					"detalle");
+
+			boolean detalle = (sDetalle != null && sDetalle
+					.equalsIgnoreCase("true"));
+
+			System.out.println("Reporteando " + ((detalle) ? "con" : "sin")
+					+ " detalle");
+
+			Integer idReporte = Integer.parseInt(Context.getEventAttribute(
+					event, "reporte").toString());
+			System.out.println("Buscando el reporte: " + idReporte);
+
+			/*
+			 * Para cargar el reporte hace falta obtener el nombre del reporte,
+			 * buscar en la bd cual es el reporte por defecto (del detalle o el
+			 * listado) de esa pantalla, obtener los datos para pasarselos al JD
+			 */
+
+			// cargar el reporte
+			ImpresionFiltro iFiltro = new ImpresionFiltro();
+
+			iFiltro.setDefecto((detalle) ? 2 : 1);
+			iFiltro.setId_grupo(Integer.parseInt(Context.getEventAttribute(
+					event, "reporte").toString()));
+
+			FacturaService factura = new FacturaService(Context.getUser());
+			List<CumplimientoPlanProduccion> cumplimiento = factura.getCumplimientoPlanProduccion((FacturaFiltro)Context.getBean("facturaFiltro"));
+			
+			List<Object[]> parametros = new ArrayList<Object[]>();
+			parametros.add(new Object[] { "TITULO",
+					Context.getUIText("cumplimiento_plan") });
+		    	
+			parametros.add(new Object[] { "totalregistros", cumplimiento.size() });
+
+			/*
+			 * Para cargar el reporte hace falta obtener el nombre del reporte,
+			 * buscar en la bd cual es el reporte por defecto (del detalle o el
+			 * listado) de esa pantalla, obtener los datos para pasarselos al JD
+			 */
+
+			ReportApp reportApp = new ReportApp(parametros);
+
+			// reportApp.getJasperPrint(iFiltro);
+			// setError(false);
+
+			List<ReporteTabla> listado = new ArrayList<ReporteTabla>();
+			ReporteTabla tabla = new ReporteTabla(cumplimiento);
+			listado.add(tabla);
+			
+			reportApp.getJasperPrint(iFiltro, listado.toArray());
+
+			setError(false);
+
+		} catch (Exception e) {
+			setError(true);
+			e.printStackTrace();
+		}
+	}
+	
+	public void imprimirReporteFacturacion(ActionEvent event) {
+
+		setError(true);
+		System.out.println("Empezando a imprimir");
+
+		try {
+
+			String sDetalle = (String) Context.getEventAttribute(event,
+					"detalle");
+
+			boolean detalle = (sDetalle != null && sDetalle
+					.equalsIgnoreCase("true"));
+
+			System.out.println("Reporteando " + ((detalle) ? "con" : "sin")
+					+ " detalle");
+
+			Integer idReporte = Integer.parseInt(Context.getEventAttribute(
+					event, "reporte").toString());
+			System.out.println("Buscando el reporte: " + idReporte);
+
+			/*
+			 * Para cargar el reporte hace falta obtener el nombre del reporte,
+			 * buscar en la bd cual es el reporte por defecto (del detalle o el
+			 * listado) de esa pantalla, obtener los datos para pasarselos al JD
+			 */
+
+			// cargar el reporte
+			ImpresionFiltro iFiltro = new ImpresionFiltro();
+
+			iFiltro.setDefecto((detalle) ? 2 : 1);
+			iFiltro.setId_grupo(Integer.parseInt(Context.getEventAttribute(
+					event, "reporte").toString()));
+
+			FacturaService factura = new FacturaService(Context.getUser());
+			List<ReporteFacturacion> reporte = factura.getReporteFacturacion((FacturaFiltro)Context.getBean("facturaFiltro"));
+			
+			List<Object[]> parametros = new ArrayList<Object[]>();
+			parametros.add(new Object[] { "TITULO",
+					Context.getUIText("reporte_facturacion") });
+		    	
+			parametros.add(new Object[] { "totalregistros", reporte.size() });
+
+			/*
+			 * Para cargar el reporte hace falta obtener el nombre del reporte,
+			 * buscar en la bd cual es el reporte por defecto (del detalle o el
+			 * listado) de esa pantalla, obtener los datos para pasarselos al JD
+			 */
+
+			ReportApp reportApp = new ReportApp(parametros);
+
+			// reportApp.getJasperPrint(iFiltro);
+			// setError(false);
+
+			List<ReporteTabla> listado = new ArrayList<ReporteTabla>();
+			ReporteTabla tabla = new ReporteTabla(reporte);
+			listado.add(tabla);
+			
+			reportApp.getJasperPrint(iFiltro, listado.toArray());
+
+			setError(false);
+
+		} catch (Exception e) {
+			setError(true);
+			e.printStackTrace();
+		}
+	}
+
+
+	
+	
+	public void exportarFactura(ActionEvent event) {
+
+		setError(true);
+		System.out.println("Empezando a imprimir");
+
+		try {
+
+			String sDetalle = (String) Context.getEventAttribute(event,
+					"detalle");
+
+			boolean detalle = (sDetalle != null && sDetalle
+					.equalsIgnoreCase("true"));
+
+			System.out.println("Reporteando " + ((detalle) ? "con" : "sin")
+					+ " detalle");
+			
+			/*
+			 * Para cargar el reporte hace falta obtener el nombre del reporte,
+			 * buscar en la bd cual es el reporte por defecto (del detalle o el
+			 * listado) de esa pantalla, obtener los datos para pasarselos al JD
+			 */
+
+			// cargar el reporte
+			ImpresionFiltro iFiltro = new ImpresionFiltro();
+
+			iFiltro.setDefecto((detalle) ? 2 : 1);			
+
+			FacturaService facturaService = new FacturaService(Context
+					.getUser());
+			FacturaFiltro filtro = (FacturaFiltro) Context
+					.getBean("facturaFiltro");
+			if(filtro.getTipoReporte().equals("a"))
+				iFiltro.setId_grupo(6);
+			else
+				iFiltro.setId_grupo(16);
+
+			List<Facturas> facturas = facturaService.loadAllById(filtro);
+			// Faltan los datos de oficina para pasarlo por parametro
+			DatosOficina oficina = OficinaAplicacion.getOficina();
+			List<Object[]> parametros = new ArrayList<Object[]>();
+			parametros.add(new Object[] { "TITULO", "" });
+
+			parametros.add(new Object[] { "OFICINA", oficina.getNombre() });
+			parametros.add(new Object[] { "REUP", oficina.getReup() });
+			parametros.add(new Object[] { "NIT", oficina.getNit() });
+			parametros.add(new Object[] { "CUENTA_MN", oficina.getCuentaMn() });
+			parametros.add(new Object[] { "CUENTA_ESTANDAR",
+					oficina.getCuentaEstandarizada() });
+			parametros.add(new Object[] { "TOTAL", facturas.size() });
+			/*
+			 * Para cargar el reporte hace falta obtener el nombre del reporte,
+			 * buscar en la bd cual es el reporte por defecto (del detalle o el
+			 * listado) de esa pantalla, obtener los datos para pasarselos al JD
+			 */
+
+			ReportApp reportApp = new ReportApp(parametros);
+
+			// reportApp.getJasperPrint(iFiltro);
+			// setError(false);
+
+			reportApp.getJasperPrint(iFiltro, facturas.toArray());
+
+			setError(false);
+
+		} catch (Exception e) {
+			setError(true);
+			e.printStackTrace();
+		}
+	}
+}

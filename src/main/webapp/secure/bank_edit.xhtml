@@ -1,0 +1,176 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+		<sec:authorize  access="hasAnyRole('IBO')">
+
+			<h:form id="form"
+				onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit') return true; else return false;}">
+				<p:toolbar>
+					<f:facet name="left">
+						<h:outputText value="#{msg.edit} #{msg.bank_account_information}" />
+					</f:facet>
+
+					<f:facet name="right">
+
+						<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+							action="#{bankAccountController.update}" styleClass="buttonBarra"
+							validateClient="true">
+							<p:confirm icon="ui-icon-alert" />
+						</p:commandButton>
+
+
+						<p:spacer width="10" />
+
+						<p:commandButton value="#{msg.cancel}" icon="ui-icon-close"
+							action="myaccount" styleClass="buttonBarra" immediate="true" />
+					</f:facet>
+				</p:toolbar>
+				<p:focus context="grdPanel" />
+
+				<h:panelGrid styleClass="panel" columns="1">
+
+
+					<h:panelGrid border="0" columns="1">
+						<p:messages id="messages" showDetail="false" autoUpdate="true"
+							globalOnly="false" />
+					</h:panelGrid>
+
+					<p:focus context="grdPanel" />
+					<h:panelGrid columns="3" id="grdPanel">
+
+						<p:outputLabel value="#{msg.bank_routing_number}" for="txtRouting" />
+						<p:inputText value="#{bankAccountController.entity.routing}"
+							required="true" id="txtRouting" maxlength="9" style="width:315px"
+							validatorMessage="#{emsg.routing_number_invalid}"
+							requiredMessage="#{msg.bank_routing_number}: #{msg.value_required}"
+							binding="#{other}" onblur="this.value = this.value.trim()">
+							<f:validateLength maximum="9" minimum="9" for="txtRouting" />
+							<f:validator validatorId="routingNumberValidator" />
+							<p:clientValidator event="blur" />
+							<pe:keyFilter mask="pint" preventPaste="false" />
+						</p:inputText>
+						<p:message for="txtRouting" display="icon" />
+
+						<p:outputLabel value="#{msg.confirm} #{msg.bank_routing_number}"
+							for="txtRouting2" />
+						<p:inputText
+							value="#{bankAccountController.entity.routingConfirm}"
+							required="true" id="txtRouting2" maxlength="9"
+							style="width:315px"
+							requiredMessage="#{msg.confirm} #{msg.bank_routing_number}: #{msg.value_required}"
+							validatorMessage="#{emsg.routing_value_dont_match}"
+							onblur="this.value = this.value.trim()">
+							<f:validator validatorId="matchValidator" />
+							<f:attribute name="other" value="#{other}" />
+							<pe:keyFilter mask="pint" preventPaste="false" />
+							<p:clientValidator event="blur" />
+						</p:inputText>
+						<p:message for="txtRouting2" display="icon" />
+
+
+
+						<p:outputLabel value="#{msg.bank_account_number}" for="txtAccount" />
+						<p:inputText value="#{bankAccountController.entity.number}"
+							required="true" id="txtAccount" maxlength="17"
+							style="width:315px"
+							requiredMessage="#{msg.bank_account_number}: #{msg.value_required}"
+							validatorMessage="#{emsg.routing_number_invalid}"
+							binding="#{othera}" onblur="this.value = this.value.trim()">
+							<p:clientValidator event="blur" />
+						</p:inputText>
+						<p:message for="txtAccount" display="icon" />
+
+						<p:outputLabel value="#{msg.confirm} #{msg.bank_routing_number}"
+							for="txtAccount2" />
+						<p:inputText value="#{bankAccountController.entity.numberConfirm}"
+							required="true" id="txtAccount2" maxlength="250"
+							style="width:315px" onblur="this.value = this.value.trim()"
+							validatorMessage="#{emsg.account_value_dont_match}"
+							requiredMessage="#{msg.confirm} #{msg.bank_account_number}: #{msg.value_required}">
+							<f:validator validatorId="matchValidator" for="txtAccount2" />
+							<f:attribute name="other" value="#{othera}" />
+							<p:clientValidator event="blur" />
+						</p:inputText>
+						<p:message for="txtAccount2" display="icon" />
+
+
+
+
+
+					</h:panelGrid>
+
+					<h:graphicImage value="/img/check.jpg"></h:graphicImage>
+
+
+				</h:panelGrid>
+
+
+				<ui:include src="/secure/confirmation_modify.xhtml"></ui:include>
+
+
+
+			</h:form>
+
+
+
+			<p:dialog header="#{msg.bank_information}"
+				widgetVar="dlgBankNotFound" modal="true" closeOnEscape="true"
+				id="dlgBankNotFoundId" resizable="false" closable="true"
+				showHeader="true" width="400px" height="200px" minHeight="400">
+				<h:form id="frmBank"
+					onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+					<h:panelGrid width="100%">
+
+						<h:panelGrid border="0" columns="1">
+							<p:messages id="messagesNotes" showDetail="false"
+								autoUpdate="true" globalOnly="false" />
+						</h:panelGrid>
+
+						<h:panelGrid columns="3">
+							<h:outputText value="#{msg.bank_information_not_found}" />
+						</h:panelGrid>
+
+
+						<h:panelGrid width="100%">
+							<h:panelGrid columns="3" styleClass="panelGridCenter">
+								<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+									styleClass="buttonBarra"
+									action="#{bankAccountController.aceptBankInformation}"
+									oncomplete="handleAddBankRequest(xhr, status, args)"
+									update=":frmBank" />
+
+								<p:spacer width="10" />
+
+								<p:commandButton value="Cancel" type="button"
+									onclick="PF('dlgBankNotFound').hide()" immediate="true"
+									styleClass="buttonBarra" icon="ui-icon-close" />
+
+
+							</h:panelGrid>
+						</h:panelGrid>
+					</h:panelGrid>
+				</h:form>
+			</p:dialog>
+
+
+			<script type="text/javascript">
+				function handleAddBankRequest(xhr, status, args) {
+
+					if (args.validationFailed || args.error) {
+
+					} else {
+						PF('dlgBankNotFound').hide();
+					}
+
+				}
+			</script>
+		</sec:authorize>
+	</ui:define>
+</ui:composition>

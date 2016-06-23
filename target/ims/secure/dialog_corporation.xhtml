@@ -1,0 +1,78 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+
+	<p:dialog header="#{msg.select_corporation}" widgetVar="dlgCorporation"
+		modal="true" closeOnEscape="false" id="dlgCorporationId"
+		resizable="false" closable="false" showHeader="true" width="600px"
+		height="300px" minHeight="300">
+
+		<h:form id="formCorpo"
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+
+			<h:panelGrid border="0" columns="1">
+				<p:messages id="messagesCorporation" showDetail="false"
+					autoUpdate="true" globalOnly="false" />
+			</h:panelGrid>
+
+			<h:panelGrid columns="3">
+
+				<p:outputLabel value="#{msg.corporation}" for="cmbCorporation" />
+				<p:selectOneMenu id="cmbCorporation"
+					value="#{userController.corporationExisting}"
+					converter="entityConverter" filter="true"
+					filterMatchMode="contains" style="width:300px" required="true"
+					requiredMessage="#{msg.corporation}: #{msg.value_required}">
+					<f:selectItem itemLabel="#{msg.select_one}" itemValue="" />
+					<f:selectItems value="#{userController.listCorporation}" var="cor"
+						itemLabel="#{cor.name}" itemValue="#{cor}" itemDisabled="#{cor.id == userController.corporationOriginal.id ? 'true' : 'false'}"/>
+				</p:selectOneMenu>
+
+				<p:message for="cmbCorporation" display="icon" id="messCorpo" />
+
+			</h:panelGrid>
+
+			<h:panelGrid width="100%">
+
+				<h:panelGrid columns="3" styleClass="panelGridCenter">
+
+					<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+						styleClass="buttonBarra"
+						actionListener="#{userController.saveCorporation}"
+						validateClient="true" ignoreAutoUpdate="true"
+						oncomplete="handleAddHoursRequest(xhr, status, args)"
+						update="messagesCorporation,messCorpo,form:grdCorporation,form:rdOwnerType" />
+
+					<p:spacer width="10" />
+
+					<p:commandButton value="Cancel" icon="ui-icon-disk"
+						styleClass="buttonBarra"
+						actionListener="#{userController.cancelCorporation}"
+						immediate="true" update="form:grdCorporation,form:rdOwnerType"
+						oncomplete="PF('dlgCorporation').hide()" />
+
+				</h:panelGrid>
+			</h:panelGrid>
+
+		</h:form>
+	</p:dialog>
+
+	<script type="text/javascript">
+		function handleAddHoursRequest(xhr, status, args) {
+
+			if (args.validationFailed || args.error) {
+
+			} else {
+				PF('dlgCorporation').hide();
+			}
+
+		}
+	</script>
+
+
+
+</ui:composition>

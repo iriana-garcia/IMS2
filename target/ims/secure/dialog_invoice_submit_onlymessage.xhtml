@@ -1,0 +1,93 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+
+		<p:dialog header="#{msg.invoices_approval}"
+			widgetVar="dlgInvoicesMess" modal="true" closeOnEscape="true"
+			id="dlgInvoicesMessId" resizable="false" closable="true"
+			showHeader="true" height="150px" minHeight="400" width="400px"
+			styleClass="myDataTable">
+			<h:form id="frmInvoicesMess"
+				onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+				<h:panelGrid width="100%">
+					<h:outputText value="#{invoiceController.messageInvoices}" />
+				</h:panelGrid>
+
+				<h:panelGrid width="100%">
+
+					<h:panelGrid columns="3" styleClass="panelGridCenter">
+
+						<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+							styleClass="buttonBarra"
+							actionListener="#{invoiceController.approvalInvoices}"
+							validateClient="true"
+							rendered="#{invoiceController.showSaveInvoice}"
+							oncomplete="handleMessageOnlyRequest(xhr, status, args)"
+							update=":frmInvoicesMess,form:uniTable,form:btnSubmit" />
+
+						<p:spacer width="10" />
+
+						<p:commandButton value="Cancel" type="button"
+							rendered="#{invoiceController.showSaveInvoice}"
+							onclick="PF('dlgInvoicesMess').hide()" immediate="true"
+							styleClass="buttonBarra" icon="ui-icon-close" />
+
+						<p:commandButton value="OK" type="button"
+							rendered="#{!invoiceController.showSaveInvoice}"
+							onclick="PF('dlgInvoicesMess').hide()" immediate="true"
+							styleClass="buttonBarra" icon="ui-icon-close" />
+
+					</h:panelGrid>
+				</h:panelGrid>
+
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog header="#{msg.information_processed}"
+			widgetVar="dlgInvoicesProcessed" modal="true" closeOnEscape="true"
+			id="dlgInvoicesProcessedID" resizable="false" closable="true"
+			showHeader="true" height="200px" minHeight="400" width="600px"
+			styleClass="myDataTable">
+			<h:form
+				onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+
+				<h:panelGrid width="100%">
+					<h:outputText value="#{invoiceController.messageInvoices}"
+						escape="false" />
+				</h:panelGrid>
+
+				<h:panelGrid width="100%">
+
+					<h:panelGrid columns="3" styleClass="panelGridCenter">
+
+						<p:commandButton value="#{msg.accept}" type="button"
+							onclick="PF('dlgInvoicesProcessed').hide()" immediate="true"
+							styleClass="buttonBarra" icon="ui-icon-close" />
+					</h:panelGrid>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+
+		<script type="text/javascript">
+			function handleMessageOnlyRequest(xhr, status, args) {
+
+				if (args.validationFailed || args.error) {
+
+				} else {
+					PF('dlgInvoicesMess').hide();
+				}
+
+			}
+		</script>
+
+
+	</sec:authorize>
+
+</ui:composition>

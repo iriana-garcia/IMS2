@@ -1,0 +1,199 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+
+		<h:form id="form"
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="#{msg.general_conf}" />
+				</f:facet>
+
+				<f:facet name="right">
+					<sec:authorize access="hasAnyRole('SUPER','CONF_GN_M')">
+						<p:commandButton value="#{msg.edit}" icon="ui-icon-pencil"
+							action="#{configurationGeneralController.edit}"
+							styleClass="buttonBarra" update="messages" />
+					</sec:authorize>
+				</f:facet>
+			</p:toolbar>
+
+
+			<h:panelGrid styleClass="panel" columns="1">
+
+
+				<h:panelGrid border="0" columns="1">
+					<p:messages id="messages" showDetail="false" autoUpdate="true" />
+				</h:panelGrid>
+
+
+				<p:tabView styleClass="tabInvoice">
+					<p:tab title="#{msg.ldap_conf}">
+
+						<h:panelGrid columns="2">
+
+							<h:outputLabel value="#{msg.authentication_attribute}"
+								rendered="false" />
+							<h:outputLabel rendered="false"
+								value="#{configurationGeneralController.entity.ldapAuthenti}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.server_address}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.ldapServer}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.server_port}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.ldapPort}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.ssl}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.ldapSsl}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.base_dn}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.ldapDn}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.base_dn_ibo}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.ldapDnIbo}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.base_dn_idc}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.ldapDnIdc}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.base_dn_int}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.ldapDnInternational}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.base_dn_sme}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.ldapDnSme}"
+								styleClass="bold" />
+
+
+							<h:outputLabel value="#{msg.user}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.ldapUser}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.sec_type}" rendered="false" />
+							<h:outputLabel rendered="false"
+								value="#{configurationGeneralController.entity.ldapSecType}"
+								styleClass="bold" />
+
+
+
+						</h:panelGrid>
+
+					</p:tab>
+
+					<p:tab title="#{msg.email_conf}">
+						<h:panelGrid columns="2">
+
+							<h:outputLabel value="#{msg.host}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.emailHost}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.port}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.emailPort}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.protocol}" rendered="false" />
+							<h:outputLabel rendered="false"
+								value="#{configurationGeneralController.entity.emailProtocol}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.from}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.emailFrom}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.auth}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.emailAuth}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.user}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.emailUser}"
+								styleClass="bold" />
+
+
+							<h:outputLabel value="#{msg.max_size}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.emailMaxSize}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.system_url}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.emailSystem}"
+								styleClass="bold" />
+
+
+
+
+						</h:panelGrid>
+					</p:tab>
+
+					<p:tab title="#{msg.ftp_conf}">
+						<h:panelGrid columns="2">
+							<h:outputLabel value="#{msg.ftp_path_pipkins}" rendered="false" />
+							<h:outputLabel rendered="false"
+								value="#{configurationGeneralController.entity.pathPipkins}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.ftp_path_oracle}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.pathOracle}"
+								styleClass="bold" />
+
+							<p:outputLabel value="#{msg.port}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.portOracle}"
+								styleClass="bold" />
+
+							<p:outputLabel value="#{msg.user}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.userOracle}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.retention_time}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.retention}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.webservice_url}" />
+							<h:outputLabel
+								value="#{configurationGeneralController.entity.webservice}"
+								styleClass="bold" />
+
+						</h:panelGrid>
+
+
+					</p:tab>
+				</p:tabView>
+
+
+			</h:panelGrid>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

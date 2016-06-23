@@ -1,0 +1,737 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+
+	<ui:define name="body">
+
+		<sec:authorize
+			access="hasAnyRole('SUPER','USER_M','USER_A','BOARD_M','BOARD_A')">
+
+			<div id="userEditMinimum">
+
+
+				<h:form id="form"
+					onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+					<p:toolbar>
+						<f:facet name="left">
+							<h:outputText
+								value="#{(userController.edit)? msg.edit : msg.add} #{msg.user}" />
+						</f:facet>
+
+						<f:facet name="right">
+
+							<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+								action="#{userController.update}" styleClass="buttonBarra"
+								update="panel" rendered="#{userController.edit}">
+								<p:confirm icon="ui-icon-alert" />
+							</p:commandButton>
+
+							<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+								action="#{userController.update}" styleClass="buttonBarra"
+								update="panel,dlgConfirmationIdUserId"
+								rendered="#{userController.edit ? false : true}">
+							</p:commandButton>
+
+							<p:spacer width="10" />
+
+							<p:commandButton value="#{msg.cancel}" icon="ui-icon-close"
+								action="#{userController.back}" styleClass="buttonBarra"
+								immediate="true" />
+						</f:facet>
+					</p:toolbar>
+
+					<p:focus context="panel" />
+
+					<h:panelGrid styleClass="panel" columns="1" id="panel">
+
+
+						<h:panelGrid border="0" columns="1">
+							<p:messages id="messages" showDetail="false" autoUpdate="true"
+								globalOnly="false" />
+						</h:panelGrid>
+
+
+						<p:growl id="msgs" showDetail="false" autoUpdate="false"
+							for="txtZip" />
+
+						<h:panelGrid columns="4">
+
+
+							<p:outputLabel value="#{msg.user}" for="cmbUser" id="txtUser"
+								rendered="#{userController.showUser}" />
+
+							<p:selectOneMenu id="cmbUser" value="#{userController.userAd}"
+								converter="entityConverter" filter="true" height="300"
+								filterMatchMode="contains" style="width:500px" var="u"
+								valueChangeListener="#{userController.changeUser}"
+								required="true" rendered="#{userController.showUser}"
+								requiredMessage="#{msg.user}: #{msg.value_required}">
+								<p:clientValidator event="blur" />
+								<p:ajax update="form" />
+
+								<f:selectItem itemLabel="" itemValue="#{null}" />
+								<f:selectItems value="#{userController.listUserAd}" var="user"
+									itemLabel="#{user.full}" itemValue="#{user}" />
+
+
+								<p:column>
+									<h:outputText value="#{u.userName}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{u.firstName}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{u.middleName}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{u.lastName}" />
+								</p:column>
+
+								<p:column>
+									<h:outputText value="#{u.email}" />
+								</p:column>
+
+							</p:selectOneMenu>
+							<p:message for="cmbUser" display="icon" id="msgUser"
+								rendered="#{userController.showUser}" />
+						</h:panelGrid>
+
+						<h:panelGrid columns="17"
+							columnClasses=",bold,,,bold,,,bold,,,bold,,,bold,,,bold,,,bold"
+							id="pngUser">
+
+							<h:outputText value="#{msg.user_name}" />
+							<h:outputText
+								value="#{empty userController.entity.name ? '---' : userController.entity.name}" />
+
+							<p:spacer width="15" />
+
+
+							<h:outputText value="#{msg.first_name}" />
+							<h:outputText
+								value="#{empty userController.entity.firstName ? '---' : userController.entity.firstName}" />
+
+							<p:spacer width="15" />
+
+							<h:outputText value="#{msg.middle_name}" />
+							<h:outputText
+								value="#{empty userController.entity.middleName ? '---' : userController.entity.middleName}" />
+
+							<p:spacer width="15" />
+
+							<h:outputText value="#{msg.last_name}" />
+							<h:outputText
+								value="#{empty userController.entity.lastName ? '---' : userController.entity.lastName}" />
+
+							<p:spacer width="15" />
+
+							<h:outputText value="#{msg.email}" />
+							<h:outputText
+								value="#{empty userController.entity.email ? '---' : userController.entity.email}" />
+
+							<p:spacer width="15" rendered="#{userController.ibo}" />
+
+							<h:outputText value="#{msg.user_id}"
+								rendered="#{userController.ibo  &amp;&amp; not empty  userController.entity.ibo.number}" />
+							<h:outputText value="#{userController.entity.ibo.number}"
+								rendered="#{userController.ibo  &amp;&amp; not empty  userController.entity.ibo.number}" />
+
+
+
+						</h:panelGrid>
+
+						<p:separator />
+
+						<h:panelGrid columns="3"
+							columnClasses="widthColumnUser,,,,widthColumnUser">
+
+
+							<p:outputLabel value="#{msg.telephone_number}" for="txtPhone" />
+							<p:inputText value="#{userController.entity.phone}"
+								maxlength="50" styleClass="largeControls" id="txtPhone"
+								validatorMessage="#{emsg.telephone_incorrect_format}">
+								<f:validateRegex pattern="[0-9]*"></f:validateRegex>
+								<p:clientValidator event="blur" />
+								<pe:keyFilter mask="pint" preventPaste="false" />
+							</p:inputText>
+							<p:inputMask value="#{userController.entity.phone}"
+								mask="(999) 999-9999" styleClass="largeControls"
+								rendered="false" />
+							<p:message for="txtPhone" display="icon" />
+
+
+							<p:outputLabel value="#{msg.email}" for="txtEmail"
+								rendered="false" />
+							<p:inputText onblur="this.value = this.value.trim()"
+								value="#{userController.entity.email}" rendered="false"
+								maxlength="100" required="true"
+								requiredMessage="#{msg.email}: #{msg.value_required}"
+								styleClass="largeControls">
+								<f:validator validatorId="emailValidator" for="txtEmail" />
+								<p:clientValidator event="blur" />
+								<pe:keyFilter mask="email" preventPaste="false" />
+							</p:inputText>
+							<p:message for="txtEmail" display="icon" rendered="false" />
+
+							<p:outputLabel value="#{msg.user_type}" for="cmbType"
+								rendered="#{userController.edit}" />
+							<p:selectOneMenu id="cmbType" value="#{userController.type}"
+								converter="entityConverter" style="width: 312px;"
+								required="true" rendered="#{userController.edit}"
+								requiredMessage="#{msg.user_type}: #{msg.value_required}"
+								disabled="#{userController.deactiveState}">
+								<f:selectItems value="#{userTypeController.listOrder}" var="t"
+									itemLabel="#{t.name}" itemValue="#{t}" />
+								<p:ajax update="grdData,messages"
+									listener="#{userController.onUserTypeChange}" />
+								<p:clientValidator event="blur" />
+							</p:selectOneMenu>
+							<p:message for="cmbType" display="icon"
+								rendered="#{userController.edit}" />
+
+
+							<p:outputLabel value="#{msg.rol}" for="cmbRol" />
+							<p:selectOneMenu id="cmbRol" value="#{userController.rol}"
+								converter="entityConverter" filter="true"
+								filterMatchMode="contains" style="width: 312px;" required="true"
+								requiredMessage="#{msg.rol}: #{msg.value_required}">
+								<f:selectItem itemLabel="#{msg.select_one}" itemValue="#{null}"
+									noSelectionOption="true" />
+								<f:selectItems value="#{rolController.listActive}" var="rol"
+									itemLabel="#{rol.name}" itemValue="#{rol}" />
+								<p:clientValidator event="blur" />
+							</p:selectOneMenu>
+							<p:message for="cmbRol" display="icon" id="mcmbRol" />
+
+							<p:outputLabel value="#{msg.state}" for="txtStateU"
+								rendered="false" />
+							<p:selectOneRadio id="txtStateU" rendered="false"
+								value="#{userController.entity.state}"
+								disabled="#{userController.deactiveState}">
+								<f:selectItem itemLabel="#{msg.deactive}" itemValue="false" />
+								<f:selectItem itemLabel="#{msg.active}" itemValue="true" />
+								<p:clientValidator event="blur" />
+							</p:selectOneRadio>
+							<p:message for="txtStateU" display="icon" rendered="false" />
+
+						</h:panelGrid>
+						<h:panelGrid id="grdData">
+							<h:panelGrid columns="3" id="grdUser"
+								columnClasses="widthColumnUser">
+
+								<p:outputLabel value="#{msg.group}" for="cmbGroup"
+									rendered="#{userController.pa}" />
+								<p:selectOneMenu id="cmbGroup" value="#{userController.group}"
+									converter="entityConverter" filter="true"
+									filterMatchMode="contains" style="width: 312px;"
+									rendered="#{userController.pa}">
+									<f:selectItem itemLabel="#{msg.select_one}" itemValue="#{null}" />
+									<f:selectItems value="#{userController.listGroup}" var="group"
+										itemLabel="#{group.name}" itemValue="#{group}" />
+									<p:clientValidator event="blur" />
+								</p:selectOneMenu>
+								<p:message for="cmbGroup" display="icon"
+									rendered="#{userController.pa}" />
+							</h:panelGrid>
+
+
+							<h:panelGrid columns="7"
+								columnClasses="widthColumnUser,,,,widthColumnUser" id="grdIbo">
+
+
+								<p:outputLabel value="#{msg.ibo_type}" for="cmbUserType"
+									rendered="#{userController.ibo}" />
+								<p:selectOneMenu id="cmbUserType"
+									rendered="#{userController.ibo}"
+									value="#{userController.iboType}" converter="entityConverter"
+									style="width: 312px;" required="true">
+									<f:selectItems value="#{iboTypeController.listOrderType}"
+										var="ent" itemLabel="#{ent.name}" itemValue="#{ent}" />
+									<p:clientValidator event="blur" />
+								</p:selectOneMenu>
+								<p:message for="cmbUserType" display="icon"
+									rendered="#{userController.ibo}" />
+
+
+								<p:spacer width="15" />
+
+
+								<p:outputLabel value="#{msg.group}" for="cmbGroupIbo"
+									rendered="#{userController.ibo}" />
+								<p:selectOneMenu id="cmbGroupIbo"
+									value="#{userController.groupIbo}" converter="entityConverter"
+									filter="true" filterMatchMode="contains" style="width: 312px;"
+									rendered="#{userController.ibo}">
+									<f:selectItem itemLabel="#{msg.select_one}" itemValue="#{null}" />
+									<f:selectItems value="#{groupsController.listActive}"
+										var="group" itemLabel="#{group.name}" itemValue="#{group}"
+										itemDisabled="#{group.userId != null &amp;&amp; group.userId == userController.entity.id ? 'true' : 'false'}" />
+									<p:clientValidator event="blur" />
+								</p:selectOneMenu>
+								<p:message for="cmbGroupIbo" display="icon"
+									rendered="#{userController.ibo}" />
+
+
+								<p:outputLabel value="#{msg.principal_owner_title}"
+									for="txtprincipal_owner_title" rendered="#{userController.ibo}" />
+								<p:inputText onblur="this.value = this.value.trim()"
+									value="#{userController.profile.princTitle}"
+									id="txtprincipal_owner_title" maxlength="150"
+									styleClass="largeControls" rendered="#{userController.ibo}">
+									<p:clientValidator event="blur" />
+								</p:inputText>
+								<p:message for="txtprincipal_owner_title" display="icon"
+									rendered="#{userController.ibo}" />
+
+								<p:spacer width="15" />
+
+								<p:outputLabel value="#{msg.rate}" for="txtAmount"
+									rendered="#{userController.ibo}" />
+								<h:panelGroup>
+									<p:inputText value="#{userController.profile.amount}"
+										id="txtAmount" styleClass="inputNumber"
+										rendered="#{userController.ibo}"
+										onchange="if(#{userController.deactiveState} == true ){ PF('dlgConfirmationChange').show()}">
+										<p:clientValidator event="blur" />
+										<pe:keyFilter mask="pnum"
+											inputRegEx="/^[\d]{0,5}\.[\d]{0,2}$|^[\d]{0,5}$|^$/"
+											preventPaste="false" />
+									</p:inputText>
+									<p:spacer width="5" />
+									<h:outputText
+										value="#{userController.profile.dateModification}"
+										id="txtDateModification" styleClass="bold">
+										<f:convertDateTime pattern="MM/dd/yyyy" />
+									</h:outputText>
+								</h:panelGroup>
+								<p:message for="txtAmount" display="icon"
+									rendered="#{userController.ibo}" />
+
+
+								<p:outputLabel value="#{msg.region}" for="txtRegion"
+									rendered="#{userController.ibo}" />
+								<p:selectOneRadio id="txtRegion"
+									rendered="#{userController.ibo}"
+									value="#{userController.profile.region}"
+									disabled="#{!userController.edit}">
+									<f:selectItem itemLabel="#{msg.domestic}" itemValue="D" />
+									<f:selectItem itemLabel="#{msg.international}" itemValue="I" />
+									<p:ajax event="change"
+										update="cmbCountryIbo,pnSpace,pntxtContract,pnCmbContract,pnErrorMessageContract,grdCorporation"
+										listener="#{userController.changeRegion}" />
+								</p:selectOneRadio>
+								<p:message for="txtRegion" display="icon"
+									rendered="#{userController.ibo}" />
+
+								<p:spacer width="15" />
+
+								<p:outputLabel value="#{msg.owner_type}" for="rdOwnerType"
+									rendered="#{userController.ibo}" />
+								<p:selectOneRadio id="rdOwnerType"
+									rendered="#{userController.ibo}"
+									value="#{userController.profile.ownerType}"
+									style="font-size: 12px;"
+									disabled="#{userController.disabledOwnerType}"
+									onchange="PF('tblIboCorporation').unselectAllRows();PF('cmbAcept').disable();">
+									<f:selectItems value="#{userController.ownerTypes}" var="c"
+										itemLabel="#{c[0]}" itemValue="#{c[1]}" />
+									<p:ajax event="click" update="cmbCountryIbo"
+										listener="#{userController.changeOwnerType}" />
+								</p:selectOneRadio>
+								<p:message for="rdOwnerType" display="icon"
+									rendered="#{userController.ibo}" />
+
+
+
+								<p:outputLabel value="#{msg.country}" for="cmbCountryIbo"
+									rendered="#{userController.ibo}" />
+								<p:selectOneMenu id="cmbCountryIbo"
+									rendered="#{userController.ibo}"
+									value="#{userController.countryIbo}"
+									converter="entityConverter" styleClass="largeControls"
+									filter="true" required="true"
+									requiredMessage="#{msg.country}: #{msg.value_required}"
+									filterMatchMode="contains" style="width: 312px;"
+									disabled="#{!userController.international}">
+									<f:selectItems value="#{countryController.listOrder}" var="ent"
+										itemLabel="#{ent.name}" itemValue="#{ent}"
+										itemDisabled="#{ent.id == constant.usCountryId &amp;&amp; userController.international ? 'true' : 'false'}" />
+								</p:selectOneMenu>
+								<p:message for="cmbCountryIbo" display="icon"
+									rendered="#{userController.ibo}" />
+
+
+								<h:panelGroup id="pnSpace">
+									<p:spacer width="15"
+										rendered="#{userController.showContractType}" />
+								</h:panelGroup>
+
+								<h:panelGroup id="pntxtContract">
+									<p:outputLabel value="#{msg.type_contract}"
+										id="txtContractType" for="cmbContractType"
+										rendered="#{userController.showContractType}" />
+								</h:panelGroup>
+								<h:panelGroup id="pnCmbContract">
+									<p:selectOneMenu id="cmbContractType"
+										rendered="#{userController.showContractType}"
+										value="#{userController.profile.typeContract}"
+										converter="entityConverter" styleClass="largeControls"
+										required="true"
+										requiredMessage="#{msg.type_contract}: #{msg.value_required}"
+										style="width: 312px;">
+										<f:selectItems value="#{userController.contractTypes}"
+											var="ent" itemLabel="#{ent[1]}" itemValue="#{ent[0]}" />
+										<p:ajax event="change" update="grdCorporation" />
+									</p:selectOneMenu>
+								</h:panelGroup>
+								<h:panelGroup id="pnErrorMessageContract">
+									<p:message for="cmbContractType" display="icon"
+										rendered="#{userController.showContractType}" />
+								</h:panelGroup>
+
+							</h:panelGrid>
+
+
+							<h:panelGrid id="grdCA" columns="3"
+								columnClasses="widthColumnUser">
+
+								<p:outputLabel value="#{msg.client_applications}" for="txtCA"
+									rendered="#{userController.ibo}" />
+								<p:pickList id="txtCA"
+									value="#{userController.clientApplications}" var="ca"
+									itemLabel="#{ca.name}" itemValue="#{ca}"
+									rendered="#{userController.ibo}" converter="entityConverter"
+									showSourceFilter="true" showTargetFilter="true"
+									filterMatchMode="contains">
+
+									<f:facet name="sourceCaption">#{msg.available}</f:facet>
+									<f:facet name="targetCaption">#{msg.assigned}</f:facet>
+
+								</p:pickList>
+								<p:message for="txtCA" display="icon"
+									rendered="#{userController.ibo}" />
+							</h:panelGrid>
+						</h:panelGrid>
+
+						<p:remoteCommand update="rdCorporation" name="refreshCorporation"
+							global="false" ignoreAutoUpdate="true" />
+
+						<p:remoteCommand name="refreshFormCorporation" global="false"
+							ignoreAutoUpdate="true" />
+
+
+						<h:panelGrid width="100%" id="grdCorporation">
+							<h:outputText value="#{msg.corporation_information}"
+								styleClass="bold" rendered="#{userController.ibo}" />
+
+							<p:separator rendered="#{userController.ibo}" />
+
+							<h:panelGrid columns="3">
+								<h:outputText value="Actions" rendered="#{userController.ibo}"
+									styleClass="bold" />
+								<p:selectOneRadio id="rdCorporation"
+									rendered="#{userController.ibo}"
+									value="#{userController.action}" style="font-size: 12px;">
+									<f:selectItems value="#{userController.option}" var="c"
+										itemLabel="#{c[0]}" itemValue="#{c[1]}" />
+									<p:ajax event="click"
+										update=":dlgCorporationId,grdCorporation,form:rdOwnerType"
+										listener="#{userController.chargeCorporation}" />
+								</p:selectOneRadio>
+
+							</h:panelGrid>
+
+
+							<h:panelGrid columns="7"
+								columnClasses="widthColumnUser,,,,widthColumnUser">
+								<p:outputLabel value="#{msg.corporation_name}" for="txtCorp"
+									rendered="#{userController.ibo}" />
+								<p:inputText onblur="this.value = this.value.trim()"
+									value="#{userController.corporation.name}" id="txtCorp"
+									maxlength="150" styleClass="largeControls"
+									required="#{userController.requiredCorporation}"
+									requiredMessage="#{msg.corporation_name}: #{msg.value_required}"
+									rendered="#{userController.ibo}">
+									<p:clientValidator event="blur" />
+								</p:inputText>
+								<p:message for="txtCorp" display="icon"
+									rendered="#{userController.ibo}" />
+
+								<p:spacer width="15" />
+
+
+								<p:outputLabel value="#{msg.ein}" for="txtein"
+									rendered="#{userController.ibo}" />
+								<p:inputText
+									onblur="this.value = this.value.trim().replace(/[^\d\.]/g, '');"
+									value="#{userController.corporation.ein}" rendered="false"
+									maxlength="9" styleClass="largeControls"
+									required="#{userController.requiredCorporation}"
+									requiredMessage="#{msg.ein}: #{msg.value_required}"
+									validatorMessage="#{emsg.ein_incorrect_format}">
+									<f:validateLength maximum="9" minimum="9" />
+									<p:clientValidator event="blur" />
+									<pe:keyFilter mask="pint" preventPaste="false" />
+								</p:inputText>
+								<p:inputMask id="txtein"
+									value="#{userController.corporation.ein}" mask="99-9999999"
+									required="#{userController.requiredCorporation}"
+									styleClass="largeControls"
+									requiredMessage="#{msg.ein}: #{msg.value_required}"
+									rendered="#{userController.ibo}">
+									<p:clientValidator event="blur" />
+								</p:inputMask>
+								<p:message for="txtein" display="icon"
+									rendered="#{userController.ibo}" />
+
+							</h:panelGrid>
+
+							<h:panelGrid columns="3" columnClasses="widthColumnUser"
+								id="grdAddress">
+
+
+								<p:outputLabel value="#{msg.address}" for="txtAddress"
+									rendered="#{userController.ibo}" />
+								<p:inputText onblur="this.value = this.value.trim()"
+									value="#{userController.address.description}" id="txtAddress"
+									maxlength="255" rendered="#{userController.ibo}"
+									required="#{userController.requiredCorporation}"
+									style="width: 850px;"
+									requiredMessage="#{msg.address}: #{msg.value_required}">
+									<p:clientValidator event="blur" />
+								</p:inputText>
+								<p:message for="txtAddress" display="icon"
+									rendered="#{userController.ibo}" />
+
+							</h:panelGrid>
+
+
+
+							<h:panelGrid columns="7"
+								columnClasses="widthColumnUser,,,,widthColumnUser"
+								id="grdCountry">
+
+								<p:outputLabel value="#{msg.country}" for="cmbCountry"
+									rendered="#{userController.ibo}" />
+								<p:selectOneMenu id="cmbCountry"
+									rendered="#{userController.ibo}"
+									value="#{userController.country}" converter="entityConverter"
+									styleClass="largeControls" filter="true"
+									required="#{userController.requiredCorporation}"
+									requiredMessage="#{msg.country}: #{msg.value_required}"
+									filterMatchMode="contains" style="width: 312px;"
+									disabled="true">
+									<p:ajax listener="#{userController.onCountryChange}"
+										update="cmdStateR" ignoreAutoUpdate="true" />
+									<f:selectItems value="#{countryController.listOrder}" var="ent"
+										itemLabel="#{ent.name}" itemValue="#{ent}" />
+								</p:selectOneMenu>
+								<p:message for="cmbCountry" display="icon"
+									rendered="#{userController.ibo}" />
+
+								<p:spacer width="15" />
+
+
+
+								<p:outputLabel value="#{msg.zip}" for="txtZip"
+									rendered="#{userController.ibo}" />
+								<p:inputText onblur="this.value = this.value.trim()"
+									value="#{userController.address.zipCode}" id="txtZip"
+									maxlength="10" styleClass="largeControls"
+									required="#{userController.requiredCorporation}"
+									requiredMessage="#{msg.zip}: #{msg.value_required}"
+									rendered="#{userController.ibo}">
+									<p:clientValidator event="blur" />
+									<pe:keyFilter regEx="/^([\d]{0,5}|[\d]{0,5}\-[\d]{0,4})$/"
+										inputRegEx="/^([\d]{5}|[\d]{5}\-[\d]{4})$/"
+										preventPaste="false" />
+									<p:ajax event="blur"
+										listener="#{userController.searchStateByZipCode}"
+										update="grdCity,msgs" ignoreAutoUpdate="true" />
+								</p:inputText>
+								<p:message for="txtZip" display="icon"
+									rendered="#{userController.ibo}" />
+
+
+
+								<h:panelGroup id="cmdStateR" rendered="false">
+									<h:panelGrid columns="3" columnClasses="widthColumnUser">
+
+										<p:outputLabel for="cmdState" value="#{msg.state}"
+											rendered="#{userController.showState}" />
+
+
+										<p:selectOneMenu id="cmdState"
+											value="#{userController.states}" style="width: 312px;"
+											filter="true" filterMatchMode="contains"
+											rendered="#{userController.showState}"
+											required="#{userController.requiredCorporation}"
+											requiredMessage="#{msg.state}: #{msg.value_required}"
+											converter="entityConverter">
+											<f:selectItem itemLabel="#{msg.select_one}" itemValue=""
+												noSelectionOption="true" />
+											<f:selectItems value="#{userController.listStates}" var="sta"
+												itemLabel="#{sta.name}" itemValue="#{sta}" />
+										</p:selectOneMenu>
+
+										<p:message for="cmdState" display="icon"
+											rendered="#{userController.showState}" />
+
+										<p:outputLabel value="#{msg.state}" for="txtState"
+											rendered="#{userController.showStateTxt}" />
+
+										<p:inputText onblur="this.value = this.value.trim()"
+											value="#{userController.address.state}"
+											required="#{userController.requiredCorporation}"
+											requiredMessage="#{msg.state}: #{msg.value_required}"
+											id="txtState" maxlength="50" styleClass="largeControls"
+											rendered="#{userController.showStateTxt}">
+											<p:clientValidator event="blur" />
+										</p:inputText>
+
+										<p:message for="txtState" display="icon"
+											rendered="#{userController.showStateTxt}" />
+
+									</h:panelGrid>
+								</h:panelGroup>
+							</h:panelGrid>
+
+
+							<h:panelGrid columns="7"
+								columnClasses="widthColumnUser,,,,widthColumnUser" id="grdCity">
+
+								<p:outputLabel for="cmdStateUS" value="#{msg.state}"
+									rendered="#{userController.ibo}" />
+								<p:selectOneMenu id="cmdStateUS"
+									value="#{userController.states}" style="width: 312px;"
+									filter="true" filterMatchMode="contains"
+									required="#{userController.requiredCorporation}"
+									requiredMessage="#{msg.state}: #{msg.value_required}"
+									converter="entityConverter" rendered="#{userController.ibo}">
+									<f:selectItem itemLabel="#{msg.select_one}" itemValue=""
+										noSelectionOption="true" />
+									<f:selectItems value="#{userController.listStates}" var="sta"
+										itemLabel="#{sta.name}" itemValue="#{sta}" />
+								</p:selectOneMenu>
+								<p:message for="cmdStateUS" display="icon"
+									rendered="#{userController.ibo}" />
+
+								<p:spacer width="15" />
+
+								<p:outputLabel value="#{msg.city}" for="txtCity"
+									rendered="#{userController.ibo}" />
+								<p:inputText onblur="this.value = this.value.trim()"
+									value="#{userController.address.city}" id="txtCity"
+									maxlength="50" styleClass="largeControls"
+									required="#{userController.requiredCorporation}"
+									requiredMessage="#{msg.city}: #{msg.value_required}"
+									rendered="#{userController.ibo}">
+									<p:clientValidator event="blur" />
+								</p:inputText>
+								<p:message for="txtCity" display="icon"
+									rendered="#{userController.ibo}" />
+
+							</h:panelGrid>
+
+						</h:panelGrid>
+
+					</h:panelGrid>
+					<ui:include src="/secure/confirmation_modify.xhtml"></ui:include>
+
+					<p:dialog header="User ID Assigned"
+						widgetVar="dlgConfirmationIdUser" modal="true"
+						closeOnEscape="true" id="dlgConfirmationIdUserId"
+						resizable="false" closable="true" showHeader="true" width="450px"
+						height="80px">
+
+						<h:panelGrid columns="2">
+							<h:outputText value="#{msg.user_id_assigned}" />
+							<h:outputText value="#{userController.profile.number}" styleClass="bold" />
+						</h:panelGrid>
+
+						<h:panelGrid width="100%">
+
+							<h:panelGrid columns="1" styleClass="panelGridCenter">
+								<p:commandButton value="OK" icon="ui-icon-disk"
+									styleClass="buttonBarra" ignoreAutoUpdate="true"
+									action="#{userController.back}"
+									oncomplete="PF('dlgConfirmationIdUser').hide()" />
+							</h:panelGrid>
+						</h:panelGrid>
+					</p:dialog>
+
+
+
+					<p:dialog header="Confirmation" widgetVar="dlgConfirmationChange"
+						modal="true" closeOnEscape="true" id="dlgConfirmationChangeId"
+						resizable="false" closable="true" showHeader="true" width="450px"
+						height="150px" minHeight="300">
+
+						<h:panelGrid border="0" columns="1">
+							<p:messages id="messagesConfirmation" showDetail="false"
+								autoUpdate="true" globalOnly="false" />
+						</h:panelGrid>
+
+						<h:panelGrid columns="3">
+							<p:outputPanel>
+								<p:outputLabel value="#{msg.date_modification}" for="txtDate" />
+								<p:spacer width="5" />
+								<h:graphicImage value="/img/question.gif" width="16px"
+									id="imgDateModification" />
+								<p:tooltip for="imgDateModification"
+									value="#{msg.user_date_modification}"></p:tooltip>
+							</p:outputPanel>
+							<p:calendar id="txtDate" navigator="true"
+								value="#{userController.profile.dateModification}"
+								widgetVar="calwidget" readonlyInput="true"
+								maxdate="#{clientApplicationController.maxDate}">
+								<p:clientValidator event="blur" />
+							</p:calendar>
+							<p:message for="txtDate" display="icon" />
+
+
+						</h:panelGrid>
+
+						<h:panelGrid width="100%">
+
+							<h:panelGrid columns="3" styleClass="panelGridCenter">
+
+								<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+									styleClass="buttonBarra" validateClient="true"
+									ignoreAutoUpdate="true"
+									update="messagesConfirmation,txtDateModification"
+									oncomplete="PF('dlgConfirmationChange').hide()" />
+
+								<p:spacer width="10" />
+
+								<p:commandButton value="Cancel" icon="ui-icon-disk"
+									styleClass="buttonBarra" immediate="true"
+									update="txtDateModification" ignoreAutoUpdate="true"
+									actionListener="#{userController.clearDateModification}"
+									oncomplete="PF('calwidget').setDate(null);PF('dlgConfirmationChange').hide();" />
+
+							</h:panelGrid>
+						</h:panelGrid>
+					</p:dialog>
+
+
+				</h:form>
+
+
+
+				<ui:include src="/secure/dialog_corporation.xhtml"></ui:include>
+				<ui:include src="/secure/dialog_list_ibo_corporation.xhtml"></ui:include>
+
+			</div>
+		</sec:authorize>
+	</ui:define>
+</ui:composition>

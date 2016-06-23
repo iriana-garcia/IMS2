@@ -1,0 +1,202 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+
+		<h:form id="form"
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="#{msg.message_board}" />
+				</f:facet>
+
+				<f:facet name="right">
+
+					<p:commandButton value="Refresh" icon="ui-icon-refresh"
+						styleClass="buttonBarra" onclick="PF('uniTableFil').filter()">
+					</p:commandButton>
+
+
+					<p:spacer width="10" />
+
+					<p:commandButton value="#{msg.print}" icon="ui-icon-print"
+						actionListener="#{printController.printListTable}"
+						styleClass="buttonBarra" update="messages"
+						oncomplete="PF('dlgPrint').show();">
+						<f:attribute name="report" value="10" />
+						<f:attribute name="title" value="message_board" />
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+
+
+			<h:panelGrid styleClass="panel" columns="1" id="btnMessage">
+
+
+				<h:panelGrid border="0" columns="1">
+					<p:messages id="messages" showDetail="false" autoUpdate="true" />
+				</h:panelGrid>
+
+
+				<p:remoteCommand name="refreshFooter"
+					update="form:uniTable:rowCount" />
+
+				<p:dataTable var="uni" value="#{messageBoardController.lazyModel}"
+					paginator="true" rows="20" paginatorPosition="bottom"
+					paginatorTemplate=" {RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {CurrentPageReport} "
+					rowsPerPageTemplate="#{constant.rowsToShow}"
+					widgetVar="uniTableFil" id="uniTable" lazy="true"
+					resizableColumns="false" draggableColumns="true"
+					sortBy="#{uni.ibo.number}" sortOrder="ascending" editable="true"
+					selectionMode="single" reflow="false" disabledTextSelection="false"
+					style="min-width: 1200px !important">
+
+					<f:facet name="header">
+						<p:outputPanel>
+
+							<p:commandButton value="Filters" icon="ui-icon-search"
+								id="btnFilter" onclick="PF('dlgFilter').show();"
+								rendered="false" />
+
+							<p:spacer width="10" rendered="false" />
+
+
+							<p:commandButton value="Clear filters"
+								actionListener="#{messageBoardController.clearFilter}"
+								icon="ui-icon-close" id="btnReset" update="form:uniTable"></p:commandButton>
+
+							<p:spacer width="10" rendered="false" />
+
+							<p:commandButton id="toggler" type="button" value="Columns"
+								icon="ui-icon-calculator" rendered="false" />
+							<p:columnToggler datasource="uniTable" trigger="toggler"
+								rendered="false" />
+
+						</p:outputPanel>
+					</f:facet>
+
+					<p:ajax event="filter" oncomplete="refreshFooter()"></p:ajax>
+
+					<f:facet name="footer">
+						<h:outputText id="rowCount"
+							value="#{msg.total_register} #{messageBoardController.lazyModel.rowCount}" />
+					</f:facet>
+
+					<p:column headerText="#{msg.user_id}" sortBy="#{uni.ibo.number}"
+						filterBy="#{uni.ibo.number}" filterStyle="width: 90% !important"
+						width="90">
+						<h:outputText value="#{uni.invoice.user.number}" />
+					</p:column>
+
+					<p:column headerText="#{msg.first_name}" width="150"
+						sortBy="#{uni.user.firstName}" filterStyle="width: 90% !important"
+						filterBy="#{uni.user.firstName}">
+						<h:outputText value="#{uni.invoice.user.user.firstName}" />
+					</p:column>
+
+					<p:column headerText="#{msg.last_name}" width="150"
+						sortBy="#{uni.user.lastName}" filterStyle="width: 90% !important"
+						filterBy="#{uni.user.lastName}">
+						<h:outputText value="#{uni.invoice.user.user.lastName}" />
+					</p:column>
+
+					<p:column headerText="#{msg.corporation_name}" width="150"
+						sortBy="#{uni.ibo.corporationName}"
+						filterStyle="width: 90% !important"
+						filterBy="#{uni.ibo.corporationName}">
+						<h:outputText value="#{uni.invoice.user.corporationName}" />
+					</p:column>
+
+
+					<p:column headerText="Invoice #{msg.number}" width="90"
+						sortBy="#{uni.invoice.number}" filterStyle="width: 90% !important">
+						<h:outputText value="#{uni.invoice.number}" />
+					</p:column>
+
+
+					<p:column headerText="#{msg.date}" sortBy="#{uni.dateMessage}"
+						width="90">
+						<h:outputText value="#{uni.dateMessageFormat}" />
+					</p:column>
+
+					<p:column headerText="#{msg.message}" rendered="false">
+						<h:outputText value="#{msg.message}" escape="false" />
+					</p:column>
+
+					<p:column headerText="#{msg.date} #{msg.reply}" rendered="false"
+						sortBy="#{uni.dateReplyMessage}" width="90">
+						<h:outputText value="#{uni.dateMessageReplyFormat}" />
+					</p:column>
+
+					<p:column headerText="#{msg.reply} #{msg.message}" rendered="false">
+						<h:outputText value="#{uni.replyMessage}" escape="false" />
+					</p:column>
+
+					<p:column headerText="#{msg.reply} #{msg.user}" width="90"
+						rendered="false" sortBy="#{uni.userReply.name}"
+						filterBy="#{uni.userReply.name}"
+						filterStyle="width: 90% !important">
+						<h:outputText value="#{uni.userReply.name}" />
+					</p:column>
+
+
+					<p:column headerText="#{msg.status}" width="100"
+						filterBy="#{uni.dateReplyMessage}"
+						sortBy="#{uni.dateReplyMessage}"
+						filterStyle="width: 90% !important">
+						<f:facet name="filter">
+							<p:selectOneMenu onchange="PF('uniTableFil').filter()"
+								id="cmbStatusMessage" style="width: 70% !important"
+								value="#{messageBoardFilter.status}">
+								<f:selectItem itemLabel="#{msg.select_all}" itemValue="-1"
+									noSelectionOption="true" />
+								<f:selectItem itemValue="1" itemLabel="Waiting for reply"></f:selectItem>
+								<f:selectItem itemValue="2" itemLabel="Replied"></f:selectItem>
+							</p:selectOneMenu>
+						</f:facet>
+						<h:outputText value="#{uni.statusDescription}" />
+					</p:column>
+
+
+
+					<p:column style="text-align: center" width="30" toggleable="false"
+						exportable="false">
+						<p:commandButton icon="ui-icon-help" styleClass="buttonBarra"
+							oncomplete="PF('dlgDetail').show()" update="dlgDetailId"
+							action="#{messageBoardController.openMessageBoard}">
+							<f:setPropertyActionListener value="#{uni.invoice}"
+								target="#{messageBoardController.invoice}" />
+						</p:commandButton>
+
+						<p:commandButton icon="ui-icon-mail-closed" rendered="false"
+							action="#{messageBoardController.openMessageBoard}"
+							id="cmdDetail" oncomplete="PF('dlgReply').show()"
+							update="dlgDetailId" disabled="#{uni.reply}">
+							<f:setPropertyActionListener value="#{uni.invoice}"
+								target="#{messageBoardController.invoice}" />
+						</p:commandButton>
+
+						<p:tooltip for="cmdDetail" value="#{msg.send_question}" />
+					</p:column>
+
+				</p:dataTable>
+
+
+				<ui:include src="/secure/confirmation_delete.xhtml"></ui:include>
+			</h:panelGrid>
+
+
+
+		</h:form>
+
+		<ui:include src="/secure/dialog_send_question.xhtml"></ui:include>
+
+		<ui:include src="/secure/select_format.xhtml"></ui:include>
+	</ui:define>
+
+</ui:composition>

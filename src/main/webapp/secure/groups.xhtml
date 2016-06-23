@@ -1,0 +1,268 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+
+		<h:form id="form" onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="#{msg.groups}" />
+				</f:facet>
+
+				<f:facet name="right">
+					<sec:authorize access="hasAnyRole('SUPER','GROUP_A')">
+						<p:commandButton value="#{msg.add}" icon="ui-icon-plus"
+							action="#{groupsController.add}" styleClass="buttonBarra"
+							update="messages" />
+					</sec:authorize>
+
+					<p:spacer width="10" />
+
+					<p:commandButton value="#{msg.print}" icon="ui-icon-print"
+						actionListener="#{printController.printListTable}"
+						styleClass="buttonBarra" update="messages"
+						oncomplete="PF('dlgPrint').show();">
+						<f:attribute name="report" value="3" />
+						<f:attribute name="title" value="groups" />
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+
+
+			<h:panelGrid styleClass="panel" columns="1">
+			
+			
+				<h:panelGrid border="0" columns="1">
+					<p:messages id="messages" showDetail="false" autoUpdate="true" />
+				</h:panelGrid>
+
+				<p:remoteCommand name="refreshFooter"
+					update="form:uniTable:rowCount" />
+
+				<p:dataTable var="uni" value="#{groupsController.lazyModel}"
+					paginator="true" rows="20" paginatorPosition="bottom"
+					paginatorTemplate=" {RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {CurrentPageReport} "
+					rowsPerPageTemplate="#{constant.rowsToShow}"
+					widgetVar="uniTableFil" id="uniTable" lazy="true"
+					resizableColumns="false" draggableColumns="true"
+					sortBy="#{uni.name}" sortOrder="ascending" editable="true"
+					selectionMode="single" reflow="false" disabledTextSelection="false">
+
+					<f:facet name="header">
+						<p:outputPanel>
+
+							<p:commandButton value="Filters" icon="ui-icon-search"
+								id="btnFilter" onclick="PF('dlgFilter').show();"
+								rendered="false" />
+
+							<p:spacer width="10" rendered="false" />
+
+
+							<p:commandButton value="Clear filters"
+								actionListener="#{groupsController.clearFilter}"
+								icon="ui-icon-close" id="btnReset" update="form:uniTable"></p:commandButton>
+
+							<p:spacer width="10"  rendered="false"/>
+
+							<p:commandButton id="toggler" type="button" value="Columns"
+								icon="ui-icon-calculator"  rendered="false"/>
+							<p:columnToggler datasource="uniTable" trigger="toggler"  rendered="false"/>
+
+						</p:outputPanel>
+					</f:facet>
+
+					<p:ajax event="filter" oncomplete="refreshFooter()"></p:ajax>
+					<f:facet name="footer">
+						<h:outputText id="rowCount"
+							value="#{msg.total_register} #{groupsController.lazyModel.rowCount}" />
+					</f:facet>
+
+					<p:column headerText="#{msg.name}" sortBy="#{uni.name}"
+						filterBy="#{uni.name}" filterStyle="width: 90% !important">
+						<h:outputText value="#{uni.name}" />
+					</p:column>
+
+					<p:column headerText="#{msg.user}" sortBy="#{uni.user.nameTable}"
+						width="130" filterBy="#{uni.user.nameTable}"
+						filterStyle="width: 90% !important">
+						<h:outputText value="#{uni.user.fullName}" />
+					</p:column>
+
+
+					<p:column headerText="#{msg.total_ibo}" sortBy="#{uni.totalIbo}"
+						width="8%" styleClass="righted">
+						<h:outputText value="#{uni.totalIbo}" />
+					</p:column>
+	
+					<p:column headerText="#{msg.state}" sortBy="#{uni.state}"
+						width="100" filterBy="#{uni.state}">
+						<f:facet name="filter">
+							<p:selectOneMenu onchange="PF('uniTableFil').filter()"
+								id="cmbError">
+								<f:converter converterId="javax.faces.Boolean" />
+								<f:selectItem itemLabel="#{msg.select_all}" itemValue="#{null}" />
+								<f:selectItem itemValue="true" itemLabel="#{msg.active}"></f:selectItem>
+								<f:selectItem itemValue="false" itemLabel="#{msg.deactive}"></f:selectItem>
+							</p:selectOneMenu>
+						</f:facet>
+						<h:outputText value="#{uni.state ? msg.active : msg.deactive}" />
+					</p:column>
+
+
+					<sec:authorize access="hasAnyRole('SUPER','GROUP_M')">
+						<p:column style="text-align: center" width="30" toggleable="false"
+							exportable="false">
+							<p:commandButton icon="ui-icon-pencil" id="cmbEdit"
+								action="#{groupsController.edit}" type="submit"  disabled="#{!uni.state}">
+								<f:setPropertyActionListener value="#{uni}"
+									target="#{groupsController.entity}" />
+
+							</p:commandButton>
+							<p:tooltip id="toolTipFadeM" for="cmbEdit" value="#{msg.edit}" />
+						</p:column>
+					</sec:authorize>
+
+					<sec:authorize access="hasAnyRole('SUPER','GROUP_C')">
+						<p:column style="text-align: center" width="30" toggleable="false"
+							exportable="false">
+							<p:commandButton
+								icon="#{uni.state ? 'ui-icon-closethick' : 'ui-icon-check'}"
+								action="#{groupsController.changeState}" update="uniTable"
+								id="cmdState">
+								<f:setPropertyActionListener value="#{uni}"
+									target="#{groupsController.entity}" />
+								<p:confirm icon="ui-icon-alert"
+									message="#{uni.totalIbo == 0 || !uni.state ? msg.confirmation : msg.confirmationIbo}" />
+							</p:commandButton>
+
+							<p:tooltip id="toolTipFade" for="cmdState"
+								value="#{uni.state ? msg.deactivate : msg.activate}" />
+						</p:column>
+					</sec:authorize>
+
+
+					<sec:authorize access="hasAnyRole('SUPER','GROUP')">
+						<p:column style="text-align: center" width="30" toggleable="false"
+							exportable="false">
+							<p:commandButton icon="ui-icon-zoomin"
+								action="#{groupsController.loadData}" update="form:tblDetail"
+								id="cmdDetail" oncomplete="PF('dlgDetail').show();">
+								<f:setPropertyActionListener value="#{uni}"
+									target="#{groupsController.entity}" />
+							</p:commandButton>
+
+							<p:tooltip for="cmdDetail" value="#{msg.details}" />
+						</p:column>
+					</sec:authorize>
+
+				</p:dataTable>
+
+
+				<ui:include src="/secure/confirmation_delete.xhtml"></ui:include>
+			</h:panelGrid>
+
+
+
+
+			<p:dialog header="#{msg.details}" widgetVar="dlgDetail" modal="true"
+				closeOnEscape="true" id="tblDetail" resizable="false" closable="true"
+				showHeader="true" width="90%" height="600px" minHeight="400">
+
+				<h:panelGrid columns="3" width="100%" id="grdGeneral"
+					columnClasses="widthColumnButton,,widthColumnButton">
+
+					<p:commandButton icon="ui-icon-seek-first"
+						actionListener="#{groupsController.loadDataBefore}"
+						update="grdDetail,grdIbo" />
+					
+					<h:panelGrid width="100%" >
+						<h:panelGrid columns="4" id="grdDetail" columnClasses="alingRight,bold,alingRight,bold">
+
+							<h:outputText value="#{msg.name}" />
+							<h:outputText value="#{groupsController.entity.name}" />
+							<h:outputText value="#{msg.user}" />
+							<h:outputText value="#{groupsController.entity.user.fullName}" />
+
+							<h:outputText value="#{msg.state}" />
+							<h:outputText
+								value="#{groupsController.entity.state ? msg.active : msg.deactive}" />
+
+							<p:spacer width="5" />
+							<p:spacer width="5" />
+
+							<h:outputText value="#{msg.created_date}" />
+							<h:outputText
+								value="#{groupsController.entity.dateCreatedFormat}" />
+
+
+							<h:outputText value="#{msg.created_user}" />
+							<h:outputText value="#{groupsController.entity.userCreated.name}" />
+
+							<h:outputText value="#{msg.updated_date}" />
+							<h:outputText
+								value="#{groupsController.entity.dateUpdatedFormat}" />
+
+
+							<h:outputText value="#{msg.updated_user}" />
+							<h:outputText value="#{groupsController.entity.userUpdated.name}" />
+
+						</h:panelGrid>
+						<p:spacer height="10" />
+
+						<p:dataTable var="ibo" value="#{groupsController.entity.profile}"
+							scrollable="true" id="grdIbo" reflow="false" styleClass="myTable" style="width:100%">
+							<f:facet name="header">
+								<h:outputText value="#{msg.ibos}" />
+							</f:facet>
+							
+							<p:column headerText="#{msg.user_id}" width="150">
+								<h:outputText value="#{ibo.number}" />
+							</p:column>
+
+							<p:column headerText="#{msg.first_name}" width="20%">
+								<h:outputText value="#{ibo.user.firstName}" />
+							</p:column>
+
+							<p:column headerText="#{msg.last_name}"  width="20%">
+								<h:outputText value="#{ibo.user.lastName}" />
+							</p:column>
+
+							<p:column headerText="#{msg.corporation_name}"  width="20%">
+								<h:outputText value="#{ibo.corporationName}" />
+							</p:column>
+
+							<p:column headerText="#{msg.email}"  width="20%">
+								<h:outputText value="#{ibo.user.email}" />
+							</p:column>
+
+						</p:dataTable>
+
+					</h:panelGrid>
+
+					<p:commandButton icon="ui-icon-seek-end"
+						actionListener="#{groupsController.loadDataNext}"
+						update="grdDetail,grdIbo" />
+
+				</h:panelGrid>
+
+
+			</p:dialog>
+
+
+
+
+
+
+		</h:form>
+
+
+
+		<ui:include src="/secure/select_format.xhtml"></ui:include>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,262 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+
+		<style>
+.ui-picklist .ui-picklist-list {
+	width: 100px !important;
+}
+</style>
+
+		<h:form id="form"
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="#{msg.phone_system_records}" />
+				</f:facet>
+
+				<f:facet name="right">
+
+					<p:commandButton value="#{msg.print}" icon="ui-icon-print"
+						actionListener="#{printController.printListTable}"
+						styleClass="buttonBarra" oncomplete="PF('dlgPrint').show();">
+						<f:attribute name="report" value="14" />
+						<f:attribute name="title" value="phone_system_records" />
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+
+
+
+			<h:panelGrid styleClass="panel" columns="1">
+
+				<p:remoteCommand name="refreshFooter"
+					update="form:uniTable:rowCount,form:uniTable:totalPage1" />
+
+				<p:dataTable var="uni"
+					value="#{agentStateDetailController.lazyModel}" paginator="true"
+					rows="20" paginatorPosition="bottom"
+					paginatorTemplate=" {RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {CurrentPageReport}"
+					rowsPerPageTemplate="#{constant.rowsToShow}" selectionMode="single"
+					widgetVar="uniTableFil" id="uniTable" lazy="true"
+					resizableColumns="false" draggableColumns="true"
+					sortBy="#{uni.startDate}" sortOrder="descending" reflow="false"
+					disabledTextSelection="false" style="min-width: 1300px !important">
+
+					<f:facet name="header">
+						<p:outputPanel>
+
+							<p:commandButton value="Filters" icon="ui-icon-search"
+								id="btnFilter" oncomplete="PF('dlgFilter').show();"
+								update="form:dialFilter" />
+
+							<p:spacer width="10" />
+							<p:commandButton value="Clear filters"
+								actionListener="#{agentStateDetailController.clearFilter}"
+								icon="ui-icon-close" id="btnReset"
+								update="form:uniTable,form:dialFilter"></p:commandButton>
+							<p:spacer width="10" rendered="false" />
+							<p:commandButton id="toggler" type="button" value="Columns"
+								icon="ui-icon-calculator" rendered="false" />
+							<p:columnToggler datasource="uniTable" trigger="toggler"
+								rendered="false" />
+						</p:outputPanel>
+					</f:facet>
+
+					<p:ajax event="filter" oncomplete="refreshFooter()"></p:ajax>
+					<p:ajax event="page" oncomplete="refreshFooter()"></p:ajax>
+
+					<f:facet name="footer">
+						<h:outputText id="rowCount"
+							value="#{msg.total_register} #{agentStateDetailController.lazyModel.rowCount}" />
+					</f:facet>
+
+					<sec:authorize ifNotGranted="IBO">
+						<p:column headerText="#{msg.user_id}" sortBy="#{uni.p.number}"
+							width="100" filterStyle="width: 90% !important">
+							<h:outputText value="#{uni.user.ibo.number}">
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="#{msg.user}" sortBy="#{uni.user.fullName}">
+							<h:outputText value="#{uni.user.fullName}">
+							</h:outputText>
+						</p:column>
+					</sec:authorize>
+
+					<p:column headerText="#{msg.start_date}" sortBy="#{uni.startDate}"
+						width="200">
+						<h:outputText value="#{uni.startDateFormat}">
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="#{msg.end_date}" sortBy="#{uni.endDate}"
+						width="200">
+						<h:outputText value="#{uni.endDateFormat}">
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="#{msg.from}" width="80">
+						<h:outputText value="#{uni.placeName}" />
+					</p:column>
+
+					<p:column headerText="#{msg.event_type}" width="100">
+						<h:outputText value="#{uni.eventTypeName}" />
+					</p:column>
+
+					<p:column headerText="#{msg.duration}" width="130">						
+							<h:outputText value="#{uni.durationHours}" />					
+					</p:column>
+
+					<p:column headerText="#{msg.reason_code}"  width="130">
+						<h:outputText value="#{uni.stateDescription}" />
+					</p:column>
+
+
+					<p:column width="50">
+						<f:facet name="header">
+							<h:outputText value="#{msg.included}" id="clmQuestionHeader" />
+							<p:tooltip value="#{msg.included_invoice}"
+								for="clmQuestionHeader" />
+						</f:facet>
+						<p:outputPanel style="text-align: center;">
+							<h:graphicImage value="/img/checkmark.gif" width="16px"
+								rendered="#{uni.associateInvoice}" />
+						</p:outputPanel>
+					</p:column>
+
+					<p:columnGroup type="footer" id="rowTotalPage">
+						<p:row>
+
+							<sec:authorize ifNotGranted="IBO">
+								<p:column colspan="6"
+									style="text-align:right; font-weight: bold;"
+									footerText="Totals Hours:" />
+							</sec:authorize>
+
+							<sec:authorize access="hasAnyRole('IBO')">
+								<p:column colspan="4"
+									style="text-align:right; font-weight: bold;"
+									footerText="Totals Hours:" />
+							</sec:authorize>
+
+
+							<p:column styleClass="boldAlingRight">
+								<f:facet name="footer">
+									<h:outputText
+										value="#{agentStateDetailController.lazyModel.totalHours}"
+										id="totalPage1">
+										<f:convertNumber
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+							</p:column>
+
+							<p:column styleClass="boldAlingRight" colspan="2">
+								<f:facet name="footer">
+									<h:outputText value="" >
+									</h:outputText>
+								</f:facet>
+							</p:column>
+						</p:row>
+					</p:columnGroup>
+				</p:dataTable>
+
+
+
+			</h:panelGrid>
+
+
+			<p:dialog header="#{msg.filters}" widgetVar="dlgFilter" modal="true"
+				height="400" width="600px" focus="btnCancel" id="dialFilter"
+				resizable="false" closeOnEscape="true">
+
+
+				<h:panelGrid border="0" columns="1">
+					<p:messages id="messages" showDetail="false" autoUpdate="true" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+
+					<h:outputText value="#{msg.user_id}" />
+					<h:inputText value="#{agentStateDetailFilter.iboNumber}" />
+
+					<h:outputText value="Date between" />
+					<p:calendar id="datetimeini"
+						value="#{agentStateDetailFilter.startDate}"
+						pattern="MM/dd/yyyy HH:mm" readonlyInput="false" required="true"
+						showButtonPanel="true"
+						requiredMessage="#{msg.start_date}: #{msg.value_required}">
+						<p:ajax event="dateSelect" update="datetimeend"></p:ajax>
+						<p:ajax event="change" update="datetimeend" />
+					</p:calendar>
+
+					<h:outputText value="and" />
+					<p:calendar widgetVar="datetimeendW" id="datetimeend"
+						readonlyInput="false" value="#{agentStateDetailFilter.endDate}"
+						showButtonPanel="true" pattern="MM/dd/yyyy HH:mm"
+						mindate="#{agentStateDetailFilter.startDate}" required="true"
+						requiredMessage="#{msg.end_date}: #{msg.value_required}">
+					</p:calendar>
+
+
+					<p:outputLabel value="#{msg.event_type}" for="txtIbos" />
+					<p:pickList id="txtIbos" value="#{agentStateDetailFilter.eventId}"
+						var="ibo" itemLabel="#{ibo[1]}" itemValue="#{ibo}"
+						showSourceFilter="false" converter="entityConverter"
+						showTargetFilter="false" filterMatchMode="contains">
+						<f:facet name="sourceCaption">#{msg.available}</f:facet>
+						<f:facet name="targetCaption">#{msg.assigned}</f:facet>
+					</p:pickList>
+
+				</h:panelGrid>
+
+				<p:spacer height="10" width="20"></p:spacer>
+
+				<h:panelGrid width="100%">
+
+					<h:panelGrid columns="2" styleClass="panelGridCenter">
+
+						<p:commandButton value="Filter" styleClass="buttonEspe"
+							actionListener="#{agentStateDetailController.validateFilter}"
+							validateClient="true"
+							oncomplete="handleFilterRequest(xhr, status, args)"
+							update="messages" />
+
+						<p:commandButton value="Cancel" id="btnCancel"
+							onclick="PF('dlgFilter').hide();" immediate="true" />
+
+					</h:panelGrid>
+
+				</h:panelGrid>
+
+
+
+			</p:dialog>
+
+			<script type="text/javascript">
+				function handleFilterRequest(xhr, status, args) {
+
+					if (args.validationFailed || args.error) {
+
+					} else {
+						PF('dlgFilter').hide();
+						PF('uniTableFil').filter();
+					}
+
+				}
+			</script>
+
+		</h:form>
+
+		<ui:include src="/secure/select_format.xhtml"></ui:include>
+	</ui:define>
+
+</ui:composition>

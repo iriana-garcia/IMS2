@@ -1,0 +1,93 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+
+	<p:dialog header="#{msg.select_principal_ibo}"
+		widgetVar="dlgIboCorporation" modal="true" closeOnEscape="false"
+		id="dlgIboCorporationId" resizable="false" closable="false"
+		showHeader="true" width="800px" height="400px" minHeight="300">
+
+		<h:form id="formIboCorpo"
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+
+			<h:panelGrid border="0" columns="1">
+				<p:messages id="messagesCorporation" showDetail="false"
+					autoUpdate="true" globalOnly="false" />
+			</h:panelGrid>
+
+			<h:panelGrid columns="3">
+
+				<p:dataTable id="dtaIbos" var="uni" widgetVar="tblIboCorporation"
+					value="#{userController.listIbosCorporation}"
+					selection="#{userController.newPrincipalIBO}" rowKey="#{uni.id}"
+					styleClass="myTable" scrollable="true" scrollHeight="300">
+
+					<p:column selectionMode="single"
+						style="width:16px;text-align:center" />
+
+					<p:column headerText="#{msg.number}" width="90">
+						<h:outputText value="#{uni.number}" />
+					</p:column>
+					<p:column headerText="#{msg.full_name}">
+						<h:outputText value="#{uni.user.fullName}" />
+					</p:column>
+					<p:column headerText="#{msg.email}">
+						<h:outputText value="#{uni.user.email}" />
+					</p:column>
+				</p:dataTable>
+
+			</h:panelGrid>
+
+			<h:panelGrid width="100%">
+
+				<h:panelGrid columns="3" styleClass="panelGridCenter">
+
+					<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+						styleClass="buttonBarra" widgetVar="cmbAcept"
+						actionListener="#{userController.saveIboCorporation}"
+						validateClient="true" ignoreAutoUpdate="true" disabled="true"
+						oncomplete="handleRequestIboCorporation(xhr, status, args)"
+						update="form:rdOwnerType" id="cmbAccept" />
+
+					<p:spacer width="10" />
+
+					<p:commandButton value="Cancel" icon="ui-icon-disk"
+						styleClass="buttonBarra" immediate="true"
+						actionListener="#{userController.cancelIboCorporation}"
+						oncomplete="PF('dlgIboCorporation').hide()" />
+
+				</h:panelGrid>
+			</h:panelGrid>
+
+		</h:form>
+	</p:dialog>
+
+	<script type="text/javascript">
+		function handleRequestIboCorporation(xhr, status, args) {
+
+			if (args.validationFailed || args.error) {
+
+			} else {
+				PF('dlgIboCorporation').hide();
+			}
+
+		}
+		
+		$(document).on("click", ".ui-radiobutton-box", function() {			
+
+			if (PF('tblIboCorporation').getSelectedRowsCount() > 0) {
+				PF('cmbAcept').enable();
+			}else{
+				PF('cmbAcept').disable();
+			}
+		
+		});
+	</script>
+
+
+
+</ui:composition>

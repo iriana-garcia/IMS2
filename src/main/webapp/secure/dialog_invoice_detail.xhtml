@@ -1,0 +1,479 @@
+<ui:composition xmlns:f="http://java.sun.com/jsf/core"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+
+	<style>
+.dialogRight.ui-dialog-titlebar.ui-widget-header {
+	text-aling: right !important;
+	float: right !important;
+}
+
+.ui-dialog-titlePrubea {
+	font-family: Arial !important;
+	font-size: 14px !important;
+	margin-top: 0px !important;
+	float: right !important;
+	position: relative;
+}
+
+.dialogRight .ui-dialog-title {
+	text-aling: right !important;
+	float: right !important;
+}
+</style>
+
+	<p:dialog header="#{msg.details}" widgetVar="dlgDetailInvoice"
+		modal="true" closeOnEscape="true" id="dlgDetailInvoiceId"
+		resizable="false" closable="false" showHeader="true" width="90%"
+		height="600px" minHeight="400" styleClass="dialogRight">
+
+		<f:facet name="header">
+
+
+			<p:commandButton icon="ui-icon-print"
+				actionListener="#{printController.printInvoice}"
+				oncomplete="PF('dlgPrint').show();">
+				<f:attribute name="report" value="7" />
+				<f:attribute name="invoice" value="#{invoiceController.entity}" />
+			</p:commandButton>
+
+			<p:spacer width="10" />
+
+			<p:commandButton icon="ui-icon-close"
+				onclick="PF('dlgDetailInvoice').hide();">
+			</p:commandButton>
+
+
+
+		</f:facet>
+
+		<h:panelGrid columns="3" width="100%" id="grdGeneral"
+			columnClasses="widthColumnButton,,widthColumnButton">
+
+			<p:commandButton icon="ui-icon-seek-first"
+				actionListener="#{invoiceController.loadDataBefore}"
+				update="pngDetail,tabDetail"
+				oncomplete="PF('tabDetailInv').select(0)" />
+
+			<h:panelGrid width="100%" id="pngDetail">
+				<p:tabView id="tabDetail" widgetVar="tabDetailInv"
+					styleClass="tabInvoice">
+					<p:tab title="Details">
+						<h:panelGrid columns="4" id="grdDetail"
+							columnClasses="righted,bold,righted,bold">
+
+							<h:outputText value="#{msg.number}" />
+							<h:outputText value="#{invoiceController.entity.number}" />
+
+							<h:outputText value="#{msg.state}" />
+							<h:outputText value="#{invoiceController.entity.state.name}" />
+
+							<h:outputText value="#{msg.start_date}" />
+							<h:outputText value="#{invoiceController.entity.startDateFormat}" />
+
+							<h:outputText value="#{msg.end_date}" />
+							<h:outputText value="#{invoiceController.entity.endDateFormat}" />
+
+
+							<h:outputText value="#{msg.user_name}" />
+							<h:outputText value="#{invoiceController.entity.user.user.name}" />
+
+
+							<h:outputText value="#{msg.state}" />
+							<h:outputText
+								value="#{invoiceController.entity.user.user.state ? msg.active : msg.deactive}" />
+
+
+							<h:outputText value="#{msg.first_name}" />
+							<h:outputText
+								value="#{invoiceController.entity.user.user.firstName}" />
+
+
+							<h:outputText value="#{msg.last_name}" />
+							<h:outputText
+								value="#{invoiceController.entity.user.user.lastName}" />
+
+
+
+							<h:outputText value="#{msg.email}" />
+							<h:outputText value="#{invoiceController.entity.user.user.email}" />
+
+
+							<h:outputText value="#{msg.user_id}" />
+							<h:outputText value="#{invoiceController.entity.user.number}" />
+
+
+
+							<h:outputText value="#{msg.corporation_name}" />
+							<h:outputText
+								value="#{invoiceController.entity.user.corporationName}" />
+
+
+							<h:outputText value="#{msg.date_submitted_ibo}" />
+							<h:outputText
+								value="#{invoiceController.entity.submmitedDateFormat}" />
+
+							<h:outputText value="#{msg.approval_date}" />
+							<h:outputText
+								value="#{invoiceController.entity.approvalDateFormat}" />
+
+							<h:outputText value="#{msg.pay_date}" />
+							<h:outputText value="#{invoiceController.entity.payDateFormat}" />
+
+
+							<h:outputText value="#{msg.send_finance}" />
+							<h:outputText
+								value="#{invoiceController.entity.payProcessed ? 'Yes' : 'No'}" />
+
+							<h:outputText value="#{msg.date_send_finance}" />
+							<h:outputText
+								value="#{invoiceController.entity.dateProcessedFormat}" />
+
+
+
+							<h:outputText value="#{msg.actual_service}" />
+							<h:outputText value="#{invoiceController.entity.actualService}">
+								<f:convertNumber
+									minFractionDigits="#{applicationBean.systemConf.decimal}"
+									maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+							</h:outputText>
+
+
+							<h:outputText value="#{msg.service_revenue}" />
+							<h:outputText value="#{invoiceController.entity.serviceRevenue}">
+								<f:convertNumber currencySymbol="$" type="currency"
+									minFractionDigits="#{applicationBean.systemConf.decimal}"
+									maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+							</h:outputText>
+
+
+							<h:outputText value="#{msg.hours_added}" />
+							<h:outputText value="#{invoiceController.entity.hoursAdded}">
+								<f:convertNumber
+									minFractionDigits="#{applicationBean.systemConf.decimal}"
+									maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+							</h:outputText>
+
+
+							<h:outputText value="#{msg.total_incentive}" />
+							<h:outputText value="#{invoiceController.entity.totalIncentive}">
+								<f:convertNumber currencySymbol="$" type="currency"
+									minFractionDigits="#{applicationBean.systemConf.decimal}"
+									maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+							</h:outputText>
+
+							<h:outputText value="#{msg.admin_fee}" />
+							<h:outputText value="#{invoiceController.entity.adminFee}">
+								<f:convertNumber currencySymbol="$" type="currency"
+									minFractionDigits="#{applicationBean.systemConf.decimal}"
+									maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+							</h:outputText>
+
+							<h:outputText value="#{msg.import_total}" />
+							<h:outputText value="#{invoiceController.entity.importTotal}">
+								<f:convertNumber currencySymbol="$" type="currency"
+									minFractionDigits="#{applicationBean.systemConf.decimal}"
+									maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+							</h:outputText>
+
+
+							<h:outputText value="#{msg.updated_date}" />
+							<h:outputText
+								value="#{invoiceController.entity.dateUpdatedFormat}" />
+
+
+							<h:outputText value="#{msg.updated_user}" />
+							<h:outputText
+								value="#{invoiceController.entity.userUpdated.name}" />
+
+						</h:panelGrid>
+
+						<sec:authorize access="hasAnyRole('SUPER','INVOICES')">
+							<h:panelGrid>
+								<h:outputText value="#{msg.note}" />
+								<h:outputText value="#{invoiceController.entity.note}"
+									styleClass="bold" />
+							</h:panelGrid>
+						</sec:authorize>
+					</p:tab>
+
+
+
+					<p:tab title="Invoice Details"
+						rendered="#{not empty invoiceController.entity.invoiceWork}">
+
+						<p:dataTable var="uni"
+							value="#{invoiceController.entity.invoiceWork}" paginator="false"
+							widgetVar="uniTableFil2" id="uniTable2" editable="true"
+							style="min-width: 1000px !important" styleClass="myTable">
+
+
+							<p:column headerText="#{msg.start_date}" width="10%">
+								<h:outputText value="#{uni.schStartTimeFormat}" />
+							</p:column>
+
+							<p:column headerText="#{msg.end_date}" width="10%">
+								<h:outputText value="#{uni.schEndTimeFormat}" />
+							</p:column>
+
+
+							<p:column headerText="#{msg.skill}" width="20%">
+								<h:outputText value="#{uni.descriptionTask}" />
+							</p:column>
+
+							<p:column headerText="#{msg.logged_time} (hours)" width="10%"
+								styleClass="righted">
+								<h:outputText value="#{uni.loggedTime} ">
+									<f:convertNumber
+										minFractionDigits="#{applicationBean.systemConf.decimal}"
+										maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="#{msg.not_ready_time} (hours)" width="10%"
+								styleClass="righted">
+								<h:outputText value="#{uni.totalNotReadyHours}">
+									<f:convertNumber
+										minFractionDigits="#{applicationBean.systemConf.decimal}"
+										maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="#{msg.actual_service} (hours)" width="10%"
+								styleClass="righted">
+								<h:outputText value="#{uni.totalReadyHours}">
+									<f:convertNumber
+										minFractionDigits="#{applicationBean.systemConf.decimal}"
+										maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+								</h:outputText>
+							</p:column>
+
+
+							<p:column headerText="#{msg.rate}" width="10%"
+								styleClass="righted">
+								<h:outputText value="#{uni.amount}">
+									<f:convertNumber currencySymbol="$" type="currency"
+										minFractionDigits="#{applicationBean.systemConf.decimal}"
+										maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+								</h:outputText>
+							</p:column>
+
+
+
+							<p:column headerText="#{msg.hours_added}" width="10%"
+								styleClass="righted">
+								<p:commandLink styleClass="myCommandLink"
+									oncomplete="PF('dlgHoursDetail').show()"
+									update=":form:dlgHoursDetailId">
+									<h:outputText value="#{uni.hoursAdded}">
+										<f:convertNumber
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+									<f:setPropertyActionListener value="#{uni}"
+										target="#{currentInvoiceController.invoiceWork}" />
+								</p:commandLink>
+							</p:column>
+
+
+
+							<p:column headerText="#{msg.service_revenue}" width="10%"
+								styleClass="righted">
+								<h:outputText value="#{uni.importTotal}">
+									<f:convertNumber currencySymbol="$" type="currency"
+										minFractionDigits="#{applicationBean.systemConf.decimal}"
+										maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+								</h:outputText>
+							</p:column>
+
+							<p:columnGroup type="footer">
+								<p:row>
+									<p:column colspan="3"
+										style="text-align:right; font-weight: bold;"
+										footerText="Totals:"></p:column>
+									<p:column styleClass="boldAlingRight">
+										<f:facet name="footer">
+											<h:outputText value="#{invoiceController.loggedTime}">
+												<f:convertNumber
+													minFractionDigits="#{applicationBean.systemConf.decimal}"
+													maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+											</h:outputText>
+										</f:facet>
+									</p:column>
+									<p:column styleClass="boldAlingRight">
+										<f:facet name="footer">
+											<h:outputText value="#{invoiceController.totalNotReadyHours}">
+												<f:convertNumber
+													minFractionDigits="#{applicationBean.systemConf.decimal}"
+													maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+											</h:outputText>
+										</f:facet>
+									</p:column>
+									<p:column styleClass="boldAlingRight">
+										<f:facet name="footer">
+											<h:outputText value="#{invoiceController.totalReadyHours}">
+												<f:convertNumber
+													minFractionDigits="#{applicationBean.systemConf.decimal}"
+													maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+											</h:outputText>
+										</f:facet>
+
+									</p:column>
+									<p:column footerText="" />
+
+									<p:column styleClass="boldAlingRight">
+
+										<f:facet name="footer">
+											<h:outputText value="#{invoiceController.hoursAdd}">
+												<f:convertNumber
+													minFractionDigits="#{applicationBean.systemConf.decimal}"
+													maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+											</h:outputText>
+										</f:facet>
+									</p:column>
+
+
+									<p:column styleClass="boldAlingRight">
+										<f:facet name="footer">
+											<h:outputText value="#{invoiceController.importTotal}">
+												<f:convertNumber currencySymbol="$" type="currency"
+													minFractionDigits="#{applicationBean.systemConf.decimal}"
+													maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+											</h:outputText>
+										</f:facet>
+									</p:column>
+								</p:row>
+							</p:columnGroup>
+
+						</p:dataTable>
+
+					</p:tab>
+
+					<p:tab title="#{msg.incentive}/#{msg.adjust}"
+						rendered="#{not empty invoiceController.entity.incentive}">
+
+						<p:dataTable var="uni"
+							value="#{invoiceController.entity.incentive}" paginator="false"
+							widgetVar="uniTableIncentive" id="uniTableIncentive"
+							editable="true" style="min-width: 1000px !important"
+							styleClass="myTable">
+
+							<f:facet name="header">
+								<h:outputText value="#{msg.incentive}" />
+							</f:facet>
+
+							<p:column headerText="#{msg.date}" width="10%">
+								<h:outputText value="#{uni.date}">
+									<f:convertDateTime pattern="MM/dd/yyyy" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="#{msg.amount}" width="10%"
+								styleClass="righted">
+								<h:outputText value="#{uni.amount}">
+									<f:convertNumber currencySymbol="$" type="currency"
+										minFractionDigits="#{applicationBean.systemConf.decimal}"
+										maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="#{msg.type}" width="10%">
+								<h:outputText value="#{uni.type}">
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="#{msg.descripcion}" width="30%">
+								<h:outputText value="#{uni.description}" />
+							</p:column>
+
+							<p:column headerText="#{msg.skill}" width="40%">
+								<h:outputText value="#{uni.skill.name}" />
+							</p:column>
+
+
+							<p:column style="text-align: center;" width="30"
+								toggleable="false" exportable="false">
+								<p:commandButton icon="ui-icon-zoomin" id="cmdDetail"
+									oncomplete="PF('dlgIncentiveDetail').show();"
+									update="form:dlgIncentiveDetailId">
+									<f:setPropertyActionListener value="#{uni}"
+										target="#{currentInvoiceController.incentive}" />
+
+								</p:commandButton>
+
+								<p:tooltip for="cmdDetail" value="#{msg.details}" />
+							</p:column>
+
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="#{msg.phone_system_records}"
+						rendered="#{not empty invoiceController.entity.phoneSystemDetail}">
+
+						<p:dataTable var="uni"
+							value="#{invoiceController.entity.phoneSystemDetail}"
+							scrollRows="100" scrollable="true" liveScroll="true"
+							scrollHeight="400" style="margin-bottom:0" widgetVar="uniTablePS"
+							id="uniTablePSId" styleClass="myTable">
+
+							<p:column headerText="#{msg.start_date}">
+								<h:outputText value="#{uni.startDateFormat}" />
+							</p:column>
+
+							<p:column headerText="#{msg.end_date}">
+								<h:outputText value="#{uni.endDateFormat}" />
+							</p:column>
+
+							<p:column headerText="#{msg.from}">
+								<h:outputText value="#{uni.placeName}" />
+							</p:column>
+
+							<p:column headerText="#{msg.event_type}">
+								<h:outputText value="#{uni.eventTypeName}" />
+							</p:column>
+
+							<p:column headerText="#{msg.duration}">
+								<h:outputText value="#{uni.durationHours}" />
+							</p:column>
+
+							<p:column headerText="#{msg.reason_code}">
+								<h:outputText value="#{uni.stateDescription}" />
+							</p:column>
+
+							<p:column width="50">
+								<f:facet name="header">
+									<h:outputText value="#{msg.included}" id="clmQuestionHeader" />
+									<p:tooltip value="#{msg.included_invoice}"
+										for="clmQuestionHeader" />
+								</f:facet>
+								<p:outputPanel style="text-align: center;">
+									<h:graphicImage value="/img/checkmark.gif" width="16px"
+										rendered="#{uni.associateInvoice}" />
+								</p:outputPanel>
+							</p:column>
+
+						</p:dataTable>
+					</p:tab>
+
+
+				</p:tabView>
+			</h:panelGrid>
+
+			<p:commandButton icon="ui-icon-seek-end"
+				actionListener="#{invoiceController.loadDataNext}"
+				update="tabDetail" oncomplete="PF('tabDetailInv').select(0)" />
+
+		</h:panelGrid>
+
+	</p:dialog>
+
+	<ui:include src="/secure/dialog_hours.xhtml"></ui:include>
+	<ui:include src="/secure/dialog_incentive.xhtml"></ui:include>
+	<ui:include src="/secure/select_format.xhtml"></ui:include>
+
+
+</ui:composition>

@@ -1,0 +1,114 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+
+
+	<script type="text/javascript">
+		function hideProgram() {
+
+			document.getElementById("formSkill:txtCa").style.visibility = "hidden";
+			document.getElementById("formSkill:cmbCa").style.visibility = "hidden";
+
+		}
+	</script>
+
+
+	<p:dialog header="#{msg.add} #{msg.skills}" widgetVar="dlgSkills"
+		modal="true" closeOnEscape="true" id="dlgSkillsId" resizable="false"
+		closable="true" showHeader="true" width="1000px" height="600px"
+		minHeight="400" onShow="hideProgram()">
+
+		<h:form id="formSkill"
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit') return true; else return false;}">
+
+
+			<h:panelGrid width="100%">
+
+				<h:panelGrid border="0" columns="1">
+					<p:messages id="messagesSkill" showDetail="false"
+						autoUpdate="false" />
+				</h:panelGrid>
+
+
+				<ui:include src="/secure/skill_edit_common.xhtml"></ui:include>
+
+				<h:panelGrid width="100%">
+					<h:panelGrid columns="5" styleClass="panelGridCenter">
+
+						<p:commandButton value="#{msg.save} #{msg.and_add}"
+							icon="ui-icon-disk" styleClass="buttonBarra"
+							actionListener="#{clientApplicationController.saveCA}"
+							validateClient="true" ignoreAutoUpdate="true"
+							update="formSkill, form:txtSkill"
+							oncomplete="handleSkillRequestAdd(xhr, status, args)" />
+
+						<p:spacer width="10" />
+
+
+						<p:commandButton value="#{msg.save} #{msg.and_close}"
+							icon="ui-icon-disk" styleClass="buttonBarra"
+							actionListener="#{clientApplicationController.saveCA}"
+							validateClient="true" ignoreAutoUpdate="true"
+							oncomplete="handleSkillRequest(xhr, status, args)"
+							update="formSkill, form:txtSkill" />
+
+						<p:spacer width="10" />
+
+						<p:commandButton value="Cancel" type="button"
+							onclick="PF('dlgSkills').hide()" immediate="true"
+							styleClass="buttonBarra" icon="ui-icon-close" />
+					</h:panelGrid>
+
+				</h:panelGrid>
+			</h:panelGrid>
+
+		</h:form>
+	</p:dialog>
+
+	<script type="text/javascript">
+		function handleSkillRequestAdd(xhr, status, args) {
+			hideProgram();
+			if (args.validationFailed || args.error) {
+
+			} else {
+				PF('dlgConfirm').show();
+			}
+
+		}
+		function handleSkillRequest(xhr, status, args) {
+
+			if (args.validationFailed || args.error) {
+
+			} else {
+				PF('dlgSkills').hide();
+			}
+
+		}
+	</script>
+
+
+	<p:dialog header="Confirmation" widgetVar="dlgConfirm" modal="true"
+		closeOnEscape="true" id="dlgConfirmId" resizable="false"
+		closable="true" showHeader="true" width="300px" height="100px">
+		<h:form>
+
+			<h:panelGrid width="100%">
+
+				<h:panelGrid border="0" columns="1">
+					<h:outputText value="#{msg.client_application_added}"></h:outputText>
+				</h:panelGrid>
+
+				<h:panelGrid width="100%">
+					<h:panelGrid columns="1" styleClass="panelGridCenter">
+						<p:commandButton value="OK" icon="ui-icon-disk"
+							styleClass="buttonBarra" onclick="PF('dlgConfirm').hide()" />
+					</h:panelGrid>
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>

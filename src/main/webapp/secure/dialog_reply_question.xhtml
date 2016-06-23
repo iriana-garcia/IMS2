@@ -1,0 +1,82 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:h="http://java.sun.com/jsf/html">
+
+	<p:dialog header="#{msg.reply}" widgetVar="dlgReply" modal="true"
+		closeOnEscape="true" id="dlgReplyId" resizable="false" closable="false"
+		showHeader="true" width="650px" height="600px" minHeight="400">
+		<h:form id="frmEmailReply" onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+			<h:panelGrid width="100%">
+
+				<h:panelGrid border="0" columns="1">
+					<p:messages id="messages" showDetail="false" autoUpdate="true" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="3">
+
+					<p:outputLabel value="#{msg.from}" />
+					<p:outputLabel value="#{messageBoardController.from}" />
+					<p:outputLabel value="" />
+
+					<p:outputLabel value="#{msg.to}" />
+					<p:outputLabel
+						value="#{messageBoardController.entity.invoice.user.user.email}" />
+					<p:outputLabel value="" />
+
+
+					<p:outputLabel value="#{msg.subject_line}" for="txtSubjW" />
+					<p:inputText value="#{messageBoardController.subject}" 
+						onblur="this.value = this.value.trim()"
+						required="true" id="txtSubjW" maxlength="150" size="40">
+						<p:clientValidator event="blur" />
+					</p:inputText>
+					<p:message for="txtSubjW" display="icon" />
+
+					<p:outputLabel value="#{msg.email_content}" for="txtContentW" />
+
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+
+					<p:editor id="txtContentW"
+						value="#{messageBoardController.entity.replyMessage}" width="550"
+						height="250" widgetVar="editorWelcome" lazy="true">
+					</p:editor>
+					<p:message for="txtContentW" display="icon" rendered="false" />
+				</h:panelGrid>
+
+				<h:panelGrid columnClasses="panelAling" width="100%">
+					<h:panelGrid columns="3" columnClasses="panelAling">
+						<p:commandButton value="#{msg.send_reply}"
+							icon="ui-icon-mail-closed" styleClass="buttonBarra"
+							actionListener="#{messageBoardController.sendReply}"
+							validateClient="true"
+							oncomplete="handleSendReplyEmailRequest(xhr, status, args)"
+							update=":frmEmailReply,form:uniTable" />
+
+						<p:spacer width="10" />
+
+						<p:commandButton value="Cancel" type="button"
+							onclick="PF('dlgReply').hide()" immediate="true"
+							styleClass="buttonBarra" icon="ui-icon-close" />
+					</h:panelGrid>
+
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:form>
+
+	</p:dialog>
+
+	<script type="text/javascript">
+		function handleSendReplyEmailRequest(xhr, status, args) {
+			if (args.validationFailed || args.error) {
+
+			} else {
+				PF('dlgReply').hide();
+			}
+		}
+	</script>
+
+</ui:composition>

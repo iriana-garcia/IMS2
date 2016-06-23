@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                                   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="reporte.data">
+	<class name="GrupoReporte" schema="public"
+		table="tbl_reporte_grupo">
+		<id column="id_grupo_reporte" name="id" type="integer">
+			<generator class="sequence">
+				<param name="sequence" />
+			</generator>
+		</id>
+		<property column="descripcion" 
+			length="250" name="descripcion" type="string">
+		</property>
+		<property column="clase_servicio" length="100"
+			name="claseServicio" not-null="true" type="string" />
+			
+		<property name="filtroBean" length="50" column="filtro_bean"/>
+			
+		<bag name="reportes" inverse="true">
+			<key  column="id_grupo_reporte"></key>
+			<one-to-many class="Reporte" />
+		</bag>
+	</class>
+</hibernate-mapping>

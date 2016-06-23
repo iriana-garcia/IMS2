@@ -1,0 +1,1 @@
+package com.ghw.dao;import com.ghw.model.UserUtil;public interface UserUtilDAO extends GenericDAO<UserUtil, String> {}

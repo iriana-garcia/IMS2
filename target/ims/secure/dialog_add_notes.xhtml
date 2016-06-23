@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+		<p:dialog header="#{msg.note}" widgetVar="dlgNotes" modal="true"
+			closeOnEscape="true" id="dlgNotesId" resizable="false"
+			closable="true" showHeader="true" width="550px" height="350px"
+			minHeight="400">
+			<h:form id="frmNotes" onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+				<h:panelGrid width="100%">
+				
+					<h:panelGrid border="0" columns="1">
+						<p:messages id="messagesNotes" showDetail="false" autoUpdate="true"
+							globalOnly="false" />
+					</h:panelGrid>
+
+					<h:panelGrid columns="3" >
+						<h:outputText value="#{msg.note}"
+							rendered="#{!invoiceController.editNote}" />
+						<h:outputText value="#{invoiceController.entity.note}"
+							rendered="#{!invoiceController.editNote}" styleClass="bold"/>
+
+						<p:outputLabel value="#{msg.note}" for="txtDescription"
+							rendered="#{invoiceController.editNote}" />
+						<p:inputTextarea id="txtDescription" onblur="this.value = this.value.trim()"
+							rendered="#{invoiceController.editNote}" required="true" requiredMessage="#{msg.note}: #{msg.value_required}"
+							value="#{invoiceController.entity.note}" rows="10" cols="55"
+							maxlength="500" autoResize="false" />
+						<p:message for="txtDescription" display="icon"
+							rendered="#{invoiceController.editNote}" />
+					</h:panelGrid>
+
+
+
+				<h:panelGrid width="100%">
+						<h:panelGrid columns="3" styleClass="panelGridCenter">
+							<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+								styleClass="buttonBarra"
+								actionListener="#{invoiceController.editNotes}"
+								validateClient="true" rendered="#{invoiceController.editNote}"
+								oncomplete="handleAddNotesRequest(xhr, status, args)"
+								update=":frmNotes,form:uniTable" />
+
+
+							<p:commandButton value="#{msg.edit}" icon="ui-icon-disk"
+								styleClass="buttonBarra"
+								rendered="#{!invoiceController.editNote}"
+								actionListener="#{invoiceController.changeToEdit}"
+								validateClient="true" update="messagesNotes,:frmNotes" />
+
+
+							<p:spacer width="10" />
+
+							<p:commandButton value="Cancel" type="button"
+								onclick="PF('dlgNotes').hide()" immediate="true"
+								styleClass="buttonBarra" icon="ui-icon-close" />
+
+
+						</h:panelGrid>
+					</h:panelGrid>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+
+		<script type="text/javascript">
+			function handleAddNotesRequest(xhr, status, args) {
+
+				if (args.validationFailed || args.error) {
+
+				} else {
+					PF('dlgNotes').hide();
+				}
+
+			}
+		</script>
+
+
+	</sec:authorize>
+
+</ui:composition>

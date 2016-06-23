@@ -1,0 +1,66 @@
+<ui:composition xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:h="http://java.sun.com/jsf/html">
+
+	<h:form id="form"
+		onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit') return true; else return false;}">
+		<p:toolbar>
+			<f:facet name="left">
+				<h:outputText value="#{msg.systemname}" />
+			</f:facet>
+		</p:toolbar>
+
+		<h:panelGrid width="100%" styleClass="gridheader" border="0"
+			rendered="false">
+			<h:panelGrid columns="2" styleClass="gridTitle" border="0">
+				<h:outputText value="#{msg.systemname}" />
+
+
+			</h:panelGrid>
+
+		</h:panelGrid>
+
+		<h:panelGrid styleClass="panel" columns="1">
+			<p:commandButton action="#{userController.syncAD}" value="Sync AD"></p:commandButton>
+
+			<p:commandButton action="#{userController.canceled}"
+				value="Cancel invoices"></p:commandButton>
+
+			<p:commandButton action="#{configurationGeneralController.ftpOracle}"
+				value="Oracle FTP" rendered="false"></p:commandButton>
+
+
+			<p:spacer height="340"></p:spacer>
+
+			<p:calendar value="#{currentInvoiceController.dateIni}"
+				readonlyInput="true" ></p:calendar>
+			<p:calendar value="#{currentInvoiceController.dateFin}"
+				readonlyInput="true" rendered="false"></p:calendar>
+
+
+			<p:commandButton action="#{currentInvoiceController.createInvoice}"
+				value="Create invoices "></p:commandButton>
+
+
+			<h:outputText value="DASHBOARDDDDDDDDDDDDDDDDDDDDDDD" />
+
+			<p:spacer height="340"></p:spacer>
+
+			<p:commandButton action="#{configurationGeneralController.elimina}"
+				label="Oracle Supplier" rendered="false"></p:commandButton>
+
+
+			<p:commandButton action="#{configurationGeneralController.ftpOracle}"
+				label="FTP"></p:commandButton>
+
+
+
+		</h:panelGrid>
+
+
+	</h:form>
+
+
+
+</ui:composition>

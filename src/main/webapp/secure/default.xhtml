@@ -1,0 +1,55 @@
+<ui:composition template="/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:h="http://java.sun.com/jsf/html">
+
+	<ui:define name="menuFlotante">
+
+		<h:form id="fmrMenuFlotante" styleClass="userPlace"
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit') return true; else return false;}">
+
+
+			<h:panelGrid columns="2">
+
+				<p:commandLink id="ajax" action="myaccount"
+					value="#{msg.welcome_user} #{sessionBean.user.fullName}"
+					styleClass="userDescrip">
+				</p:commandLink>
+
+
+				<p:splitButton icon="ui-icon-person" value="#{msg.logout}"
+					action="#{loginBean.logout}">
+
+					<p:menuitem value="#{msg.my_account}" action="myaccount" />
+				</p:splitButton>
+
+			</h:panelGrid>
+
+		</h:form>
+
+	</ui:define>
+
+	<ui:define name="menu">
+		<ui:include src="/public/menu.xhtml" />
+	</ui:define>
+
+	<ui:define name="body">
+		<h:panelGroup>
+			<ui:include src="/secure/datos.xhtml" />
+		</h:panelGroup>
+	</ui:define>
+
+	<ui:define name="espere">
+
+		<ui:include src="/public/wait.xhtml" />
+
+
+	</ui:define>
+
+	<ui:define name="footer">
+		<h:outputText value="#{msg.license}" styleClass="copyright"></h:outputText>
+	</ui:define>
+
+</ui:composition>

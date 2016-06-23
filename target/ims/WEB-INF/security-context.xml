@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:sec="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="
+     http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+    http://www.springframework.org/schema/security
+    http://www.springframework.org/schema/security/spring-security.xsd">
+
+	<!-- Enable method level Spring Security by annotations -->
+	<sec:global-method-security
+		pre-post-annotations="enabled" proxy-target-class="true">
+
+	</sec:global-method-security>
+
+
+	<sec:http use-expressions="true" auto-config="false"
+		authentication-manager-ref="authenticationManager">
+
+		<sec:access-denied-handler error-page="/public/error.jsf" />
+
+		<sec:form-login login-page="/public/login.jsf"
+			authentication-success-handler-ref="redirectLoginHandler"
+			authentication-failure-handler-ref="userNameCachingAuthenticationFailureHandler" />
+
+		<sec:session-management>
+			<sec:concurrency-control max-sessions="1"
+				expired-url="/public/anotherlogin.jsf" session-registry-alias="sessionRegistry" />
+		</sec:session-management>
+
+		<sec:csrf disabled="true" />
+
+		<sec:logout logout-success-url="/public/login.jsf"
+			delete-cookies="JSESSIONID" />
+
+
+		<sec:custom-filter ref="sessionManagementFilter"
+			before="SESSION_MANAGEMENT_FILTER" />
+
+		<!--<sec:custom-filter position="CONCURRENT_SESSION_FILTER" ref="concurrencyFilter" 
+			/> <sec:custom-filter after="FORM_LOGIN_FILTER" ref="myAuthFilter" /> <sec:session-management 
+			session-authentication-strategy-ref="sas"> </sec:session-management> -->
+
+
+
+		<sec:intercept-url pattern="/secure/logsystem.jsf"
+			access="hasAnyRole('SUPER','LOG')" />
+
+		<sec:intercept-url pattern="/secure/invoices_problem.jsf"
+			access="hasAnyRole('SUPER','INVOICES')" />
+
+		<sec:intercept-url pattern="/secure/corporation_problem.jsf"
+			access="hasAnyRole('SUPER','USER')" />
+
+		<sec:intercept-url pattern="/secure/phonesystem.jsf"
+			access="hasAnyRole('SUPER','PHONE_SYSTEM')" />
+
+		<sec:intercept-url pattern="/secure/rol.jsf"
+			access="hasAnyRole('SUPER','ROL')" />
+
+		<sec:intercept-url pattern="/secure/rol_edit.jsf"
+			access="hasAnyRole('SUPER','ROL_M','ROL_A')" />
+
+		<sec:intercept-url pattern="/secure/general_configuration.jsf"
+			access="hasAnyRole('SUPER','CONF_GN')" />
+		<sec:intercept-url pattern="/secure/gen_conf_edit.jsf"
+			access="hasAnyRole('SUPER','CONF_GN_M','CONF_GN_A')" />
+
+		<sec:intercept-url pattern="/secure/email_configuration.jsf"
+			access="hasAnyRole('SUPER','EMAIL')" />
+		<sec:intercept-url pattern="/secure/email_conf_edit.jsf"
+			access="hasAnyRole('SUPER','EMAIL_M','EMAIL_A')" />
+
+		<sec:intercept-url pattern="/secure/system_configuration.jsf"
+			access="hasAnyRole('SUPER','CONF_SYS')" />
+		<sec:intercept-url pattern="/secure/system_conf_edit.jsf"
+			access="hasAnyRole('SUPER','CONF_SYS_M','CONF_SYS_A')" />
+
+		<sec:intercept-url pattern="/secure/threshold.jsf"
+			access="hasAnyRole('SUPER','THRES','THRES_M')" />
+
+
+		<sec:intercept-url pattern="/secure/client_application.jsf"
+			access="hasAnyRole('SUPER','CA')" />
+		<sec:intercept-url pattern="/secure/client_application_edit.jsf"
+			access="hasAnyRole('SUPER','CA_M','CA_A')" />
+
+		<sec:intercept-url pattern="/secure/skill.jsf"
+			access="hasAnyRole('SUPER','CA')" />
+		<sec:intercept-url pattern="/secure/skills_edit.jsf"
+			access="hasAnyRole('SUPER','CA_M','CA_A')" />
+
+		<sec:intercept-url pattern="/secure/phone_system_skills.jsf"
+			access="hasAnyRole('SUPER','CA')" />
+
+		<sec:intercept-url pattern="/secure/groups.jsf"
+			access="hasAnyRole('SUPER','GROUP')" />
+		<sec:intercept-url pattern="/secure/groups_edit.jsf"
+			access="hasAnyRole('SUPER','GROUP_M','GROUP_A')" />
+
+		<sec:intercept-url pattern="/secure/user.jsf"
+			access="hasAnyRole('SUPER','USER')" />
+		<sec:intercept-url pattern="/secure/user_edit.jsf"
+			access="hasAnyRole('SUPER','USER_M','USER_A','BOARD_M','BOARD_A')" />
+
+		<sec:intercept-url pattern="/secure/onboarding.jsf"
+			access="hasAnyRole('SUPER','BOARD')" />
+
+		<sec:intercept-url pattern="/secure/current_invoice.jsf"
+			access="hasAnyRole('SUPER','CURRENT_INV')" />
+
+		<sec:intercept-url pattern="/secure/invoices.jsf"
+			access="hasAnyRole('SUPER','INVOICES')" />
+
+		<sec:intercept-url pattern="/secure/pay_processed.jsf"
+			access="hasAnyRole('SUPER','INVOICES')" />
+
+		<sec:intercept-url pattern="/secure/invoices_history.jsf"
+			access="hasAnyRole('SUPER','INVOICES_HIST')" />
+
+		<sec:intercept-url pattern="/secure/category.jsf"
+			access="hasAnyRole('SUPER','CATEGORY')" />
+
+
+
+		<!-- Page level Spring Security : Intercept access to resources in /pages/secure/** -->
+		<sec:intercept-url pattern="/secure/*" access="authenticated" />
+
+		<!-- Page level Spring Security : Permit access to resources in /pages/unsecure/** -->
+		<sec:intercept-url pattern="/public/*" access="permitAll" />
+
+		<!-- Page level Spring Security : Enable Primefaces -->
+		<sec:intercept-url pattern="/javax.faces.resource/**"
+			access="permitAll" />
+
+
+	</sec:http>
+
+
+	<!-- <beans:bean id="sessionManagementFilter" class="com.ghw.security.CustomSessionManagement"> 
+		<beans:constructor-arg name="securityContextRepository" ref="httpSessionSecurityContextRepository" 
+		/> <beans:property name="invalidSessionStrategy" ref="jsfRedirectStrategy" 
+		/> </beans:bean> -->
+
+	<beans:bean id="sessionManagementFilter"
+		class="org.springframework.security.web.session.SessionManagementFilter">
+		<beans:constructor-arg name="securityContextRepository"
+			ref="httpSessionSecurityContextRepository" />
+		<beans:property name="invalidSessionStrategy" ref="jsfRedirectStrategy" />
+	</beans:bean>
+
+	<beans:bean id="jsfRedirectStrategy" class="com.ghw.security.JsfRedirectStrategy">
+		<beans:property name="invalidSessionUrl" value="/public/viewexpired.xhtml" />
+	</beans:bean>
+	<beans:bean id="httpSessionSecurityContextRepository"
+		class="org.springframework.security.web.context.HttpSessionSecurityContextRepository" />
+
+
+	<!-- <beans:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"> 
+		<beans:constructor-arg name="strength" value="10" /> </beans:bean> <beans:bean 
+		id="concurrencyFilter" class="org.springframework.security.web.session.ConcurrentSessionFilter"> 
+		<beans:property name="sessionRegistry" ref="sessionRegistry" /> <beans:property 
+		name="expiredUrl" value="/viewexpired.jsf" /> </beans:bean> <beans:bean id="myAuthFilter" 
+		class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter"> 
+		<beans:property name="sessionAuthenticationStrategy" ref="sas" /> <beans:property 
+		name="authenticationManager" ref="authenticationManager" /> </beans:bean> 
+		<beans:bean id="sas" class="org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy"> 
+		<beans:constructor-arg> <beans:list> <beans:bean class="org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy"> 
+		<beans:constructor-arg ref="sessionRegistry" /> <beans:property name="maximumSessions" 
+		value="1" /> <beans:property name="exceptionIfMaximumExceeded" value="true" 
+		/> </beans:bean> <beans:bean class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy"> 
+		</beans:bean> <beans:bean class="org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy"> 
+		<beans:constructor-arg ref="sessionRegistry" /> </beans:bean> </beans:list> 
+		</beans:constructor-arg> </beans:bean> - -->
+
+	<beans:bean id="sessionRegistry"
+		class="org.springframework.security.core.session.SessionRegistryImpl" />
+
+
+
+	<sec:authentication-manager alias="authenticationManager">
+		<sec:authentication-provider ref="customAuthenticationProvider" />
+
+	</sec:authentication-manager>
+
+
+	<beans:bean id="customAuthenticationProvider"
+		class="com.ghw.security.CustomAuthenticationProvider">
+	</beans:bean>
+
+
+	<beans:bean id="userNameCachingAuthenticationFailureHandler"
+		class="com.ghw.security.UserNameCachingAuthenticationFailureHandler">
+		<beans:property name="defaultFailureUrl" value="/public/login.jsf?error" />
+	</beans:bean>
+
+	<!-- Inject authentication Manager to our LoginBean <beans:bean id="loginBean" 
+		name="loginBean" class="com.ghw.controller.LoginBean"> <beans:property name="authenticationManager" 
+		ref="authenticationManager"></beans:property> </beans:bean> -->
+</beans:beans>

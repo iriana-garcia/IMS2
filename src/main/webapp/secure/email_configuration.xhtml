@@ -1,0 +1,191 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+
+	<ui:define name="body">
+
+		<h:form id="form" onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="#{msg.email_conf}" />
+				</f:facet>
+
+				<f:facet name="right">
+					<sec:authorize access="hasAnyRole('SUPER','EMAIL_M')">
+						<p:commandButton value="#{msg.edit}" icon="ui-icon-pencil"
+							action="#{configurationEmailController.edit}"
+							styleClass="buttonBarra" update="messages" />
+					</sec:authorize>
+				</f:facet>
+			</p:toolbar>
+
+
+			<h:panelGrid styleClass="panel" columns="1">
+
+				<p:tabView styleClass="tabInvoice">
+					<p:tab title="#{msg.ibo_welcome}">
+
+						<h:panelGrid columns="2">
+
+							<h:outputLabel value="#{msg.subject_line}" />
+							<h:outputLabel
+								value="#{configurationEmailController.entityWelcome.subject}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.to}" />
+							<h:outputLabel
+								value="#{configurationEmailController.entityWelcome.to}"
+								styleClass="bold" />
+
+
+							<h:outputLabel value="#{msg.bcc_to}" />
+							<h:outputLabel
+								value="#{configurationEmailController.entityWelcome.bcc}"
+								styleClass="bold" />
+
+
+							<h:outputLabel value="#{msg.html_email}" rendered="false" />
+							<h:outputLabel rendered="false"
+								value="#{configurationEmailController.entityWelcome.html}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.email_content}" />
+						</h:panelGrid>
+						<h:panelGrid>
+							<h:outputLabel escape="false"
+								value="#{configurationEmailController.entityWelcome.content}"
+								styleClass="bold" />
+
+						</h:panelGrid>
+
+					</p:tab>
+
+					<p:tab title="#{msg.ibo_invoice}">
+
+						<h:panelGrid columns="2">
+
+							<h:outputLabel value="#{msg.subject_line}" />
+							<h:outputLabel
+								value="#{configurationEmailController.entityInvoice.subject}"
+								styleClass="bold" />
+
+
+							<h:outputLabel value="#{msg.to}" />
+							<h:outputLabel
+								value="#{configurationEmailController.entityInvoice.to}"
+								styleClass="bold" />
+
+
+							<h:outputLabel value="#{msg.bcc_to}" />
+							<h:outputLabel
+								value="#{configurationEmailController.entityInvoice.bcc}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.html_email}" rendered="false" />
+							<h:outputLabel rendered="false"
+								value="#{configurationEmailController.entityInvoice.html}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.email_content}" />
+						</h:panelGrid>
+						<h:panelGrid>
+							<h:outputLabel escape="false"
+								value="#{configurationEmailController.entityInvoice.content}"
+								styleClass="bold" />
+
+						</h:panelGrid>
+
+					</p:tab>
+
+					<p:tab title="#{msg.finance_email}">
+
+						<h:panelGrid columns="2">
+
+							<h:outputLabel value="#{msg.subject_line}" />
+							<h:outputLabel
+								value="#{configurationEmailController.entityFinance.subject}"
+								styleClass="bold" />
+
+
+							<h:outputLabel value="#{msg.to}" />
+							<h:outputLabel
+								value="#{configurationEmailController.entityFinance.to}"
+								styleClass="bold" />
+
+
+							<h:outputLabel value="#{msg.bcc_to}" />
+							<h:outputLabel
+								value="#{configurationEmailController.entityFinance.bcc}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.html_email}" rendered="false" />
+							<h:outputLabel rendered="false"
+								value="#{configurationEmailController.entityFinance.html}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.email_content}" />
+						</h:panelGrid>
+						<h:panelGrid>
+							<h:outputLabel escape="false"
+								value="#{configurationEmailController.entityFinance.content}"
+								styleClass="bold" />
+
+						</h:panelGrid>
+
+					</p:tab>
+
+
+				</p:tabView>
+			
+			
+
+				<p:fieldset toggleable="false" styleClass="myFieldset">
+					<f:facet name="legend" >
+							<h:outputLabel value="#{msg.available_keys}" />
+				</f:facet>
+				
+					<h:outputLabel value="#{msg.available_keys_content}" />
+
+					<p:dataTable var="key" value="#{configurationEmailController.keys}">						
+						<p:column headerText="Title" width="150">
+							<h:outputText value="#{key[0]}" />
+						</p:column>
+						<p:column headerText="Description">
+							<h:outputText value="#{key[1]}" />
+						</p:column>
+					</p:dataTable>
+
+
+				</p:fieldset>
+<style>
+.myFieldset .ui-fieldset, .ui-fieldset .ui-fieldset-legend {
+background-color: transparent !important;
+border-color: transparent !important;
+}
+
+.myFieldset .ui-fieldset, .ui-fieldset .ui-fieldset-legend .ui-state-default{
+background-color: transparent !important;
+border-color: transparent !important;
+}
+
+</style>
+
+
+
+				<h:panelGrid border="0" columns="1">
+					<p:messages id="messages" showDetail="false" autoUpdate="true" />
+				</h:panelGrid>
+
+
+			</h:panelGrid>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,210 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+	
+	
+		<style>
+
+			.myCommandLink:hover {
+				color: #0066cc !important;
+				font-weight: bold;
+			}
+
+		</style>
+
+		<h:form id="form"
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="#{msg.pay_processed}" />
+				</f:facet>
+
+				<f:facet name="right">
+
+					<p:commandButton value="#{msg.print}" icon="ui-icon-print"
+						actionListener="#{printController.printListTable}"
+						styleClass="buttonBarra" oncomplete="PF('dlgPrint').show();">
+						<f:attribute name="report" value="13" />
+						<f:attribute name="title" value="pay_processed" />
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+
+
+
+			<h:panelGrid styleClass="panel" columns="1">
+
+				<p:remoteCommand name="refreshFooter"
+					update="form:uniTable:rowCount" />
+
+				<p:dataTable var="uni" value="#{logSystemController.lazyModel}"
+					paginator="true" rows="15" paginatorPosition="bottom"
+					paginatorTemplate=" {RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {CurrentPageReport}"
+					rowsPerPageTemplate="#{constant.rowsToShow}"
+					selectionMode="single" widgetVar="uniTableFil" id="uniTable"
+					lazy="true" resizableColumns="false" draggableColumns="true"
+					sortBy="#{uni.date}" sortOrder="descending" reflow="false"
+					disabledTextSelection="false" style="min-width: 1300px !important">
+
+					<f:facet name="header">
+						<p:outputPanel>
+
+							<p:commandButton value="Filters" icon="ui-icon-search"
+								id="btnFilter" oncomplete="PF('dlgFilter').show();"
+								update="form:dialFilter" />
+
+							<p:spacer width="10" />
+							<p:commandButton value="Clear filters"
+								actionListener="#{logSystemController.clearFilter}"
+								icon="ui-icon-close" id="btnReset"
+								update="form:uniTable,form:dialFilter"></p:commandButton>
+							<p:spacer width="10" rendered="false" />
+							<p:commandButton id="toggler" type="button" value="Columns"
+								icon="ui-icon-calculator" rendered="false" />
+							<p:columnToggler datasource="uniTable" trigger="toggler"
+								rendered="false" />
+						</p:outputPanel>
+					</f:facet>
+
+					<p:ajax event="filter" oncomplete="refreshFooter()"></p:ajax>
+
+					<f:facet name="footer">
+						<h:outputText id="rowCount"
+							value="#{msg.total_register} #{logSystemController.lazyModel.rowCount}" />
+					</f:facet>
+
+
+
+					<p:column headerText="#{msg.date}" sortBy="#{uni.date}" width="150">
+						<f:facet name="filter">
+							<p:calendar pattern="MM-dd-yyyy" size="8" readonlyInput="true">
+								<p:ajax event="dateSelect"
+									oncomplete="PF('uniTableFil').filter()" />
+							</p:calendar>
+						</f:facet>
+						<h:outputText value="#{uni.dateFormat}">
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="IP" sortBy="#{uni.ip}" filterBy="#{uni.ip}"
+						width="120" filterStyle="width: 90% !important">
+						<h:outputText value="#{uni.ip}" />
+					</p:column>
+				
+
+					<p:column headerText="#{msg.user}" sortBy="#{uni.user.name}"
+						filterStyle="width: 90% !important" filterBy="#{uni.user.name}"
+						width="120" filterStyleClass="manual">
+						<h:outputText value="#{uni.userName}" />
+					</p:column>
+
+
+					<p:column headerText="#{msg.detail}" sortable="false"
+						filterStyle="width: 90% !important" filterBy="#{uni.detail}"
+						style="min-width: 80px !important;">
+						<h:outputLabel value="#{uni.detail}" rendered="#{!uni.cutOff}" />
+
+						<p:commandLink id="cLinkNote" styleClass="myCommandLink"
+							oncomplete="PF('dlgDetail').show()" update=":dlgDetailId"
+							rendered="#{uni.cutOff}">
+							<h:outputText value="#{uni.detailTable}" />
+							<f:setPropertyActionListener value="#{uni}"
+								target="#{logSystemController.entity}" />
+						</p:commandLink>
+					</p:column>
+
+				</p:dataTable>
+
+
+
+			</h:panelGrid>
+
+
+			<p:dialog header="#{msg.filters}" widgetVar="dlgFilter" modal="true"
+				height="200" width="400px" focus="btnCancel" id="dialFilter"
+				resizable="false" closeOnEscape="true">
+
+
+				<h:panelGrid border="0" columns="1">
+					<p:messages id="messages" showDetail="false" autoUpdate="true" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+
+					<h:outputText value="#{msg.start_date}" />
+					<p:calendar id="datetimeini" value="#{logSystemFilter.startDate}"
+						pattern="MM/dd/yyyy" readonlyInput="true">
+						<p:ajax event="dateSelect" update="datetimeend"></p:ajax>
+						<p:ajax event="change" update="datetimeend" />
+					</p:calendar>
+
+					<h:outputText value="#{msg.end_date}" />
+					<p:calendar widgetVar="datetimeendW" id="datetimeend"
+						readonlyInput="true" value="#{logSystemFilter.endDate}"
+						pattern="MM/dd/yyyy" mindate="#{logSystemFilter.startDate}">
+					</p:calendar>
+				</h:panelGrid>
+
+				<p:spacer height="10" width="20"></p:spacer>
+
+				<h:panelGrid width="100%">
+
+					<h:panelGrid columns="2" styleClass="panelGridCenter">
+
+						<p:commandButton value="Filter" styleClass="buttonEspe"
+							actionListener="#{logSystemController.validateFilter}"
+							validateClient="true"
+							oncomplete="handleFilterRequest(xhr, status, args)"
+							update="messages" />
+
+
+
+						<p:commandButton value="Cancel" type="reset" id="btnCancel"
+							onclick="PF('dlgFilter').hide();" immediate="true"
+							actionListener="#{logSystemController.cleanDetailFilter}" />
+
+
+
+					</h:panelGrid>
+
+				</h:panelGrid>
+
+
+
+			</p:dialog>
+
+			<script type="text/javascript">
+				function handleFilterRequest(xhr, status, args) {
+
+					if (args.validationFailed || args.error) {
+
+					} else {
+						PF('dlgFilter').hide();
+						PF('uniTableFil').filter();
+					}
+
+				}
+			</script>
+
+		</h:form>
+
+
+		<p:dialog header="#{msg.detail}" widgetVar="dlgDetail" modal="true"
+			closeOnEscape="true" id="dlgDetailId" resizable="false"
+			closable="true" showHeader="true" width="700px" height="550px"
+			minHeight="400">
+			<h:panelGrid width="100%">
+				<h:outputText value="#{logSystemController.entity.detail}" />
+			</h:panelGrid>
+		</p:dialog>
+
+		<ui:include src="/secure/select_format.xhtml"></ui:include>
+	</ui:define>
+
+</ui:composition>

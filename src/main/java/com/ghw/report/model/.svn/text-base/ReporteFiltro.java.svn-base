@@ -1,0 +1,63 @@
+package reporte.data;
+
+import java.io.Serializable;
+
+
+public class ReporteFiltro implements Serializable {
+
+	private Reporte reporte;
+	private Integer tema, subtema, tipoDato;
+	private String valor;
+	private String texto;
+
+	public Reporte getReporte() {
+		return reporte;
+	}
+
+	public void setReporte(Reporte reporte) {
+		this.reporte = reporte;
+	}
+
+	public Integer getTema() {
+		return tema;
+	}
+
+	public void setTema(Integer tema) {
+		this.tema = tema;
+	}
+
+	public Integer getSubtema() {
+		return subtema;
+	}
+
+	public void setSubtema(Integer subtema) {
+		this.subtema = subtema;
+	}
+
+	public String getValor() {
+		return valor;
+	}
+
+	public void setValor(String valor) {
+		this.valor = valor;
+	}
+
+	public String getTexto() {
+		return texto;
+	}
+
+	public void setTexto(String texto) {
+		this.texto = texto;
+	}
+
+	public Integer getTipoDato() {
+		return tipoDato;
+	}
+
+	public void setTipoDato(Integer tipoDato) {
+		this.tipoDato = tipoDato;
+	}
+	
+	
+
+}

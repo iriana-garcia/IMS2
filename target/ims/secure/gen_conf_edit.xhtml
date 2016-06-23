@@ -1,0 +1,437 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+
+
+
+		<sec:authorize access="hasAnyRole('SUPER','CONF_GN_M')">
+			<h:form id="form"
+				onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+				<p:toolbar>
+					<f:facet name="left">
+						<h:outputText
+							value="#{configurationGeneralController.entity.id == null ? msg.add : msg.edit} #{msg.general_conf}" />
+					</f:facet>
+
+					<f:facet name="right">
+						<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+							action="#{configurationGeneralController.update}"
+							styleClass="buttonBarra" validateClient="true">
+							<p:confirm icon="ui-icon-alert" />
+						</p:commandButton>
+
+						<p:spacer width="10" />
+
+						<p:commandButton value="#{msg.cancel}" icon="ui-icon-close"
+							action="general_configuration" styleClass="buttonBarra"
+							immediate="true" />
+					</f:facet>
+				</p:toolbar>
+
+
+				<h:panelGrid styleClass="panel" columns="1">
+					<p:panel id="panel-signup">
+						<p:focus for="form:tabConf:txtFtpOra" binding="#{configurationGeneralController.focus}"/>
+						<h:panelGrid border="0" columns="1">
+							<p:messages id="messages" showDetail="false" autoUpdate="true"
+								globalOnly="false" />
+						</h:panelGrid>
+
+
+						<p:tabView styleClass="tabInvoice" id="tabConf" widgetVar="tabConfW">
+							<p:tab title="#{msg.ldap_conf}">
+								<h:panelGrid columns="3">
+									<p:outputLabel value="#{msg.authentication_attribute}"
+										for="txtName" rendered="false" />
+									<p:inputText onblur="this.value = this.value.trim()"
+										value="#{configurationGeneralController.entity.ldapAuthenti}"
+										required="true" id="txtName" maxlength="100"
+										requiredMessage="#{msg.authentication_attribute}: #{msg.value_required}"
+										styleClass="largeControls" rendered="false">
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="txtName" display="icon" rendered="false" />
+
+
+									<p:outputLabel value="#{msg.server_address}" for="txtServer" />
+									<p:inputText onblur="this.value = this.value.trim()"
+										value="#{configurationGeneralController.entity.ldapServer}"
+										required="true" id="txtServer" maxlength="50"
+										styleClass="largeControls"
+										requiredMessage="#{msg.server_address}: #{msg.value_required}">
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="txtServer" display="icon" />
+
+
+
+									<p:outputLabel value="#{msg.server_port}" for="txtPort" />
+									<p:inputText
+										value="#{configurationGeneralController.entity.ldapPort}"
+										required="true" id="txtPort" maxlength="5"
+										styleClass="inputNumber"
+										requiredMessage="#{msg.server_port}: #{msg.value_required}">
+										<p:clientValidator event="blur" />
+										<pe:keyFilter mask="pint" inputRegEx="/^[\d]{0,5}$/"
+											preventPaste="false" />
+									</p:inputText>
+									<p:message for="txtPort" display="icon" />
+
+
+									<p:outputLabel value="#{msg.ssl}" for="txtSsl" />
+									<p:selectOneRadio id="txtSsl"
+										value="#{configurationGeneralController.entity.ldapSsl}">
+										<f:selectItem itemLabel="No" itemValue="false" />
+										<f:selectItem itemLabel="Yes" itemValue="true" />
+									</p:selectOneRadio>
+									<p:message for="txtSsl" display="icon" />
+
+
+
+									<p:outputPanel>
+										<p:outputLabel value="#{msg.base_dn}" for="txtBaseDn" />
+										<p:spacer width="5" />
+										<h:graphicImage value="/img/question.gif" width="16px"
+											id="imgBaseDn" />
+										<p:tooltip for="imgBaseDn" value="#{msg.dn_base}"></p:tooltip>
+									</p:outputPanel>
+
+									<p:inputText onblur="this.value = this.value.trim()"
+										value="#{configurationGeneralController.entity.ldapDn}"
+										required="true" id="txtBaseDn" maxlength="100" size="80"
+										requiredMessage="#{msg.base_dn}: #{msg.value_required}">
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="txtBaseDn" display="icon" />
+
+
+									<p:outputPanel>
+										<p:outputLabel value="#{msg.base_dn_ibo}" for="txtBaseDnI" />
+										<p:spacer width="5" />
+										<h:graphicImage value="/img/question.gif" width="16px"
+											id="imgBaseDnI" />
+										<p:tooltip for="imgBaseDnI" value="#{msg.dn_structure}"></p:tooltip>
+									</p:outputPanel>
+									<p:inputText onblur="this.value = this.value.trim()"
+										value="#{configurationGeneralController.entity.ldapDnIbo}"
+										required="true" id="txtBaseDnI" maxlength="100" size="80"
+										requiredMessage="#{msg.base_dn_ibo}: #{msg.value_required}">
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="txtBaseDnI" display="icon" />
+
+									<p:outputPanel>
+										<p:outputLabel value="#{msg.base_dn_idc}" for="txtBaseIDC" />
+										<p:spacer width="5" />
+										<h:graphicImage value="/img/question.gif" width="16px"
+											id="imgBaseDnIdc" />
+										<p:tooltip for="imgBaseDnIdc" value="#{msg.dn_structure}"></p:tooltip>
+									</p:outputPanel>
+									<p:inputText onblur="this.value = this.value.trim()"
+										value="#{configurationGeneralController.entity.ldapDnIdc}"
+										required="true" id="txtBaseIDC" maxlength="100" size="80"
+										requiredMessage="#{msg.base_dn_idc}: #{msg.value_required}">
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="txtBaseIDC" display="icon" />
+
+									<p:outputPanel>
+										<p:outputLabel value="#{msg.base_dn_int}" for="txtBaseInt" />
+										<p:spacer width="5" />
+										<h:graphicImage value="/img/question.gif" width="16px"
+											id="imgBaseInt" />
+										<p:tooltip for="imgBaseInt" value="#{msg.dn_structure}"></p:tooltip>
+									</p:outputPanel>
+									<p:inputText onblur="this.value = this.value.trim()"
+										value="#{configurationGeneralController.entity.ldapDnInternational}"
+										required="true" id="txtBaseInt" maxlength="100" size="80"
+										requiredMessage="#{msg.base_dn_int}: #{msg.value_required}">
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="txtBaseInt" display="icon" />
+
+
+									<p:outputPanel>
+										<p:outputLabel value="#{msg.base_dn_sme}" for="txtBaseDnS" />
+										<p:spacer width="5" />
+										<h:graphicImage value="/img/question.gif" width="16px"
+											id="imgBaseDnS" />
+										<p:tooltip for="imgBaseDnS" value="#{msg.dn_structure}"></p:tooltip>
+									</p:outputPanel>
+									<p:inputText onblur="this.value = this.value.trim()"
+										value="#{configurationGeneralController.entity.ldapDnSme}"
+										required="true" id="txtBaseDnS" maxlength="100" size="80"
+										requiredMessage="#{msg.base_dn_sme}: #{msg.value_required}">
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="txtBaseDnS" display="icon" />
+
+
+									<p:outputLabel value="#{msg.user}" for="txtUser" />
+									<p:inputText onblur="this.value = this.value.trim()"
+										value="#{configurationGeneralController.entity.ldapUser}"
+										id="txtUser" maxlength="50" styleClass="largeControls">
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="txtUser" display="icon" />
+
+									<p:outputLabel value="#{msg.password}" for="txtPassword" />
+									<p:password
+										value="#{configurationGeneralController.entity.ldapPass}"
+										redisplay="true" id="txtPassword" maxlength="50" match="pwd2"
+										styleClass="largeControls">
+										<p:clientValidator event="blur" />
+									</p:password>
+									<p:message for="txtPassword" display="icon" />
+
+									<p:outputLabel value="#{msg.confirm_pass}" for="pwd2" />
+									<p:password
+										value="#{configurationGeneralController.entity.ldapPass}"
+										redisplay="true" id="pwd2" maxlength="50" match="pwd2"
+										styleClass="largeControls">
+										<p:clientValidator event="blur" />
+									</p:password>
+									<p:message for="pwd2" display="icon" />
+
+
+									<p:outputLabel value="#{msg.sec_type}" rendered="false" />
+									<p:selectOneMenu id="country" rendered="false"
+										value="#{configurationGeneralController.entity.ldapSecType}"
+										style="width:150px">
+										<f:selectItem itemLabel="none" itemValue="none" />
+										<f:selectItem itemLabel="simple" itemValue="simple" />
+										<f:selectItem itemLabel="GSSAPI" itemValue="GSSAPI" />
+										<f:selectItem itemLabel="GSS-SPNEGO" itemValue="GSS-SPNEGO" />
+										<f:selectItem itemLabel="EXTERNAL" itemValue="EXTERNAL" />
+										<f:selectItem itemLabel="DIGEST-MD5" itemValue="DIGEST-MD5" />
+									</p:selectOneMenu>
+
+
+								</h:panelGrid>
+
+							</p:tab>
+
+							<p:tab title="#{msg.email_conf}">
+								<h:panelGrid columns="3">
+
+									<p:outputLabel value="#{msg.host}" for="txtEmailHost" />
+									<p:inputText onblur="this.value = this.value.trim()"
+										value="#{configurationGeneralController.entity.emailHost}"
+										required="true"
+										requiredMessage="#{msg.host}: #{msg.value_required}"
+										id="txtEmailHost" maxlength="50" styleClass="largeControls">
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="txtEmailHost" display="icon" />
+
+
+									<p:outputLabel value="#{msg.port}" for="txtEmailPort" />
+									<p:inputText styleClass="inputNumber"
+										value="#{configurationGeneralController.entity.emailPort}"
+										required="true" id="txtEmailPort" maxlength="5"
+										requiredMessage="#{msg.port} #{msg.value_required}">
+										<p:clientValidator event="blur" />
+										<pe:keyFilter mask="pint" inputRegEx="/^[\d]{0,5}$/"
+											preventPaste="false" />
+									</p:inputText>
+									<p:message for="txtEmailPort" display="icon" />
+
+
+									<p:outputLabel value="#{msg.protocol}" for="txtEmailProtocol"
+										rendered="false" />
+									<p:inputText onblur="this.value = this.value.trim()"
+										rendered="false"
+										value="#{configurationGeneralController.entity.emailProtocol}"
+										required="false" id="txtEmailProtocol" maxlength="10"
+										styleClass="largeControls">
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="txtEmailProtocol" display="icon"
+										rendered="false" />
+
+									<p:outputLabel value="#{msg.from}" for="txtEmailFrom" />
+									<p:inputText onblur="this.value = this.value.trim()"
+										value="#{configurationGeneralController.entity.emailFrom}"
+										required="false" id="txtEmailFrom" maxlength="100"
+										styleClass="largeControls">
+										<f:validator validatorId="emailValidator" for="txtEmail" />
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="txtEmailFrom" display="icon" />
+
+									<p:outputLabel value="#{msg.auth}" for="txtEmailAuth" />
+									<p:selectOneRadio id="txtEmailAuth"
+										value="#{configurationGeneralController.entity.emailAuth}">
+										<f:selectItem itemLabel="No" itemValue="false" />
+										<f:selectItem itemLabel="Yes" itemValue="true" />
+									</p:selectOneRadio>
+									<p:message for="txtEmailAuth" display="icon" />
+
+
+									<p:outputLabel value="#{msg.user}" for="txtUserEmail" />
+									<p:inputText onblur="this.value = this.value.trim()"
+										value="#{configurationGeneralController.entity.emailUser}"
+										id="txtUserEmail" maxlength="50" styleClass="largeControls">
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="txtUserEmail" display="icon" />
+
+									<p:outputLabel value="#{msg.password}" for="txtPasswordEmail" />
+									<p:password
+										value="#{configurationGeneralController.entity.emailPass}"
+										id="txtPasswordEmail" maxlength="50" match="pwdEmail"
+										styleClass="largeControls" redisplay="true">
+										<p:clientValidator event="blur" />
+									</p:password>
+									<p:message for="txtPasswordEmail" display="icon" />
+
+									<p:outputLabel value="#{msg.confirm_pass}" for="pwdEmail" />
+									<p:password
+										value="#{configurationGeneralController.entity.emailPass}"
+										id="pwdEmail" maxlength="50" match="pwdEmail"
+										styleClass="largeControls" redisplay="true">
+										<p:clientValidator event="blur" />
+									</p:password>
+									<p:message for="pwdEmail" display="icon" />
+
+
+
+									<p:outputLabel value="#{msg.max_size}" for="txtEmailSize" />
+									<p:inputText
+										value="#{configurationGeneralController.entity.emailMaxSize}"
+										required="true" id="txtEmailSize" maxlength="5"
+										styleClass="inputNumber"
+										requiredMessage="#{msg.max_size}: #{msg.value_required}">
+										<p:clientValidator event="blur" />
+										<pe:keyFilter mask="pint" inputRegEx="/^[\d]{0,5}$/"
+											preventPaste="false" />
+									</p:inputText>
+									<p:message for="txtEmailSize" display="icon" />
+
+
+									<p:outputLabel value="#{msg.system_url}" for="txtUrl" />
+									<p:inputText onblur="this.value = this.value.trim()"
+										value="#{configurationGeneralController.entity.emailSystem}"
+										required="false" id="txtUrl" maxlength="300"
+										styleClass="largeControls">
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="txtUrl" display="icon" />
+
+
+
+
+								</h:panelGrid>
+							</p:tab>
+
+							<p:tab title="#{msg.ftp_conf}" id="tabFtp">
+								<h:panelGrid columns="3">
+									<p:outputLabel value="#{msg.ftp_path_pipkins}" for="txtFtpPip"
+										rendered="false" />
+									<p:inputText onblur="this.value = this.value.trim()"
+										rendered="false"
+										value="#{configurationGeneralController.entity.pathPipkins}"
+										required="false" id="txtFtpPip" maxlength="200"
+										styleClass="largeControls">
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="txtFtpPip" display="icon" rendered="false" />
+
+									<p:outputLabel value="#{msg.ftp_path_oracle}" for="txtFtpOra" />
+									<p:inputText onblur="this.value = this.value.trim()" widgetVar="txtFtpOraW"
+										value="#{configurationGeneralController.entity.pathOracle}"
+										required="false" id="txtFtpOra" maxlength="200"
+										styleClass="largeControls">
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="txtFtpOra" display="icon" />
+
+
+									<p:outputLabel value="#{msg.port}" for="txtPortFtp" />
+									<p:inputText
+										value="#{configurationGeneralController.entity.portOracle}"
+										required="false" id="txtPortFtp" maxlength="200"
+										styleClass="inputNumber">
+										<p:clientValidator event="blur" />
+										<pe:keyFilter mask="pint" inputRegEx="/^[\d]{0,5}$/"
+											preventPaste="false" />
+									</p:inputText>
+									<p:message for="txtPortFtp" display="icon" />
+
+									<p:outputLabel value="#{msg.user}" for="txtUserFtp" />
+									<p:inputText onblur="this.value = this.value.trim()" 
+										value="#{configurationGeneralController.entity.userOracle}"
+										required="false" id="txtUserFtp" maxlength="200"
+										styleClass="largeControls">
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="txtUserFtp" display="icon" />
+
+									<p:outputLabel value="#{msg.password}" for="txtPasswordFtp" />
+									<p:password
+										value="#{configurationGeneralController.entity.passwordOracle}"
+										id="txtPasswordFtp" maxlength="50" match="txtPasswordFtp2"
+										styleClass="largeControls" redisplay="true">
+										<p:clientValidator event="blur" />
+									</p:password>
+									<p:message for="txtPasswordFtp" display="icon" />
+
+									<p:outputLabel value="#{msg.confirm_pass}"
+										for="txtPasswordFtp2" />
+									<p:password
+										value="#{configurationGeneralController.entity.passwordOracle}"
+										id="txtPasswordFtp2" maxlength="50" match="txtPasswordFtp2"
+										styleClass="largeControls" redisplay="true">
+										<p:clientValidator event="blur" />
+									</p:password>
+									<p:message for="txtPasswordFtp2" display="icon" />
+
+
+
+									<p:outputLabel value="#{msg.retention_time}" for="txtRetSize" />
+									<p:inputText
+										value="#{configurationGeneralController.entity.retention}"
+										id="txtRetSize" maxlength="5" styleClass="inputNumber">
+										<p:clientValidator event="blur" />
+										<pe:keyFilter mask="pint" inputRegEx="/^[\d]{0,5}$/"
+											preventPaste="false" />
+									</p:inputText>
+									<p:message for="txtRetSize" display="icon" />
+
+
+									<p:outputLabel value="#{msg.webservice_url}"
+										for="txtUrlWebService" />
+									<p:inputText onblur="this.value = this.value.trim()"
+										value="#{configurationGeneralController.entity.webservice}"
+										required="true" id="txtUrlWebService" maxlength="300"
+										styleClass="largeControls"
+										requiredMessage="#{msg.webservice_url}: #{msg.value_required}">
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="txtUrlWebService" display="icon" />
+
+
+								</h:panelGrid>
+
+
+							</p:tab>
+						</p:tabView>
+
+
+					</p:panel>
+
+				</h:panelGrid>
+
+				<ui:include src="/secure/confirmation_modify.xhtml"></ui:include>
+			</h:form>
+		</sec:authorize>
+	</ui:define>
+
+</ui:composition>

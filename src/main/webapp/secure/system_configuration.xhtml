@@ -1,0 +1,140 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+
+		<h:form id="form"
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="#{msg.system_conf}" />
+				</f:facet>
+
+				<f:facet name="right">
+					<sec:authorize access="hasAnyRole('SUPER','CONF_SYS_M')">
+						<p:commandButton value="#{msg.edit}" icon="ui-icon-pencil"
+							action="#{configurationSystemController.edit}"
+							styleClass="buttonBarra" update="messages" />
+					</sec:authorize>
+				</f:facet>
+			</p:toolbar>
+
+
+			<h:panelGrid styleClass="panel" columns="1">
+
+
+				<h:panelGrid border="0" columns="1">
+					<p:messages id="messages" showDetail="false" autoUpdate="true" />
+				</h:panelGrid>
+
+
+				<p:focus for="tabConf" />
+				<p:tabView styleClass="tabInvoice" id="tabConf">
+					<p:tab title="#{msg.invoice_compilation}" rendered="false">
+
+						<h:panelGrid columns="2">
+
+							<h:outputLabel value="#{msg.type_year}" />
+							<h:outputLabel
+								value="#{configurationSystemController.entity.typeYearDescription}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.beginning_month}" />
+							<h:outputLabel
+								value="#{configurationSystemController.entity.beginMonth}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.invoice_frecuency}" />
+							<h:outputLabel
+								value="#{configurationSystemController.entity.invoiceFrecuencyDescription}"
+								styleClass="bold" />
+
+							<h:outputLabel value="#{msg.day_week_paid}" />
+							<h:outputLabel
+								value="#{configurationSystemController.entity.dayPayDescription}"
+								styleClass="bold" />
+
+						</h:panelGrid>
+
+					</p:tab>
+
+					<p:tab title="#{msg.general}">
+						<h:panelGrid columns="2">
+
+							<h:outputLabel value="#{msg.admin_fee}" />
+							<h:outputLabel
+								value="#{configurationSystemController.entity.adminFee}"
+								styleClass="bold">
+								<f:convertNumber currencySymbol="$" type="currency"
+									minFractionDigits="#{applicationBean.systemConf.decimal}"
+									maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+							</h:outputLabel>
+
+
+
+							<h:outputLabel value="#{msg.buffer} (#{msg.minutes})" />
+							<h:outputLabel
+								value="#{configurationSystemController.entity.buffer}"
+								styleClass="bold">
+							</h:outputLabel>
+
+
+							<h:outputLabel value="#{msg.number_decimal_place}" />
+							<h:outputLabel
+								value="#{configurationSystemController.entity.decimal}"
+								styleClass="bold">
+							</h:outputLabel>
+
+							<h:outputLabel
+								value="#{msg.background}/#{msg.font} #{msg.color} #{msg.cell_modified}" />
+							<h:outputLabel value="Test color"
+								style="background-color: ##{configurationSystemController.entity.color}; color: ##{configurationSystemController.entity.fontColor}" />
+
+
+							<h:outputLabel value="#{msg.enabled_submit_invoice}" />
+							<h:outputLabel
+								value="#{configurationSystemController.entity.startDateFormat}"
+								styleClass="bold">
+							</h:outputLabel>
+
+							<h:outputLabel value="to" />
+							<h:outputLabel
+								value="#{configurationSystemController.entity.endDateFormat}"
+								styleClass="bold">
+							</h:outputLabel>
+
+							<h:outputLabel value="#{msg.limit_submit}" />
+							<h:outputLabel
+								value="#{configurationSystemController.entity.totalSubmitInvoice}"
+								styleClass="bold">
+							</h:outputLabel>
+
+
+							<p:outputLabel value="#{msg.paypal_file_limit}" />
+							<h:outputLabel
+								value="#{configurationSystemController.entity.paypalFileLimit}"
+								styleClass="bold">
+									<f:convertNumber currencySymbol="$" type="currency"
+									minFractionDigits="#{applicationBean.systemConf.decimal}"
+									maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+							</h:outputLabel>
+
+						</h:panelGrid>
+					</p:tab>
+
+
+				</p:tabView>
+
+
+			</h:panelGrid>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

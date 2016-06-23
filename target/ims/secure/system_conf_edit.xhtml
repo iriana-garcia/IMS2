@@ -1,0 +1,226 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+
+
+		<sec:authorize access="hasAnyRole('SUPER','CONF_SYS_M')">
+			<h:form
+				onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+				<p:toolbar>
+					<f:facet name="left">
+						<h:outputText
+							value="#{configurationSystemController.entity.id == null ? msg.add : msg.edit} #{msg.system_conf}" />
+					</f:facet>
+
+					<f:facet name="right">
+						<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+							action="#{configurationSystemController.update}"
+							styleClass="buttonBarra" validateClient="true">
+							<p:confirm icon="ui-icon-alert" />
+						</p:commandButton>
+
+						<p:spacer width="10" />
+
+						<p:commandButton value="#{msg.cancel}" icon="ui-icon-close"
+							action="system_configuration" styleClass="buttonBarra"
+							immediate="true" />
+					</f:facet>
+				</p:toolbar>
+
+
+				<h:panelGrid styleClass="panel" columns="1">
+
+
+
+					<h:panelGrid border="0" columns="1">
+						<p:messages id="messages" showDetail="false" autoUpdate="true"
+							globalOnly="false" />
+					</h:panelGrid>
+
+					<p:tabView styleClass="tabInvoice">
+						<p:tab title="#{msg.invoice_compilation}" rendered="false">
+
+
+							<h:panelGrid columns="3">
+								<p:outputLabel value="#{msg.type_year}" for="txtTypeYear" />
+								<p:selectOneMenu id="txtTypeYear" required="true"
+									requiredMessage="#{msg.type_year}: #{msg.value_required}"
+									value="#{configurationSystemController.entity.typeYear}"
+									style="width: 300px;">
+									<f:selectItems
+										value="#{configurationSystemController.listTypeYears}" />
+								</p:selectOneMenu>
+								<p:message for="txtTypeYear" display="icon" />
+
+
+								<p:outputLabel value="#{msg.beginning_month}" for="txtMonth" />
+								<p:spinner id="txtMonth" min="0" max="12"
+									onblur="this.value = this.value.trim().replace(/[^\d\.]/g, '')"
+									value="#{configurationSystemController.entity.beginMonth}">
+									<p:clientValidator event="blur" />
+								</p:spinner>
+								<p:message for="txtMonth" display="icon" />
+
+
+
+								<p:outputLabel value="#{msg.invoice_frecuency}"
+									for="txtFrecuency" />
+								<p:selectOneMenu id="txtFrecuency" required="true"
+									requiredMessage="#{msg.invoice_frecuency}: #{msg.value_required}"
+									value="#{configurationSystemController.entity.invoiceFrecuency}"
+									style="width: 300px;">
+									<f:selectItems
+										value="#{configurationSystemController.listInvoiceFrecuency}" />
+								</p:selectOneMenu>
+								<p:message for="txtFrecuency" display="icon" />
+
+
+								<p:outputLabel value="#{msg.day_week_paid}" for="txtDayWeek" />
+								<p:selectOneMenu id="txtDayWeek" required="true"
+									requiredMessage="#{msg.day_week_paid}: #{msg.value_required}"
+									value="#{configurationSystemController.entity.dayPay}"
+									style="width: 300px;">
+									<f:selectItems
+										value="#{configurationSystemController.listDayWeek}" />
+								</p:selectOneMenu>
+								<p:message for="txtDayWeek" display="icon" />
+
+
+							</h:panelGrid>
+
+						</p:tab>
+
+						<p:tab title="#{msg.general}">
+							<h:panelGrid columns="3">
+
+								<p:outputLabel value="#{msg.admin_fee}" for="txtFee" />
+								<p:inputText
+									value="#{configurationSystemController.entity.adminFee}"
+									required="true" id="txtFee" styleClass="inputNumber"
+									requiredMessage="#{msg.admin_fee}: #{msg.value_required}">
+									<p:clientValidator event="blur" />
+									<pe:keyFilter mask="pnum"
+										inputRegEx="/^[\d]{0,5}\.[\d]{0,2}$|^[\d]{0,5}$|^$/"
+										preventPaste="false" />
+								</p:inputText>
+								<p:message for="txtFee" display="icon" />
+
+								<p:outputLabel value="#{msg.buffer} (#{msg.minutes})"
+									for="txtBuffer" />
+								<p:inputText
+									value="#{configurationSystemController.entity.buffer}"
+									required="true" id="txtBuffer" maxlength="5"
+									styleClass="inputNumber"
+									requiredMessage="#{msg.buffer}: #{msg.value_required}">
+									<p:clientValidator event="blur" />
+									<pe:keyFilter mask="pint" inputRegEx="/^[\d]{0,5}$/"
+										preventPaste="false" />
+								</p:inputText>
+								<p:message for="txtBuffer" display="icon" />
+
+								<p:outputPanel>
+
+									<p:outputLabel value="#{msg.number_decimal_place}"
+										for="txtDecimal" />
+									<p:spacer width="5" />
+									<h:graphicImage value="/img/question.gif" width="16px"
+										id="imgDecimal" />
+									<p:tooltip for="imgDecimal"
+										value="#{msg.decimal_places_message}"></p:tooltip>
+								</p:outputPanel>
+								<p:inputText
+									value="#{configurationSystemController.entity.decimal}"
+									required="true" id="txtDecimal" maxlength="5"
+									styleClass="inputNumber"
+									requiredMessage="#{msg.number_decimal_place}: #{msg.value_required}">
+									<p:clientValidator event="blur" />
+									<pe:keyFilter mask="pnum" inputRegEx="/^[1-6]$|^$/"
+										preventPaste="false" />
+								</p:inputText>
+								<p:message for="txtDecimal" display="icon" />
+
+								<p:outputLabel
+									value="#{msg.font} #{msg.color} #{msg.cell_modified}"
+									for="txtColor" />
+								<p:colorPicker
+									value="#{configurationSystemController.entity.fontColor}"
+									id="txtColor" />
+								<p:message for="txtColor" display="icon" />
+
+								<p:outputLabel
+									value="#{msg.background} #{msg.color} #{msg.cell_modified}"
+									for="txtBackground" />
+								<p:colorPicker
+									value="#{configurationSystemController.entity.color}"
+									id="txtBackground">
+								</p:colorPicker>
+								<p:message for="txtBackground" display="icon" />
+
+
+								<p:outputLabel value="#{msg.enabled_submit_invoice}"
+									for="dateStart" />
+								<p:calendar id="dateStart" required="true"
+									widgetVar="dateStartW"
+									requiredMessage="#{msg.enabled_submit_invoice}: #{msg.value_required}"
+									value="#{configurationSystemController.entity.start}"
+									pattern="EEEE, HH:mm" showButtonPanel="true"
+									readonlyInput="true" />
+								<p:message for="dateStart" display="icon" />
+
+								<p:outputLabel value="to" for="dateEnd" />
+								<p:calendar id="dateEnd" required="true"
+									requiredMessage="to: #{msg.value_required}"
+									value="#{configurationSystemController.entity.end}"
+									pattern="EEEE, HH:mm" showButtonPanel="true"
+									readonlyInput="true" />
+								<p:message for="dateEnd" display="icon" />
+
+								<p:outputLabel value="#{msg.limit_submit}" for="txtLimit" />
+								<p:inputText
+									value="#{configurationSystemController.entity.totalSubmitInvoice}"
+									required="true" id="txtLimit" maxlength="5"
+									styleClass="inputNumber"
+									requiredMessage="#{msg.limit_submit}: #{msg.value_required}">
+									<p:clientValidator event="blur" />
+									<pe:keyFilter mask="pint" inputRegEx="/^[\d]{0,5}$/"
+										preventPaste="false" />
+								</p:inputText>
+								<p:message for="txtLimit" display="icon" />
+
+								<p:outputLabel value="#{msg.paypal_file_limit}"
+									for="txtPayPalLimit" />
+								<p:inputText
+									value="#{configurationSystemController.entity.paypalFileLimit}"
+									required="true" id="txtPayPalLimit" styleClass="inputNumber"
+									requiredMessage="#{msg.paypal_file_limit}: #{msg.value_required}">
+									<p:clientValidator event="blur" />
+									<pe:keyFilter mask="pnum"
+										inputRegEx="/^[\d]{0,5}\.[\d]{0,2}$|^[\d]{0,5}$|^$/"
+										preventPaste="false" />
+								</p:inputText>
+								<p:message for="txtPayPalLimit" display="icon" />
+
+							</h:panelGrid>
+						</p:tab>
+
+
+					</p:tabView>
+
+
+
+
+				</h:panelGrid>
+
+				<ui:include src="/secure/confirmation_modify.xhtml"></ui:include>
+			</h:form>
+		</sec:authorize>
+	</ui:define>
+
+</ui:composition>

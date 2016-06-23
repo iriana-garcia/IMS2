@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+<f:view contentType="text/html">
+
+	<h:head>
+		<f:facet name="first">
+			<meta http-equiv="X-UA-Compatible" content="IE=10" />
+			<meta http-equiv="X-UA-Compatible" content="IE=11" />			
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+			<meta http-equiv="Content-Type" content="text/xhtml; charset=UTF-8" />
+			<meta http-equiv="Cache-Control" content="no-cache" />
+			<meta http-equiv="Pragma" content="no-cache" />			
+		</f:facet>
+
+		<h:outputStylesheet name="theme.css" library="css" />
+		<h:outputScript name="script.js" library="js"></h:outputScript>
+		<title><ui:insert name="title">IMS v1.0</ui:insert></title>
+
+	</h:head>
+
+	<body class="backgroungPage">
+
+
+		<div class="encabezado">
+			<h:graphicImage value="/img/gvw-logo.png" width="200px" height="60px"
+				style="margin-left: 30px" />
+		</div>
+
+		<div id="menuFlo">
+			<ui:insert name="menuFlotante"></ui:insert>
+		</div>
+
+		<div id="app">
+
+
+			<div id="content">
+
+				<div id="menubar">
+
+					<ui:insert name="menu"></ui:insert>
+
+				</div>
+
+				<div id="bodyApp">
+					<ui:insert name="body">aplicacion</ui:insert>
+					<ui:insert name="espere"></ui:insert>
+				</div>
+				<!-- <rich:messages layout="table"></rich:messages> -->
+
+				<div id="footer">
+					<ui:insert name="footer"></ui:insert>
+				</div>
+			</div>
+
+
+
+		</div>
+
+
+	</body>
+
+</f:view>
+
+</html>

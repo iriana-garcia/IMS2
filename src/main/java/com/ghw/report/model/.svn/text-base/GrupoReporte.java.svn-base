@@ -1,0 +1,77 @@
+package reporte.data;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class GrupoReporte implements Serializable {
+	
+	private Integer id;
+	
+	private String descripcion;
+	private String claseServicio;
+	private String filtroBean;
+	
+	private List<Reporte> reportes;
+	
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
+	
+	public String getFiltroBean() {
+		return filtroBean;
+	}
+
+	public void setFiltroBean(String filtroBean) {
+		this.filtroBean = filtroBean;
+	}
+
+	
+	public String getClaseServicio() {
+		return claseServicio;
+	}
+
+	public void setClaseServicio(String claseServicio) {
+		this.claseServicio = claseServicio;
+	}
+
+	
+	public List<Reporte> getReportes() {
+		return reportes;
+	}
+
+	public void setReportes(List<Reporte> reportes) {
+		this.reportes = reportes;
+	}
+
+
+	
+	public Integer getIdentity() {
+		return getId();
+	}
+	
+	
+
+	public Reporte getDefaultListado() {
+		return null;
+	}
+
+	public Reporte getDefaultDetalle() {
+		return null;
+	}
+	
+
+}

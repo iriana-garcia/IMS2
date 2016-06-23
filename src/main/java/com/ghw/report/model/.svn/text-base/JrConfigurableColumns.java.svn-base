@@ -1,0 +1,84 @@
+package reporte.data;
+
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
+
+import javax.faces.component.UIComponent;
+import javax.faces.event.ActionEvent;
+
+import org.richfaces.component.html.HtmlDataGrid;
+
+import util.Context;
+
+
+public class JrConfigurableColumns implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	private List<JrConfigurableColumn> configFields;
+
+	public List<JrConfigurableColumn> getConfigFields() {
+		return configFields;
+	}
+
+	public void setConfigFields(List<JrConfigurableColumn> lista) {
+		this.configFields = lista;
+	}
+	
+	public JrConfigurableColumns() {
+//		setConfigFields(new ArrayList<JrConfigurableColumn>());
+	}
+	
+	public JrConfigurableColumns(List<JrConfigurableColumn> configFields) {
+		setConfigFields(configFields);
+	}
+	
+	
+	private HtmlDataGrid getGrid(ActionEvent event) {
+		
+		UIComponent cmp = event.getComponent();
+		
+		while (!cmp.getId().equals("grid")) {
+			cmp = cmp.getParent();
+		}
+		
+		if (cmp instanceof HtmlDataGrid) {
+			return (HtmlDataGrid)cmp;
+		}
+		return null;
+	}
+	
+	
+	public void orderEvent(ActionEvent event) {
+		
+		String op = (String) Context.getEventAttribute(event, "op");
+		System.out.println("--> operacion: " + op);
+
+		HtmlDataGrid dg = getGrid(event);
+//		configFields.
+		
+		if (dg != null) {
+			System.out.println("---> datagrid encontrado");
+			
+			JrConfigurableColumn c =  
+				(JrConfigurableColumn)dg.getRowData();
+			
+			int pos = configFields.indexOf(c);
+			System.out.println("---> posicion: " + pos);
+			
+			if (op.equals("subir") && pos > 0) { 
+				//intercambiar con el menor
+				System.out.println("subiendo");
+				configFields.get(pos).setOrder(pos + 1);
+				configFields.get(pos - 1).setOrder(pos + 2);
+			}
+			else if (op.equals("bajar") && pos < configFields.size() ) {
+				//intercambiar con el mayor
+				System.out.println("bajando");
+				configFields.get(pos).setOrder(pos + 2);
+				configFields.get(pos + 1).setOrder(pos + 1);
+			}
+		}
+		Collections.sort(configFields);
+	}
+}

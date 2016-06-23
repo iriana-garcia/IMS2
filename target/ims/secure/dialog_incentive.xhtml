@@ -1,0 +1,159 @@
+<ui:composition xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+
+	<p:dialog header="#{msg.incentive}" widgetVar="dlgIncentiveDetail"
+		modal="true" closeOnEscape="true" id="dlgIncentiveDetailId"
+		resizable="false" closable="true" showHeader="true" width="650px"
+		height="600px" minHeight="400">
+		<h:panelGrid columns="2" columnClasses="alingRight,boldAlingLeft">
+
+			<h:outputText value="#{msg.amount}" />
+			<h:outputText value="#{currentInvoiceController.incentive.amount}">
+				<f:convertNumber currencySymbol="$" type="currency"
+					minFractionDigits="#{applicationBean.systemConf.decimal}"
+					maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+			</h:outputText>
+
+			<h:outputText value="#{msg.skill}" />
+			<h:outputText
+				value="#{currentInvoiceController.incentive.skill.name}" />
+
+			<h:outputText value="#{msg.type}" />
+			<h:outputText value="#{currentInvoiceController.incentive.type}" />
+
+			<h:outputText value="Service Hours"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="Days Active as of 8/31"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="CTO%"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="RET %"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="Not Ready %"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="QA"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="RTS"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="Retention-Not Ready Time (Operational) Points"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="Retention-Not Ready Time (Operational) Points"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="Retention-Real Time Saves Points"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="Total Retention Points"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="Sales-Not Ready Time (Operational) Points"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="Sales-Quality Points"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="CTO Rate Points"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="Total Sales Points"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="Pool"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="Retention Points if Qualifiers met"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="Retention Points if Qualifiers met"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="Sales Points if Qualifiers met"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="Higher of two Points"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="%"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="TESTIMONIAL"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="$10 REFERRAL"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+			<h:outputText value="$40 REFERRAL"
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+			<h:outputText value=""
+				rendered="#{currentInvoiceController.incentive.type == 'I'}" />
+
+
+			<h:outputText value="#{msg.descripcion}" />
+			<h:outputText
+				value="#{currentInvoiceController.incentive.description}" />
+
+
+		</h:panelGrid>
+
+
+	</p:dialog>
+
+</ui:composition>

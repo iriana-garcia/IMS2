@@ -1,0 +1,268 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+
+		<h:form id="form"
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="#{msg.on_boarding}" />
+				</f:facet>
+
+				<f:facet name="right">
+
+					<p:commandButton value="Refresh" icon="ui-icon-refresh"
+						styleClass="buttonBarra" onclick="PF('uniTableFil').filter()">
+					</p:commandButton>
+
+
+					<p:spacer width="10" />
+
+					<p:commandButton value="#{msg.print}" icon="ui-icon-print"
+						actionListener="#{printController.printListTable}"
+						styleClass="buttonBarra" update="messages"
+						oncomplete="PF('dlgPrint').show();">
+						<f:attribute name="report" value="6" />
+						<f:attribute name="title" value="on_boarding" />
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+
+
+			<h:panelGrid styleClass="panel" columns="1">
+
+				<p:remoteCommand name="refreshFooter"
+					update="form:uniTable:rowCount,form:messages" />
+
+
+				<h:panelGrid border="0" columns="1">
+					<p:messages id="messages" showDetail="false" autoUpdate="false" />
+				</h:panelGrid>
+
+				<p:growl id="msgs" showDetail="false" />
+
+				<p:dataTable var="uni" value="#{userUtilController.lazyModel}"
+					paginator="true" rows="15" paginatorPosition="bottom"
+					paginatorTemplate=" {RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {CurrentPageReport} "
+					rowsPerPageTemplate="#{constant.rowsToShow}"
+					selectionMode="single" widgetVar="uniTableFil" id="uniTable"
+					lazy="true" resizableColumns="false" draggableColumns="true"
+					sortBy="#{uni.userName}" sortOrder="ascending" reflow="false"
+					disabledTextSelection="false" style="min-width: 1300px !important">
+
+					<f:facet name="header">
+						<p:outputPanel>
+
+
+							<p:commandButton value="Filters" icon="ui-icon-search"
+								id="btnFilter" onclick="PF('dlgFilter').show();"
+								rendered="false" />
+
+							<p:spacer width="10" rendered="false" />
+
+
+							<p:commandButton value="Clear filters"
+								actionListener="#{userUtilController.clearFilter}"
+								icon="ui-icon-close" id="btnReset"
+								update="form:uniTable, cmbSta"></p:commandButton>
+
+							<p:spacer width="10" rendered="false" />
+
+							<p:commandButton id="toggler" type="button" value="Columns"
+								icon="ui-icon-calculator" rendered="false" />
+							<p:columnToggler datasource="uniTable" trigger="toggler"
+								rendered="false" />
+
+						</p:outputPanel>
+					</f:facet>
+
+					<p:ajax event="filter" oncomplete="refreshFooter()"></p:ajax>
+					<f:facet name="footer">
+						<h:outputText id="rowCount"
+							value="#{msg.total_register} #{userUtilController.lazyModel.rowCount}" />
+					</f:facet>
+
+
+					<p:column headerText="#{msg.name}" sortBy="#{uni.userName}"
+						filterBy="#{uni.userName}" width="90"
+						filterStyle="width: 90% !important">
+						<h:outputText value="#{uni.userName}" />
+					</p:column>
+
+					<p:column headerText="#{msg.user_id}" sortBy="#{uni.number}"
+						filterBy="#{uni.number}" width="90"
+						filterStyle="width: 90% !important">
+						<h:outputText value="#{uni.number}" />
+					</p:column>
+
+
+					<p:column headerText="#{msg.first_name}" sortBy="#{uni.firstName}"
+						filterBy="#{uni.firstName}" width="110"
+						filterStyle="width: 90% !important">
+						<h:outputText value="#{uni.firstName}" />
+					</p:column>
+
+					<p:column headerText="#{msg.middle_name}" rendered="false"
+						sortBy="#{uni.middleName}" filterBy="#{uni.middleName}"
+						width="110" filterStyle="width: 90% !important">
+						<h:outputText value="#{uni.middleName}" />
+					</p:column>
+
+					<p:column headerText="#{msg.last_name}" sortBy="#{uni.lastName}"
+						filterBy="#{uni.lastName}" width="110"
+						filterStyle="width: 90% !important">
+						<h:outputText value="#{uni.lastName}" />
+					</p:column>
+
+					<p:column headerText="#{msg.email}" sortBy="#{uni.email}"
+						filterBy="#{uni.email}" width="120"
+						filterStyle="width: 90% !important">
+						<h:outputText value="#{uni.email}" />
+					</p:column>
+
+					<p:column headerText="#{msg.corporation_name}"
+						sortBy="#{uni.corporationName}" width="130"
+						filterStyle="width: 90% !important"
+						filterBy="#{uni.corporationName}">
+						<h:outputText value="#{uni.corporationName}" />
+					</p:column>
+
+					<p:column headerText="#{msg.address}" sortBy="#{uni.address}"
+						filterable="false">
+						<h:outputText value="#{uni.addressFull}" />
+					</p:column>
+
+
+					<p:column headerText="#{msg.country}" sortBy="#{uni.country}"
+						filterBy="#{uni.country}" width="110"
+						filterStyle="width: 90% !important">
+						<h:outputText value="#{uni.country}" />
+					</p:column>
+
+
+					<p:column headerText="#{msg.state}" sortBy="#{uni.state}"
+						filterBy="#{uni.state}" width="80">
+						<f:facet name="filter">
+							<p:selectOneMenu onchange="PF('uniTableFil').filter()"
+								id="cmbError">
+								<f:selectItem itemLabel="#{msg.select_all}" itemValue="#{null}"
+									noSelectionOption="true" />
+								<f:converter converterId="javax.faces.Boolean" />
+								<f:selectItem itemValue="true" itemLabel="#{msg.active}"></f:selectItem>
+								<f:selectItem itemValue="false" itemLabel="#{msg.deactive}"></f:selectItem>
+							</p:selectOneMenu>
+						</f:facet>
+						<h:outputText value="#{uni.state ? msg.active : msg.deactive}" />
+					</p:column>
+
+
+					<p:column headerText="#{msg.status}" sortBy="#{uni.status}"
+						filterBy="#{uni.statusId}" width="80">
+
+						<f:facet name="filter">
+							<p:selectOneMenu onchange="PF('uniTableFil').filter()"
+								id="cmbSta" style="width:60px">
+								<f:selectItem itemLabel="#{msg.select_all}" itemValue="#{null}"
+									noSelectionOption="true" />
+								<f:selectItems value="#{iboStateController.listOrder}"
+									var="type" itemLabel="#{type.name}" itemValue="#{type.id}" />
+							</p:selectOneMenu>
+						</f:facet>
+
+						<h:outputText value="#{uni.status}" />
+					</p:column>
+
+					<p:column sortBy="#{uni.hasBankInformation}"
+						filterBy="#{uni.hasBankInformation}" width="50"
+						filterStyle="width: 90% !important">
+						<f:facet name="header">
+							<h:outputText value="Bank" id="clmQuestionHeader" />
+							<p:tooltip value="#{msg.has_bank_information}"
+								for="clmQuestionHeader" />
+						</f:facet>
+						<f:facet name="filter">
+							<p:selectOneMenu onchange="PF('uniTableFil').filter()"
+								id="cmbBank" style="width: 30px">
+								<f:selectItem itemLabel="#{msg.select_all}" itemValue="#{null}"
+									noSelectionOption="true" />
+								<f:converter converterId="javax.faces.Boolean" />
+								<f:selectItem itemValue="true" itemLabel="Yes"></f:selectItem>
+								<f:selectItem itemValue="false" itemLabel="No"></f:selectItem>
+							</p:selectOneMenu>
+						</f:facet>
+						<p:outputPanel style="text-align: center;">
+							<h:graphicImage value="/img/checkmark.gif" width="16px"
+								rendered="#{uni.hasBankInformation}" />
+						</p:outputPanel>
+					</p:column>
+
+
+
+					<sec:authorize access="hasAnyRole('SUPER','BOARD_A')">
+						<p:column style="text-align: center" width="30" toggleable="false"
+							exportable="false">
+							<p:commandButton icon="ui-icon-plus" id="cmbAdd"
+								update="form:messages" action="#{userUtilController.add}"
+								type="submit" disabled="#{!uni.temporal || !uni.state}">
+								<f:setPropertyActionListener value="#{uni}"
+									target="#{userUtilController.entity}" />
+
+							</p:commandButton>
+							<p:tooltip id="toolTipFadeM" for="cmbAdd" value="#{msg.add}" />
+						</p:column>
+					</sec:authorize>
+
+
+					<sec:authorize access="hasAnyRole('SUPER','BOARD')">
+						<p:column style="text-align: center" width="30" toggleable="false"
+							exportable="false">
+							<p:commandButton icon="ui-icon-mail-closed"
+								action="#{userUtilController.sendEmail}"
+								update="form:msgs,uniTable" id="cmdEmail"
+								disabled="#{uni.temporal || !uni.state}">
+								<f:setPropertyActionListener value="#{uni}"
+									target="#{userUtilController.entity}" />
+								<p:confirm icon="ui-icon-alert" />
+							</p:commandButton>
+
+							<p:tooltip for="cmdEmail" value="#{msg.send_welcome_email}" />
+						</p:column>
+					</sec:authorize>
+
+					<sec:authorize access="hasAnyRole('SUPER','BOARD_C')">
+						<p:column style="text-align: center" width="30" toggleable="false"
+							exportable="false">
+							<p:commandButton
+								icon="#{uni.state ? 'ui-icon-closethick' : 'ui-icon-check'}"
+								action="#{userUtilController.changeState}"
+								update="uniTable,form:messages" id="cmdState">
+								<f:setPropertyActionListener value="#{uni}"
+									target="#{userUtilController.entity}" />
+								<p:confirm icon="ui-icon-alert" />
+							</p:commandButton>
+
+							<p:tooltip id="toolTipFade" for="cmdState"
+								value="#{uni.state ? msg.deactivate : msg.activate}" />
+						</p:column>
+					</sec:authorize>
+
+
+				</p:dataTable>
+
+
+				<ui:include src="/secure/confirmation_delete.xhtml"></ui:include>
+			</h:panelGrid>
+
+
+		</h:form>
+
+		<ui:include src="/secure/select_format.xhtml"></ui:include>
+	</ui:define>
+
+</ui:composition>

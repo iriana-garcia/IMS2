@@ -1,0 +1,233 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+
+		<style>
+.pngRol tbody td {
+	border-width: 0px;
+}
+
+.col1 {
+	width: 40px;
+}
+
+.col2 {
+	width: 80px;
+}
+
+.colTotal {
+	width: 120px;
+	float: right;
+}
+
+.colTotalF {
+	width: 25px;
+}
+</style>
+
+		<p:dialog header="#{msg.add_hours}" widgetVar="dlgHours" modal="true"
+			closeOnEscape="true" id="dlgHoursId" resizable="false"
+			closable="true" showHeader="true" width="850px" height="600px"
+			minHeight="400">
+			<h:form id="frmHours"
+				onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+				<h:panelGrid width="100%">
+
+					<h:panelGrid border="0" columns="1">
+						<p:messages id="messagesHour" showDetail="false" autoUpdate="true"
+							globalOnly="false" />
+					</h:panelGrid>
+
+					<h:panelGrid width="100%" columns="3">
+
+						<p:outputLabel value="#{msg.hours}" for="txtHour" />
+						<p:inputText value="#{currentInvoiceController.newHours.hour}"
+							required="true" size="8" styleClass="inputNumber" id="txtHour"
+							requiredMessage="#{msg.hours}: #{msg.value_required}">
+							<p:clientValidator event="blur" />
+							<pe:keyFilter mask="pnum"
+								inputRegEx="/^[\d]{0,5}\.[\d]{0,2}$|^[\d]{0,5}$|^$/"
+								preventPaste="false" />
+						</p:inputText>
+						<p:message for="txtHour" display="icon" />
+
+
+						<p:outputLabel value="Minutes" for="txtMin" />
+						<p:inputText value="#{currentInvoiceController.newHours.minutes}"
+							required="true" size="8" styleClass="inputNumber" id="txtMin"
+							requiredMessage="#{msg.minimum} Min.: #{msg.value_required}">
+							<p:clientValidator event="blur" />
+							<pe:keyFilter mask="pint" inputRegEx="/^[\d]{0,5}$/"
+								preventPaste="false" />
+						</p:inputText>
+						<p:message for="txtMin" display="icon" />
+
+
+
+						<p:outputLabel value="#{msg.category}" for="cmbCategory" />
+						<p:selectOneMenu id="cmbCategory" required="true"
+							value="#{currentInvoiceController.category}"
+							converter="entityConverter" style="width: 312px;"
+							requiredMessage="#{msg.category}: #{msg.value_required}">
+							<f:selectItems value="#{categoryController.listActive}" var="ent"
+								itemLabel="#{ent.name}" itemValue="#{ent}" />
+							<p:clientValidator event="blur" />
+						</p:selectOneMenu>
+						<p:message for="cmbCategory" display="icon" />
+
+						<p:outputLabel value="#{msg.descripcion}" for="txtDescription" />
+						<p:inputTextarea id="txtDescription"
+							onblur="this.value = this.value.trim()"
+							value="#{currentInvoiceController.newHours.description}" rows="5"
+							cols="55" maxlength="250" autoResize="false" />
+						<p:message for="txtDescription" display="icon" />
+
+					</h:panelGrid>
+					<h:panelGrid width="100%">
+
+						<h:panelGrid columns="3" styleClass="panelGridCenter">
+							<p:commandButton value="#{msg.add_hours}" icon="ui-icon-disk"
+								styleClass="buttonBarra"
+								actionListener="#{currentInvoiceController.addHours}"
+								validateClient="true" update="frmHours,messagesHour" />
+
+							<p:spacer width="10" />
+
+							<p:commandButton value="Clear" type="reset" immediate="true"
+								styleClass="buttonBarra" icon="ui-icon-close" update="" />
+						</h:panelGrid>
+					</h:panelGrid>
+
+					<p:separator />
+				</h:panelGrid>
+
+				<p:dataTable var="uni" value="#{currentInvoiceController.hours}"
+					widgetVar="uniTableFil" id="uniTable" disabledTextSelection="false"
+					style="min-width: 600px !important" editable="true"
+					rowKey="#{uni.id}">
+
+					<p:column headerText="#{msg.hours}" width="200"
+						styleClass="righted">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{uni.hours}">
+									<f:convertNumber
+										minFractionDigits="#{applicationBean.systemConf.decimal}"
+										maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+								</h:outputText>
+							</f:facet>
+							<f:facet name="input">
+								<h:panelGrid border="0" styleClass="pngRol" columns="3"
+									width="100%" columnClasses="col1,col2">
+									<p:outputLabel value="Hrs." for="txtHour" />
+									<p:inputText value="#{uni.hour}" required="true" size="5"
+										styleClass="inputNumber" id="txtHour"
+										requiredMessage="#{msg.minimum} Hrs.: #{msg.value_required}">
+										<p:clientValidator event="blur" />
+										<pe:keyFilter mask="pnum"
+											inputRegEx="/^[\d]{0,5}\.[\d]{0,2}$|^[\d]{0,5}$|^$/"
+											preventPaste="false" />
+										<p:ajax event="blur" listener="#{uni.calculateHours}" />
+									</p:inputText>
+									<p:message for="txtHour" display="icon" />
+
+									<p:outputLabel value="Min." for="txtMin" />
+									<p:inputText value="#{uni.minutes}" required="true" size="5"
+										styleClass="inputNumber" id="txtMin"
+										requiredMessage="#{msg.minimum} Min.: #{msg.value_required}">
+										<p:clientValidator event="blur" />
+										<pe:keyFilter mask="pint" inputRegEx="/^[\d]{0,5}$/"
+											preventPaste="false" />
+										<p:ajax event="blur" listener="#{uni.calculateHours}" />
+									</p:inputText>
+									<p:message for="txtMin" display="icon" />
+								</h:panelGrid>
+
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column headerText="#{msg.category}" width="30%">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{uni.category.name}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:selectOneMenu id="cmbCategory" required="true"
+									value="#{uni.category}" converter="entityConverter"
+									style="width: 75%;"
+									requiredMessage="#{msg.category}: #{msg.value_required}">
+									<f:selectItems value="#{categoryController.listOrder}"
+										var="ent" itemLabel="#{ent.name}" itemValue="#{ent}" />
+									<p:clientValidator event="blur" />
+								</p:selectOneMenu>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column headerText="#{msg.descripcion}" width="60%">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{uni.description}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputTextarea value="#{uni.description}" rows="5" cols="55"
+									maxlength="250" autoResize="true"
+									onblur="this.value = this.value.trim()" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column style="width:15px">
+						<p:rowEditor />
+					</p:column>
+
+				</p:dataTable>
+
+
+				<h:panelGrid width="100%">
+
+					<h:panelGrid columns="3" styleClass="panelGridCenter">
+
+						<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+							styleClass="buttonBarra"
+							actionListener="#{currentInvoiceController.saveHoursAdded}"
+							validateClient="true"
+							oncomplete="handleAddHoursRequest(xhr, status, args)"
+							update=":frmHours,form:uniTable,form:otxImportTotal" />
+
+						<p:spacer width="10" />
+
+						<p:commandButton value="Cancel" type="button"
+							onclick="PF('dlgHours').hide()" immediate="true"
+							styleClass="buttonBarra" icon="ui-icon-close" />
+
+
+					</h:panelGrid>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+
+		<script type="text/javascript">
+			function handleAddHoursRequest(xhr, status, args) {
+
+				if (args.validationFailed || args.error) {
+
+				} else {
+					PF('dlgHours').hide();
+				}
+
+			}
+		</script>
+
+
+	</sec:authorize>
+
+</ui:composition>

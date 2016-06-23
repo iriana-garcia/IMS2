@@ -1,0 +1,27 @@
+package reporte.data;
+
+import java.util.List;
+
+public class ReporteTabla {
+
+	private List lista;
+
+	public List getLista() {
+		return lista;
+	}
+
+	public void setLista(List lista) {
+		this.lista = lista;
+	}
+
+	public ReporteTabla(List lista) {
+		super();
+		this.lista = lista;
+	}
+
+	public Integer getCantidad() {
+
+		return lista == null ? 0 : lista.size();
+	}
+
+}

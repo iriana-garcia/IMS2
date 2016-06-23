@@ -1,0 +1,154 @@
+package reporte.data;
+
+import java.io.Serializable;
+
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
+
+import ar.com.fdvs.dj.domain.builders.ColumnBuilder;
+import ar.com.fdvs.dj.domain.entities.columns.AbstractColumn;
+
+
+/**
+ * Columna configurable
+ * @author Fernando Soto Martorell
+ *
+ */
+@Root
+public class JrConfigurableColumn implements Serializable, Comparable<JrConfigurableColumn> {
+
+	private static final long serialVersionUID = 8425069402294842226L;
+
+	@Attribute
+	private boolean visible;
+	@Element
+	private String name = "";
+	@Element
+	private String alias = "";
+	@Element
+	private String expression;
+	@Element
+	private String filterExp = "";
+	@Element
+	private String valueClassName = "";
+	@Attribute
+	private int width;
+	@Attribute
+	private int order;
+
+	public JrConfigurableColumn() {
+	}
+
+	public JrConfigurableColumn(String name, String alias,
+			String ValueClassName, boolean visible, int order) {
+		this.name = name;
+		this.alias = alias;
+		this.visible = visible;
+		//this.width = with;
+		this.order = order;
+	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getAlias() {
+		// System.out.println("obteniendo alias");
+		return alias;
+	}
+
+	public void setAlias(String alias) {
+		// System.out.println("poniendo alias");
+		this.alias = alias;
+
+	}
+
+	public String getExpression() {
+		return expression;
+	}
+
+	public void setExpression(String expression) {
+		this.expression = expression;
+	}
+
+	public String getFilterExp() {
+		return filterExp;
+	}
+
+	public void setFilterExp(String filterExp) {
+		this.filterExp = filterExp;
+	}
+
+	public String getValueClassName() {
+		return valueClassName;
+	}
+
+	public void setValueClassName(String valueClassName) {
+		this.valueClassName = valueClassName;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getOrder() {
+		return order;
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
+	}
+	
+
+	
+	public int compareTo(JrConfigurableColumn jrcc) {
+		
+		if (jrcc == null)
+			return 1;
+		
+		if (this.equals(jrcc))
+			return 0;
+		
+		if ((this.order) <  jrcc.order)
+			return -1;
+		
+		return 1;
+	}
+
+	
+	
+	public AbstractColumn getAbstractColumn() {
+
+		try {
+			AbstractColumn column = ColumnBuilder.getInstance()
+					.setWidth(getWidth())
+					.setColumnProperty(getName(), getValueClassName())
+					.setTitle(getAlias())
+					.build();
+
+			return column;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+}

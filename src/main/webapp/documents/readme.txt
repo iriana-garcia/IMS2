@@ -1,0 +1,1 @@
+In this folder save all the document sent to Oracle

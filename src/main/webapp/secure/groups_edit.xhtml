@@ -1,0 +1,113 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+		<sec:authorize
+			access="hasAnyRole('SUPER','GROUP_M','GROUP_A')">
+
+			<h:form id="form" onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+				<p:toolbar>
+					<f:facet name="left">
+						<h:outputText
+							value="#{(groupsController.edit)? msg.edit : msg.add} #{msg.group}" />
+					</f:facet>
+
+					<f:facet name="right">
+
+						<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+							action="#{groupsController.update}" styleClass="buttonBarra"
+							 rendered="#{groupsController.edit}" update="panel,txtName">
+							<p:confirm icon="ui-icon-alert" />
+						</p:commandButton>
+						<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+							action="#{groupsController.update}" styleClass="buttonBarra"
+							 update="panel,txtName"
+							rendered="#{groupsController.edit ? false : true}">
+						</p:commandButton>
+
+						<p:spacer width="10" />
+
+						<p:commandButton value="#{msg.cancel}" icon="ui-icon-close"
+							action="groups" styleClass="buttonBarra" immediate="true" />
+					</f:facet>
+				</p:toolbar>
+			
+
+				<h:panelGrid styleClass="panel" columns="1" id="panel">
+
+
+					<h:panelGrid border="0" columns="1">
+						<p:messages id="messages" showDetail="false" autoUpdate="true"
+							globalOnly="false" />
+					</h:panelGrid>
+
+					<p:focus context="grdPanel" />
+					<h:panelGrid columns="3" columnClasses="columnGroups" id="grdPanel">
+
+						<p:outputLabel value="#{msg.name}" for="txtName" />
+						<p:inputText  onblur="this.value = this.value.trim()" value="#{groupsController.entity.name}"
+							required="true" id="txtName" maxlength="50" style="width:315px"
+							requiredMessage="#{msg.name}: #{msg.value_required}">
+							<p:clientValidator event="blur"/>
+						</p:inputText>
+						<p:message for="txtName" display="icon" />
+
+
+
+						<p:outputLabel value="#{msg.state}" for="txtState"
+							rendered="false" />
+						<p:selectOneRadio id="txtState"
+							rendered="false"
+							value="#{groupsController.entity.state}"
+							disabled="#{groupsController.deactiveState}">
+							<f:selectItem itemLabel="#{msg.deactive}" itemValue="false" />
+							<f:selectItem itemLabel="#{msg.active}" itemValue="true" />
+						</p:selectOneRadio>
+						<p:message for="txtState" display="icon"
+							rendered="false" />
+
+
+
+						<p:outputLabel value="#{msg.user}" for="cmbUser" />
+						<p:selectOneMenu id="cmbUser" value="#{groupsController.user}"
+							converter="entityConverter" filter="true"
+							filterMatchMode="contains" style="width:300px">
+							<f:selectItem itemLabel="#{msg.select_one}" itemValue="" />
+							<f:selectItems value="#{groupsController.listUser}" var="user"
+								itemLabel="#{user.fullName}" itemValue="#{user}" />
+						</p:selectOneMenu>
+						<p:message for="cmbUser" display="icon" />
+					</h:panelGrid>
+
+					<h:panelGrid columns="3" columnClasses="columnGroups">
+						<p:outputLabel value="#{msg.ibos}" for="txtIbos" />
+						<p:pickList id="txtIbos" value="#{groupsController.ibos}"
+							var="ibo" itemLabel="#{ibo.nameSelectOne}" itemValue="#{ibo}"
+							converter="entityConverter" showSourceFilter="true"
+							showTargetFilter="true" filterMatchMode="contains">
+
+							<f:facet name="sourceCaption">#{msg.available}</f:facet>
+							<f:facet name="targetCaption">#{msg.assigned}</f:facet>
+
+						</p:pickList>
+						<p:message for="txtIbos" display="icon" />
+
+					</h:panelGrid>
+
+
+				</h:panelGrid>
+
+
+				<ui:include src="/secure/confirmation_modify.xhtml"></ui:include>
+
+
+
+			</h:form>
+		</sec:authorize>
+	</ui:define>
+</ui:composition>

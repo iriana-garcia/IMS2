@@ -1,0 +1,512 @@
+package reporte.controler;
+
+import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.faces.event.ActionEvent;
+import javax.faces.model.SelectItem;
+
+import org.richfaces.component.html.HtmlDataTable;
+
+import reporte.ConfigurableReportUtil;
+import reporte.ReportApp;
+import reporte.ReportLoader;
+import reporte.data.GrupoReporte;
+import reporte.data.ImpresionFiltro;
+import reporte.data.JrConfigurableColumn;
+import reporte.data.JrConfigurableColumns;
+import reporte.data.Reporte;
+import reporte.servicio.GrupoReporteService;
+import reporte.servicio.ReporteService;
+import services.ExcepcionSistema;
+import util.Context;
+
+public class ReporteController implements Serializable {
+	private Reporte reporte;
+	private String jrxml;
+	private Integer mode;
+
+	private boolean edicion;
+	private HtmlDataTable table;
+
+	private List<Reporte> listaReportes;
+
+	private List<GrupoReporte> listaGrupoReportes;
+	private List<SelectItem> listaGrupoReportesSI;
+
+	public Reporte getReporte() {
+		// reporte = (Reporte) Context.getBean("reporteData");
+		if (reporte == null) {
+			reporte = new Reporte();
+			reporte.setGrupoReporte(new GrupoReporte());
+		}
+		return reporte;
+	}
+
+	public void setReporte(Reporte reporte) {
+
+		// getReporte();
+		//		
+		// if (reporte != null) {
+		// this.reporte = reporte.clone();
+		// } else
+		// this.reporte = new Reporte();
+
+		this.reporte = reporte;
+	}
+
+	public String getJrxml() {
+		return jrxml;
+	}
+
+	public void setJrxml(String jrxml) {
+		this.jrxml = jrxml;
+	}
+
+	public Integer getMode() {
+		return mode;
+	}
+
+	public void setMode(Integer mode) {
+		this.mode = mode;
+	}
+
+	public boolean isEdicion() {
+		return edicion;
+	}
+
+	public void setEdicion(boolean edicion) {
+		this.edicion = edicion;
+	}
+
+	public HtmlDataTable getTable() {
+		return table;
+	}
+
+	public void setTable(HtmlDataTable table) {
+		this.table = table;
+	}
+
+	public JrConfigurableColumns getConfigurableColumns() {
+		return (JrConfigurableColumns) Context.getBean("configurableColumns");
+	}
+
+	public List<JrConfigurableColumn> getConfigFields() {
+
+		return getConfigurableColumns().getConfigFields();
+
+	}
+
+	public void setConfigFields(List<JrConfigurableColumn> configFields) {
+
+		getConfigurableColumns().setConfigFields(configFields);
+
+		// this.configFields = configFields;
+	}
+
+	public List<Reporte> getListaReportes() {
+
+		// ImpresionFiltro filtro = new ImpresionFiltro();
+		// filtro.setId_grupo(getReporteFiltro().getId_grupo());
+		// filtro.setNombre(getReporteFiltro().getNombre());
+
+		ReporteService rs = new ReporteService();
+		listaReportes = rs.getData((ImpresionFiltro) Context
+				.getBean("impresionFiltro"));
+		;
+
+		return listaReportes;
+	}
+
+	public void setListaReportes(List<Reporte> listaReportes) {
+		this.listaReportes = listaReportes;
+	}
+
+	// public List<SelectItem> getListaReportesSI() {
+	//
+	// List<Reporte> reportes = getListaReportes();
+	//
+	// listaReportesSI = new ArrayList<SelectItem>();
+	// for (Reporte reporte : reportes) {
+	// listaReportesSI.add(new SelectItem(reporte.getJrxml(), reporte
+	// .getNombre()
+	// + " (" + reporte.getJrxml() + ")"));
+	// }
+	//
+	// return listaReportesSI;
+	// }
+	//
+	// public void setListaReportesSI(List<SelectItem> listaReportesSI) {
+	// this.listaReportesSI = listaReportesSI;
+	// }
+
+	public List<GrupoReporte> getListaGrupoReportes() {
+
+		GrupoReporteService grs = new GrupoReporteService();
+		listaGrupoReportes = grs.getList();
+
+		return listaGrupoReportes;
+	}
+
+	public void setListaGrupoReportes(List<GrupoReporte> listaGrupoReportes) {
+		this.listaGrupoReportes = listaGrupoReportes;
+	}
+
+	public List<SelectItem> getListaGrupoReportesSI() {
+
+		List<GrupoReporte> gr = getListaGrupoReportes();
+		listaGrupoReportesSI = new ArrayList<SelectItem>();
+
+		for (GrupoReporte grupoReporte : gr) {
+			if (!grupoReporte.getClaseServicio().equals("a"))
+				listaGrupoReportesSI.add(new SelectItem(grupoReporte.getId(),
+						grupoReporte.getDescripcion()));
+		}
+
+		return listaGrupoReportesSI;
+	}
+
+	public void setListaGrupoReportesSI(List<SelectItem> listaGrupoReportesSI) {
+		this.listaGrupoReportesSI = listaGrupoReportesSI;
+	}
+
+	/* ************************************************************************** */
+
+//	public String forInsert() {
+//
+//		setEdicion(false);
+//
+//		try {
+//
+//			// inicializo los valores
+//			CandidatosFiltro busquedaFiltro = (CandidatosFiltro) Context
+//					.getBean("candidatosFiltro");
+//			busquedaFiltro = new CandidatosFiltro();
+//
+//			if (getReporteFiltro() != null
+//					&& getReporteFiltro().getId_grupo() != null
+//					&& getReporteFiltro().getId_grupo() > 0) {
+//
+//				System.out.println("--> buscando el reporte: "
+//						+ getReporteFiltro().getId_grupo());
+//
+//				ReporteService rs = new ReporteService();
+//				Reporte reporteDefault = rs
+//						.getReporteDefault(getReporteFiltro().getId_grupo());
+//
+//				if (reporteDefault != null) {
+//					setConfigFields(ConfigurableReportUtil
+//							.getConfigurableColumnsList(reporteDefault));
+//
+//					if (getReporte() == null)
+//						setReporte(new Reporte());
+//					reporte.setId(null);
+//
+//					getReporte().setGrupoReporte(
+//							reporteDefault.getGrupoReporte());
+//
+//				} else {
+//
+//					System.out.println("no se puedo obtener el reporte");
+//					Context
+//							.addErrorMessage("Error en la aplicacion: no se puedo obtener el reporte");
+//					return null;
+//				}
+//			} else {
+//
+//				System.out
+//						.println("nada de donde sacar las columnas configurables");
+//				Context.addInfoMessage("debe seleccionar el grupo de reporte");
+//				return null;
+//				// str = rs.getData(iFiltro).get(0).getJrxml();
+//			}
+//
+//			// System.out.println(str);
+//			// configFields =
+//			// ConfigurableReportUtil.getConfigurableColumnsList(str);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			Context.addFatalMessage("error del sistema");
+//		}
+//
+//		// System.out.println("agregando");
+//
+//		return "add";
+//	}
+//
+//	public String forModify() {
+//
+//		try {
+//
+//			setEdicion(true);
+//
+//			try {
+//
+//				BusquedaAvanzadaControler c = (BusquedaAvanzadaControler) Context
+//						.getBean("busquedaAvanzadaControler");
+//				c.procesarReporte((Reporte) getTable().getRowData());
+//
+//				setConfigFields(ConfigurableReportUtil
+//						.getConfigurableColumnsList(getReporte()));
+//
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//				Context.addErrorMessageFromMSG(e.getMessage());
+//				return null;
+//			}
+//
+//			// cargaConfigurableFields(getReporte().getJrxml());
+//
+//			// System.out.println("modificando");
+//
+//			return "edit";
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//		return null;
+//	}
+//
+//	public String doAction() {
+//
+//		System.out.println(getReporte().getNombre());
+//
+//		int result = (isEdicion()) ? Modificar() : Insertar();
+//
+//		if (result == 0) {
+//			return "back";
+//		} else {
+//			return null;
+//		}
+//	}
+//
+//	/* ************************************************************************** */
+//
+//	public int Insertar() {
+//
+//		try {
+//			/*
+//			 * if (ReportLoader.existsReport(getReporte())) {
+//			 * Context.addErrorMessage("existe un fichero con el mismo nombre");
+//			 * return -2; }
+//			 */
+//			// salvar el reporte en el hd
+//			System.out.println("-> clase de controlReporte");
+//			System.out.println("-> reporte " + getReporte().getNombre());
+//			System.out.println("-> grupo reporte "
+//					+ getReporte().getGrupoReporte().getId());
+//
+//			BusquedaAvanzadaControler c = (BusquedaAvanzadaControler) Context
+//					.getBean("busquedaAvanzadaControler");
+//
+//			ReportApp reportApp = new ReportApp();
+//			reportApp.AdicionarReporte(reporte, getConfigFields(), c
+//					.devuelveFiltro());
+//
+//		} catch (ExcepcionSistema e) {
+//			e.printStackTrace();
+//			Context.addErrorMessageFromMSG(e.getMessage());
+//			return -1;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			Context.addErrorMessageFromMSG(e.getMessage());
+//			return -1;
+//		}
+//		return 0;
+//	}
+//
+//	public String eliminar() {
+//
+//		try {
+//			setReporte((Reporte) getTable().getRowData());
+//			System.out.println("--> eliminando el reporte");
+//			ReporteService rs = new ReporteService(Context.getUser());
+//
+//			rs.makeTransient(reporte);
+//
+//			File f = new File(ReportLoader.getReportPathConfigurados(reporte));
+//			f.delete();
+//
+//		} catch (Exception e) {
+//			Context.addErrorMessageFromMSG(e.getMessage());
+//			return null;
+//		}
+//
+//		return null;
+//
+//	}
+//
+//	public int Modificar() {
+//
+//		try {
+//
+//			BusquedaAvanzadaControler c = (BusquedaAvanzadaControler) Context
+//					.getBean("busquedaAvanzadaControler");
+//
+//			// salvar el reporte en el hd
+//			ReportApp reportApp = new ReportApp();
+//			reportApp.ModificarReporte(getReporte(), getConfigFields(), c
+//					.devuelveFiltro());
+//
+//			// ReporteService service = new ReporteService();
+//			// service.makePersistent(reporte, Context.getUser());
+//		} catch (ExcepcionSistema e) {
+//			e.printStackTrace();
+//			Context.addErrorMessageFromMSG(e.getMessage());
+//			return -1;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			Context.addErrorMessageFromMSG(e.getMessage());
+//			return -1;
+//		}
+//		return 0;
+//	}
+//
+//	public String Adicionar() {
+//		return null;
+//	}
+
+	/* ************************************************************************** */
+
+//	public String imprimir() {
+//
+//		// ConfigurableReportUtil cru = new
+//		// ConfigurableReportUtil(getReporte());
+//		// cru.
+//
+//		ReportApp reportApp = new ReportApp();
+//
+//		BusquedaAvanzadaControler c = (BusquedaAvanzadaControler) Context
+//				.getBean("busquedaAvanzadaControler");
+//
+//		try {
+//			if (isEdicion()) {
+//				System.out.println("imprimiendo en edicion");
+//				reportApp.getJasperPrint(getReporte(), c.getFiltroReporte(),
+//						getConfigFields());
+//			} else {
+//				System.out.println("imprimiendo en insertar");
+//				ReporteService rs = new ReporteService();
+//				reportApp.getJasperPrint(rs.getReporteDefault(getReporte()
+//						.getGrupoReporte().getId()), c.getFiltroReporte(),
+//						getConfigFields());
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//		return null;
+//	}
+//
+//	public void imprimir(ActionEvent event) {
+//
+//		ReportApp reportApp = new ReportApp();
+//
+//		BusquedaAvanzadaControler c = (BusquedaAvanzadaControler) Context
+//				.getBean("busquedaAvanzadaControler");
+//
+//		try {
+//			if (isEdicion()) {
+//				System.out.println("imprimiendo en edicion");
+//				reportApp.getJasperPrint(getReporte(), c.getFiltroReporte(),
+//						getConfigFields());
+//			} else {
+//				System.out.println("imprimiendo en insertar");
+//				ReporteService rs = new ReporteService();
+//				reportApp.getJasperPrint(rs.getReporteDefault(getReporte()
+//						.getGrupoReporte().getId()), c.getFiltroReporte(),
+//						getConfigFields());
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+//
+//	public void imprimirDesdeTabla(ActionEvent event) {
+//
+//		System.out.println("-> Imprimiendo desde tabla");
+//
+//		ReportApp reportApp = new ReportApp();
+//
+//		try {
+//
+//			BusquedaAvanzadaControler c = (BusquedaAvanzadaControler) Context
+//					.getBean("busquedaAvanzadaControler");
+//
+//			c.procesarReporte((Reporte) getTable().getRowData());
+//
+//			c.getFiltroReporte();
+//
+//			// reportApp.getJasperPrint(getReporte(), false,
+//			// getFiltroReporte());
+//
+//			reportApp.getJasperPrint(reporte, false);
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			Context.addErrorMessage("error imprimiendo");
+//		}
+//	}
+
+	/* ************************************************************************** */
+
+	/**
+	 * Devuelve el bean impresionFiltro
+	 * 
+	 * @return
+	 */
+	protected ImpresionFiltro getReporteFiltro() {
+		return (ImpresionFiltro) Context.getBean("impresionFiltro");
+	}
+
+	protected GrupoReporte getGrupoReporte() {
+		return (GrupoReporte) Context.getBean("grupoReporte");
+	}
+
+	public void seleccionar(ActionEvent event) {
+		Reporte r = (Reporte) getTable().getRowData();
+
+		System.out.println("--> Poniendo el reporte a "
+				+ ((r == null) ? "nulo." : r.getNombre()));
+
+		setReporte(r);
+
+		if (getReporte() != null)
+			cargaConfigurableFields(getReporte().getJrxml());
+	}
+
+	public void cargaConfigurableFields(String jrxml) {
+		/*
+		 * JrConfigurableColumns cc = (JrConfigurableColumns)
+		 * Context.getBean("configurableColumns");
+		 * 
+		 * cc.setConfigFields(null);
+		 */
+		try {
+
+			if (reporte != null) {
+				/*
+				 * cc.setConfigFields(ConfigurableReportUtil
+				 * .getConfigurableColumnsList(jrxml));
+				 */
+				setConfigFields(ConfigurableReportUtil
+						.getConfigurableColumnsList(jrxml));
+			}
+		} catch (ExcepcionSistema e) {
+			System.out.println(e.getMessage());
+			Context.addErrorMessage("error obteniendo reporte");
+		} catch (Exception e) {
+			e.printStackTrace();
+			Context.addFatalMessage("error del sistema");
+		}
+
+	}
+
+	/* ************************************************************************** */
+
+	/* ************************************************************************** */
+
+}

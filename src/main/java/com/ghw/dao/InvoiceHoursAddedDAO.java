@@ -1,0 +1,1 @@
+package com.ghw.dao;import com.ghw.model.InvoiceHoursAdded;public interface InvoiceHoursAddedDAO extends GenericDAO<InvoiceHoursAdded, String> {}

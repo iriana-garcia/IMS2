@@ -1,0 +1,21 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+	
+	
+	<h:form id="menuFrm">
+			<p:menubar model="#{menuController.model}"
+				rendered="#{sessionBean.logueado}">
+			</p:menubar>
+
+
+			<p:menubar rendered="#{!sessionBean.logueado}">
+				<p:menuitem value="Enter" action="start"
+					rendered="#{!sessionBean.logueado}"></p:menuitem>
+
+			</p:menubar>
+	</h:form>
+	
+
+</ui:composition>

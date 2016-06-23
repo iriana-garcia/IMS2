@@ -1,0 +1,249 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+
+		<style>
+.pngRol tbody td {
+	border-width: 0px;
+}
+
+.col1 {
+	width: 40px;
+}
+
+.col2 {
+	width: 80px;
+}
+
+.colTotal {
+	width: 120px;
+	float: right;
+}
+
+.colTotalF {
+	width: 25px;
+}
+</style>
+
+		<h:form id="form"
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="#{msg.thresholds}" />
+				</f:facet>
+
+				<f:facet name="right">
+					<p:commandButton value="#{msg.print}" icon="ui-icon-print"
+						rendered="false"
+						actionListener="#{printController.printListTable}"
+						styleClass="buttonBarra" update="messages"
+						oncomplete="PF('dlgPrint').show();">
+						<f:attribute name="report" value="2" />
+						<f:attribute name="title" value="roles" />
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+
+			<p:growl id="msgs" showDetail="false" />
+
+
+			<p:remoteCommand name="refreshTable" update="form:uniTable" />
+
+
+			<h:panelGrid styleClass="panel" columns="1" id="panel">
+
+				<p:focus context="panel" />
+
+
+				<p:dataTable var="uni" value="#{thresholdsController.list}"
+					rows="20" widgetVar="uniTableFil" id="uniTable" lazy="false"
+					resizableColumns="false" draggableColumns="false" editable="true"
+					style="min-width: 1300px !important">
+
+					<p:ajax event="rowEdit"
+						listener="#{thresholdsController.onRowEdit}" update=":form:msgs">
+					</p:ajax>
+					<p:ajax event="rowEditCancel"
+						listener="#{thresholdsController.onRowCancel}" update=":form:msgs" />
+
+
+					<p:column headerText="#{msg.metric}" width="250">
+						<h:outputText value="#{uni.metric}" />
+					</p:column>
+
+					<p:column headerText="#{msg.descripcion}">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{uni.description}" />
+							</f:facet>
+							<f:facet name="input">
+								<h:panelGrid border="0" styleClass="pngRol" columns="2"
+									columnClasses="columSize">
+									<p:inputText onblur="this.value = this.value.trim()"
+										value="#{uni.description}" maxlength="150" required="true"
+										size="50" id="inpDescription"
+										requiredMessage="#{emsg.description_empty}">
+										<p:clientValidator event="blur" />
+									</p:inputText>
+									<p:message for="inpDescription" display="icon" />
+								</h:panelGrid>
+
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+
+					<p:column headerText="#{msg.minimum}" width="200"
+						styleClass="righted">
+						<p:cellEditor rendered="#{uni.hasValues}">
+							<f:facet name="output">
+								<h:outputText value="#{uni.minFormat}" />
+							</f:facet>
+							<f:facet name="input">
+								<h:panelGrid border="0" styleClass="pngRol" columns="3"
+									width="100%" rendered="#{uni.id == 4}"
+									columnClasses="col1,col2">
+									<p:outputLabel value="Hrs." for="txtHour" />
+									<p:inputText value="#{uni.hourMin}" required="true" size="5"
+										styleClass="inputNumber" id="txtHour"
+										requiredMessage="#{msg.minimum} Hrs.: #{msg.value_required}">
+										<p:clientValidator event="blur" />
+										<pe:keyFilter mask="pnum"
+											inputRegEx="/^[\d]{0,5}\.[\d]{0,2}$|^[\d]{0,5}$|^$/"
+											preventPaste="false" />
+									</p:inputText>
+									<p:message for="txtHour" display="icon" />
+
+									<p:outputLabel value="Min." for="txtMin" />
+									<p:inputText value="#{uni.minutesMin}" required="true" size="5"
+										styleClass="inputNumber" id="txtMin"
+										requiredMessage="#{msg.minimum} Min.: #{msg.value_required}">
+										<p:clientValidator event="blur" />
+										<pe:keyFilter mask="pint" inputRegEx="/^[\d]{0,5}$/"
+											preventPaste="false" />
+									</p:inputText>
+									<p:message for="txtMin" display="icon" />
+								</h:panelGrid>
+
+								<h:panelGrid border="0" columns="3" styleClass="pngRol"
+									width="100%" rendered="#{uni.id != 4}"
+									columnClasses="colTotal,colTotalF">
+
+									<p:inputText value="#{uni.min}" required="true" id="txtMinT"
+										styleClass="inputNumber" size="7"
+										requiredMessage="#{msg.minimum}: #{msg.value_required}">
+										<p:clientValidator event="blur" />
+										<pe:keyFilter mask="pnum"
+											inputRegEx="/^[\d]{0,7}\.[\d]{0,2}$|^[\d]{0,7}$|^$/"
+											preventPaste="false" />
+									</p:inputText>
+									<p:message for="txtMinT" display="icon" />
+
+								</h:panelGrid>
+
+							</f:facet>
+						</p:cellEditor>
+
+						<h:outputText value="#{uni.minFormat}"
+							rendered="#{!uni.hasValues}" />
+					</p:column>
+
+					<p:column headerText="#{msg.maximum}" width="150"
+						styleClass="righted">
+						<p:cellEditor rendered="#{uni.hasValues}">
+							<f:facet name="output">
+								<h:outputText value="#{uni.maxFormat}" />
+							</f:facet>
+							<f:facet name="input">
+								<h:panelGrid border="0" styleClass="pngRol" columns="3"
+									width="100%" rendered="#{uni.id == 4}"
+									columnClasses="col1,col2">
+									<p:outputLabel value="Hrs." for="txtHourM" />
+									<p:inputText value="#{uni.hourMax}" required="true" size="5"
+										styleClass="inputNumber" id="txtHourM"
+										requiredMessage="#{msg.maximum} Hrs.: #{msg.value_required}">
+										<p:clientValidator event="blur" />
+										<pe:keyFilter mask="pnum"
+											inputRegEx="/^[\d]{0,5}\.[\d]{0,2}$|^[\d]{0,5}$|^$/"
+											preventPaste="false" />
+									</p:inputText>
+									<p:message for="txtHourM" display="icon" />
+
+									<p:outputLabel value="Min." for="txtMinm" />
+									<p:inputText value="#{uni.minutesMax}" required="true" size="5"
+										styleClass="inputNumber" id="txtMinm"
+										requiredMessage="#{msg.maximum} Min.: #{msg.value_required}">
+										<p:clientValidator event="blur" />
+										<pe:keyFilter mask="pint" inputRegEx="/^[\d]{0,5}$/"
+											preventPaste="false" />
+									</p:inputText>
+									<p:message for="txtMinm" display="icon" />
+								</h:panelGrid>
+
+								<h:panelGrid border="0" styleClass="pngRol" columns="3"
+									rendered="#{uni.id != 4}" columnClasses="colTotal,colTotalF">
+
+									<p:inputText value="#{uni.max}" required="true" id="txtMinTM"
+										styleClass="inputNumber" size="10"
+										requiredMessage="#{msg.maximum}: #{msg.value_required}">
+										<p:clientValidator event="blur" />
+										<pe:keyFilter mask="pnum"
+											inputRegEx="/^[\d]{0,7}\.[\d]{0,2}$|^[\d]{0,7}$|^$/"
+											preventPaste="false" />
+									</p:inputText>
+									<p:message for="txtMinTM" display="icon" />
+
+								</h:panelGrid>
+							</f:facet>
+						</p:cellEditor>
+
+						<h:outputText value="#{uni.maxFormat}"
+							rendered="#{!uni.hasValues}" />
+					</p:column>
+
+					<p:column headerText="#{msg.background}/#{msg.font} #{msg.color}"
+						width="150"
+						style="background-color: ##{uni.color}; color: ##{uni.fontColor}">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="Test" />
+							</f:facet>
+							<f:facet name="input">
+								<p:colorPicker value="#{uni.color}" id="colorBack" />
+								<p:tooltip value="#{msg.background} #{msg.color}"
+									for="colorBack" />
+								<p:colorPicker value="#{uni.fontColor}" id="colorFont" />
+								<p:tooltip value="#{msg.font} #{msg.color}" for="colorFont" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+
+					<sec:authorize access="hasAnyRole('SUPER','THRES_M')">
+						<p:column style="width:20px">
+							<p:rowEditor />
+						</p:column>
+					</sec:authorize>
+
+				</p:dataTable>
+
+
+
+
+				<ui:include src="/secure/confirmation_modify.xhtml"></ui:include>
+			</h:panelGrid>
+
+		</h:form>
+
+
+		<ui:include src="/secure/select_format.xhtml"></ui:include>
+	</ui:define>
+
+</ui:composition>

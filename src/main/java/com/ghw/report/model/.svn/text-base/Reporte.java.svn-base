@@ -1,0 +1,146 @@
+package reporte.data;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import services.interfaces.IEntity;
+
+public class Reporte implements Serializable, Cloneable, IEntity<Integer> {
+
+	private static final long serialVersionUID = 1L;
+
+	private Integer id;
+
+	private String nombre;
+	private String descripcion;
+
+	private String metodo;
+	private Integer defecto;
+	private String filtro;
+
+	private String jrxml;
+	private String columnas;
+
+	private List<ReporteFiltro> filtroList = new ArrayList<ReporteFiltro>();
+
+	private GrupoReporte grupoReporte;
+
+	private String titulo;
+
+	public String getTitulo() {
+		return titulo;
+	}
+
+	public void setTitulo(String titulo) {
+		this.titulo = titulo;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
+	public String getMetodo() {
+		return metodo;
+	}
+
+	public void setMetodo(String metodo) {
+		this.metodo = metodo;
+	}
+
+	public Integer getDefecto() {
+		return defecto;
+	}
+
+	public void setDefecto(Integer defecto) {
+		this.defecto = defecto;
+	}
+
+	public String getFiltro() {
+		return filtro;
+	}
+
+	public void setFiltro(String filtro) {
+		this.filtro = filtro;
+	}
+
+	public String getJrxml() {
+		return jrxml;
+	}
+
+	public void setJrxml(String jrxml) {
+		this.jrxml = jrxml;
+	}
+
+	public String getColumnas() {
+		return columnas;
+	}
+
+	public void setColumnas(String columnas) {
+		this.columnas = columnas;
+	}
+
+	public GrupoReporte getGrupoReporte() {
+		return grupoReporte;
+	}
+
+	public void setGrupoReporte(GrupoReporte grupoReporte) {
+		this.grupoReporte = grupoReporte;
+	}
+
+	public Integer getIdentity() {
+		return getId();
+	}
+
+	public Reporte clone() {
+		Reporte reporte = new Reporte();
+
+		reporte.setId(getId());
+		reporte.setNombre(getNombre());
+		reporte.setDefecto(getDefecto());
+		reporte.setDescripcion(getDescripcion());
+		reporte.setFiltro(getFiltro());
+		reporte.setGrupoReporte(getGrupoReporte());
+		reporte.setJrxml(getJrxml());
+		reporte.setMetodo(getMetodo());
+		reporte.setFiltroList(getFiltroList());
+
+		return reporte;
+	}
+
+	public List<ReporteFiltro> getFiltroList() {
+		return filtroList;
+	}
+
+	public void setFiltroList(List<ReporteFiltro> filtroList) {
+		this.filtroList = filtroList;
+	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "Id: " + id + " Nombre: " + nombre + " Nombre del fichero: "
+				+ jrxml;
+	}
+
+}

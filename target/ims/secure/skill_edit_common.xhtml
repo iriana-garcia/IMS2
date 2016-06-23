@@ -1,0 +1,55 @@
+<ui:composition xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+
+	<h:panelGrid columns="3">
+
+		<p:outputLabel value="#{msg.name}" for="txtSkillName" id="labelSkillName"/>
+		<p:inputText value="#{skillController.entity.name}" required="true"
+			id="txtSkillName" maxlength="50" size="40"
+			onblur="this.value = this.value.trim()"
+			requiredMessage="#{msg.name}: #{msg.value_required}">
+			<p:clientValidator event="blur" />
+		</p:inputText>
+		<p:message for="txtSkillName" display="icon" id="txtSkillNameError"/>
+
+
+		<p:outputLabel value="#{msg.client_application}" for="cmbCa" id="txtCa"/>
+		<p:selectOneMenu id="cmbCa" value="#{skillController.ca}" widgetVar="cmbCaW"
+			converter="entityConverter" filter="true" filterMatchMode="contains"
+			style="width: 312px;" required="false"
+			requiredMessage="#{msg.client_application}: #{msg.value_required}">
+			<f:selectItem itemLabel="#{msg.select_one}" itemValue="#{null}"
+				noSelectionOption="true" />
+			<f:selectItems value="#{clientApplicationController.listActive}" var="ca"
+				itemLabel="#{ca.name}" itemValue="#{ca}" />
+			<p:clientValidator event="blur" />
+		</p:selectOneMenu>
+		<p:message for="cmbCa" display="icon" id="mcmbRol" />
+		
+
+		<p:outputLabel value="#{msg.phone_system_skill}"
+			for="txtPhoneSystemSkill" />
+		<p:pickList id="txtPhoneSystemSkill" value="#{skillController.skills}"
+			var="skill" itemValue="#{skill}" itemLabel="#{skill.name}"
+			converter="entityConverter" showSourceFilter="true"
+			showTargetFilter="true" filterMatchMode="contains">
+			<f:facet name="sourceCaption">#{msg.available}</f:facet>
+			<f:facet name="targetCaption">#{msg.assigned}</f:facet>
+
+			<p:column style="width:90%">
+				<h:outputText value="#{skill.name}" />
+			</p:column>
+
+			<p:column style="width:10%;">
+				<h:outputText value="#{skill.place}" />
+			</p:column>
+		</p:pickList>
+		<p:message for="txtPhoneSystemSkill" display="icon" />
+
+	</h:panelGrid>
+</ui:composition>

@@ -1,0 +1,160 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<script>
+		function enabledOnlySunday(date) {
+			var day = date.getDay();
+			return [ day == 0, '' ];
+		}
+	</script>
+
+	<p:dialog header="#{msg.filters}" widgetVar="dlgFilter" modal="true"
+		height="400" width="450px" focus="btnCancel" id="dialFilter"
+		resizable="false" closeOnEscape="true">
+
+
+		<h:panelGrid border="0" columns="1">
+			<p:messages id="messagesf" showDetail="false" autoUpdate="false" />
+		</h:panelGrid>
+
+		<h:panelGrid columns="3" id="panel">
+			<h:outputText value="#{msg.start_date}" />
+			<p:calendar id="datetimeini" value="#{invoiceFilter.startDate}"
+				pattern="MM/dd/yyyy" readonlyInput="true"
+				beforeShowDay="enabledOnlySunday">
+				<p:ajax event="dateSelect" update="datetimeend" global="false"></p:ajax>
+				<p:ajax event="change" update="datetimeend" global="false" />
+			</p:calendar>
+			<p:message for="datetimeini" display="icon" />
+
+			<h:outputText value="#{msg.end_date}" rendered="false" />
+			<p:calendar id="datetimeend" value="#{invoiceFilter.endDate}"
+				pattern="MM/dd/yyyy" readonlyInput="true"
+				mindate="#{invoiceFilter.startDate}" rendered="false" />
+			<p:message for="datetimeend" display="icon"  rendered="false"/>
+
+
+			<h:outputText value="#{msg.submitted} #{msg.start_date}" />
+			<p:calendar value="#{invoiceFilter.startDateSubmitted}"
+				readonlyInput="true" pattern="MM/dd/yyyy" id="startDateSubmittedId">
+				<p:ajax event="dateSelect" update="endDateSubmittedId"
+					global="false"></p:ajax>
+				<p:ajax event="change" update="endDateSubmittedId" global="false" />
+			</p:calendar>
+			<p:message for="startDateSubmittedId" display="icon" />
+
+			<h:outputText value="#{msg.submitted} #{msg.end_date}" />
+			<p:calendar value="#{invoiceFilter.endDateSubmitted}"
+				readonlyInput="true" mindate="#{invoiceFilter.startDateSubmitted}"
+				pattern="MM/dd/yyyy" id="endDateSubmittedId" />
+			<p:message for="endDateSubmittedId" display="icon" />
+
+
+			<h:outputText value="#{msg.pay_date} #{msg.start_date}" />
+			<p:calendar value="#{invoiceFilter.startDatePay}"
+				readonlyInput="true" pattern="MM/dd/yyyy" id="startDatePayId">
+				<p:ajax event="dateSelect" update="endDatePayId" global="false"></p:ajax>
+				<p:ajax event="change" update="endDatePayId" global="false" />
+			</p:calendar>
+			<p:message for="startDatePayId" display="icon" />
+
+			<h:outputText value="#{msg.pay_date} #{msg.end_date}" />
+			<p:calendar value="#{invoiceFilter.endDatePay}" readonlyInput="true"
+				mindate="#{invoiceFilter.startDatePay}" pattern="MM/dd/yyyy"
+				id="endDatePayId" />
+			<p:message for="endDatePayId" display="icon" />
+
+			<h:outputText value="#{msg.note}" />
+			<p:selectOneMenu value="#{invoiceFilter.note}" style="width:100px"
+				id="cmdNote">
+				<f:selectItem itemLabel="#{msg.select_all}" itemValue="-1"
+					noSelectionOption="true" />
+				<f:selectItem itemValue="1" itemLabel="Yes"></f:selectItem>
+				<f:selectItem itemValue="0" itemLabel="No"></f:selectItem>
+			</p:selectOneMenu>
+			<p:message for="cmdNote" display="icon" />
+
+			<h:outputText value="#{msg.service_revenue}" />
+			<p:selectOneMenu value="#{invoiceFilter.typeImport}"
+				style="width:100px" id="cmbServiceRevenue">
+				<f:selectItem itemLabel="#{msg.select_all}" itemValue="-1"
+					noSelectionOption="true" />
+				<f:selectItem itemValue="1" itemLabel="Negative value"></f:selectItem>
+				<f:selectItem itemValue="2" itemLabel="Positive value"></f:selectItem>
+			</p:selectOneMenu>
+			<p:message for="cmbServiceRevenue" display="icon" />
+
+			<h:outputText value="#{msg.sent_finance}" />
+			<p:selectOneMenu value="#{invoiceFilter.sentFinance}"
+				style="width:100px" id="cmbSentFinance">
+				<f:selectItem itemLabel="#{msg.select_all}" itemValue="#{null}"
+					noSelectionOption="true" />
+				<f:selectItem itemValue="1" itemLabel="Yes"></f:selectItem>
+				<f:selectItem itemValue="2" itemLabel="No"></f:selectItem>
+			</p:selectOneMenu>
+			<p:message for="cmbSentFinance" display="icon" />
+
+
+			<h:outputText value="#{msg.sent_finance} #{msg.start_date}"
+				rendered="false" />
+			<p:calendar id="datetimeiniFinance"
+				value="#{invoiceFilter.startDateFinance}" pattern="MM/dd/yyyy"
+				rendered="false" readonlyInput="true">
+				<p:ajax event="dateSelect" update="datetimeendFinance"
+					global="false"></p:ajax>
+				<p:ajax event="change" update="datetimeendFinance" global="false" />
+			</p:calendar>
+			<p:message for="datetimeiniFinance" display="icon" />
+
+			<h:outputText value="#{msg.sent_finance} #{msg.end_date}"
+				rendered="false" />
+			<p:calendar id="datetimeendFinance"
+				value="#{invoiceFilter.endDateFinance}" pattern="MM/dd/yyyy"
+				rendered="false" readonlyInput="true"
+				mindate="#{invoiceFilter.startDateFinance}" />
+			<p:message for="datetimeendFinance" display="icon" />
+
+		</h:panelGrid>
+
+		<p:spacer height="10" width="20"></p:spacer>
+
+		<h:panelGrid width="100%">
+
+			<h:panelGrid columns="2" styleClass="panelGridCenter">
+
+				<p:commandButton value="Filter" styleClass="buttonEspe"
+					actionListener="#{invoiceController.validateFilter}"
+					validateClient="true"
+					oncomplete="handleFilterRequest(xhr, status, args)"
+					update="messagesf, form:txtRangeDate, panel" />
+
+
+				<p:commandButton value="Cancel" type="reset" id="btnCancel"
+					onclick="PF('dlgFilter').hide();" immediate="true"
+					actionListener="#{invoiceController.cleanDetailFilter}" />
+
+
+
+			</h:panelGrid>
+
+		</h:panelGrid>
+
+	</p:dialog>
+	<script type="text/javascript">
+		function handleFilterRequest(xhr, status, args) {
+
+			if (args.validationFailed || args.error) {
+
+			} else {
+				PF('dlgFilter').hide();
+				PF('uniTableFil').filter();
+			}
+
+		}
+	</script>
+
+</ui:composition>

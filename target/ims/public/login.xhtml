@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+
+<h:head>
+	<h:outputStylesheet name="theme.css" library="css" />
+	<title><ui:insert name="title">IMS v1.0</ui:insert></title>
+	<meta http-equiv="X-UA-Compatible" content="IE=10" />
+	<meta http-equiv="X-UA-Compatible" content="IE=11" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="Content-Type" content="text/xhtml; charset=UTF-8" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<meta http-equiv="Pragma" content="no-cache" />
+
+</h:head>
+<!--#003366  -->
+
+<body class="backgroungPage">
+
+
+	<style>
+.ui-inputfield.ui-state-error,.ui-widget-content .ui-state-error,.ui-widget-header .ui-state-error
+	{
+	border: 1px solid #cd0a0a;
+	color: black;
+	background: white !important;
+}
+</style>
+
+
+	<h:form id="form"  prependId="false">
+
+		<p:spacer height="40" />
+
+		<p:remoteCommand name="refreshLogin"
+			update="form:username,form:password,form:btnLog" />
+
+
+		<h:panelGrid border="0" columns="1" columnClasses="centered" id="grid"
+			width="100%">
+
+
+			<h:graphicImage value="/img/gvw-logo.png" width="300px" />
+
+			<h:panelGrid columns="3" border="0" style="margin: 0 auto;"
+				columnClasses="loginForm,,">
+
+				<p:outputLabel value="#{msg.user}" for="username"
+					styleClass="loginForm" />
+				<p:inputText value="#{loginBean.name}" id="username" required="true"				
+					onblur="this.value = this.value.trim()"
+					requiredMessage="#{msg.user}: #{msg.value_required}">
+					<p:clientValidator event="blur" />
+				</p:inputText>
+				<p:message for="username" display="icon" />
+
+
+				<p:outputLabel value="#{msg.password}" for="password"
+					styleClass="loginForm" />
+				<p:password value="#{loginBean.password}" id="password"
+					required="true" 
+					requiredMessage="#{msg.password}: #{msg.value_required}">
+					<p:clientValidator event="blur" />
+				</p:password>
+				<p:message for="password" display="icon" />
+
+
+			</h:panelGrid>
+
+
+			<p:commandButton action="#{loginBean.login}" value="Log in"
+				id="btnLog" validateClient="true" styleClass="buttonLogin" update="form" ajax="false"/>
+
+			<p:spacer height="10" />
+
+			<p:commandLink ajax="false" immediate="true"
+				value="#{msg.forgot_password}" styleClass="forgotPass">
+				<p:fileDownload value="#{loginBean.file}" />
+			</p:commandLink>
+
+			<p:spacer height="20" />
+
+			<h:outputText value="#{msg.license}" styleClass="copyright"></h:outputText>
+
+
+			<h:panelGrid border="0" columns="1" styleClass="panelGridCenter">
+				<p:messages id="messages" showDetail="false" autoUpdate="true"
+					globalOnly="false" />
+			</h:panelGrid>
+
+
+		</h:panelGrid>
+
+
+
+		<ui:include src="/public/wait.xhtml" />
+
+
+	</h:form>
+
+
+</body>
+</html>

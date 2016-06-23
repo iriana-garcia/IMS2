@@ -1,0 +1,180 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<style>
+.pngRol {
+	width: 100%;
+}
+
+.pngRol tbody td {
+	border-width: 0px !important;
+}
+
+.ui-panelgrid .ui-panelgrid-cell {
+	border-width: 0px !important;
+}
+
+.ui-widget-content {
+	border-width: 0px !important;
+}
+</style>
+
+
+	<p:dialog header="#{msg.warning}" widgetVar="dlgMessageWarning"
+		modal="true" closeOnEscape="true" id="dlgMessageWarningId"
+		resizable="false" closable="true" showHeader="true" width="400px"
+		height="100px">
+
+		<h:form id="frmMessage"
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+			<h:panelGrid width="100%">
+				<h:outputText value="#{msg.warning_message}" />
+			</h:panelGrid>
+
+			<h:panelGrid columnClasses="center" width="100%" id="panel">
+				<h:panelGrid columns="3" columnClasses="center">
+
+					<p:commandButton value="OK" icon="ui-icon-close"
+						styleClass="buttonBarra" onclick="PF('dlgMessageWarning').hide()"
+						validateClient="false" immediate="true">
+					</p:commandButton>
+
+
+				</h:panelGrid>
+
+			</h:panelGrid>
+		</h:form>
+	</p:dialog>
+
+	<p:dialog header="#{msg.message_board}" widgetVar="dlgDetail"
+		modal="true" closeOnEscape="true" id="dlgDetailId" resizable="false"
+		closable="true" showHeader="true" width="90%" height="600px">
+		<h:form id="frmEmail" onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+			<h:panelGrid width="100%">
+				<sec:authorize
+					access="hasAnyRole('SUPER','MESSAGE_M','IBO')">
+
+					<p:focus for="txtContentW" />
+				</sec:authorize>
+
+				<h:panelGrid width="100%">
+					<p:dataList value="#{messageBoardController.messageBoards}"
+						var="uni" type="definition" style="width: 100%;">
+
+						<p:panelGrid styleClass="pngRol">
+							<p:row>
+								<p:column style="text-align: right; font-size: 10px;">
+									<h:outputText value="#{uni.dateMessageFormat}" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column style="text-align: right; ">
+									<h:outputText value="#{uni.message}"
+										style="background-color: #a8ddfb !important; " />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column style="text-align: left;font-size: 10px;">
+									<h:outputText value="#{uni.dateMessageReplyFormat}" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column style="text-align: left;font-size: 10px;">
+									<h:outputText value="#{uni.userReply.name}" />
+								</p:column>
+							</p:row>
+							<p:row>
+
+								<p:column style="text-align:left;">
+									<h:outputText value="#{uni.replyMessage}"
+										style="background-color: #e8e177 !important; " />
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+
+					</p:dataList>
+
+
+				</h:panelGrid>
+				<sec:authorize
+					access="hasAnyRole('SUPER','MESSAGE_M','IBO')">
+
+					<h:panelGrid width="100%">
+
+						<h:panelGrid columns="3" styleClass="panelAlingRighth">
+							<p:commandButton value="#{msg.add} #{msg.message}"
+								icon="ui-icon-disk" styleClass="buttonBarra"
+								rendered="#{messageBoardController.showButtonAddMessage}"
+								actionListener="#{messageBoardController.changeToEdit}"
+								validateClient="true" update=":frmEmail" />
+						</h:panelGrid>
+					</h:panelGrid>
+					<h:panelGrid width="100%">
+
+						<h:panelGrid columns="1" styleClass="panelGridCenter">
+							<h:panelGrid border="0" columns="1">
+								<p:messages id="messagesQuestion" showDetail="false"
+									autoUpdate="false" />
+							</h:panelGrid>
+
+							<h:panelGrid columns="3">
+								<p:outputLabel value="#{msg.message}" for="txtContentW"
+									rendered="#{messageBoardController.showAddMessage}" />
+								<p:inputTextarea rows="20" cols="75" id="txtContentW"
+									required="true" onblur="this.value = this.value.trim()"
+									rendered="#{messageBoardController.showAddMessage}"
+									value="#{messageBoardController.content}" autoResize="true"
+									requiredMessage="#{msg.message}: #{msg.value_required}" />
+
+								<p:message for="txtContentW" display="icon"
+									rendered="#{messageBoardController.showAddMessage}" />
+							</h:panelGrid>
+							<h:panelGrid width="100%">
+
+								<h:panelGrid columns="3" styleClass="panelGridCenter">
+
+									<p:commandButton value="#{msg.save} #{msg.message}"
+										icon="ui-icon-help" styleClass="buttonBarra"
+										rendered="#{messageBoardController.showAddMessage}"
+										actionListener="#{messageBoardController.sendQuestion}"
+										validateClient="true"
+										update=":frmEmail,form:btnMessage,messagesQuestion" />
+
+									<p:spacer width="10"
+										rendered="#{messageBoardController.showAddMessage}" />
+
+
+									<p:commandButton value="#{msg.cancel}" icon="ui-icon-close"
+										id="focusBtton" styleClass="buttonBarra"
+										actionListener="#{messageBoardController.cancelQuestion}"
+										rendered="#{messageBoardController.showAddMessage}"
+										update=":frmEmail" validateClient="false" immediate="true">
+									</p:commandButton>
+
+
+
+								</h:panelGrid>
+							</h:panelGrid>
+						</h:panelGrid>
+					</h:panelGrid>
+				</sec:authorize>
+			</h:panelGrid>
+		</h:form>
+
+	</p:dialog>
+
+	<script type="text/javascript">
+		function handleSendEmailRequest(xhr, status, args) {
+			if (args.validationFailed || args.error) {
+
+			} else {
+				PF('dlgDetail').hide();
+			}
+		}
+	</script>
+
+</ui:composition>

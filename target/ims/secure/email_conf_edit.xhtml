@@ -1,0 +1,270 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+
+		<style>
+.myFieldset .ui-fieldset,.ui-fieldset .ui-fieldset-legend {
+	background-color: transparent !important;
+	border-color: transparent !important;
+}
+
+.myFieldset .ui-fieldset,.ui-fieldset .ui-fieldset-legend .ui-state-default
+	{
+	background-color: transparent !important;
+	border-color: transparent !important;
+}
+</style>
+
+		<f:view contentType="text/html" />
+		<sec:authorize access="hasAnyRole('SUPER','EMAIL_M')">
+			<h:form
+				onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+				<p:toolbar>
+					<f:facet name="left">
+						<h:outputText value="#{msg.edit} #{msg.email_conf}" />
+					</f:facet>
+
+					<f:facet name="right">
+						<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+							action="#{configurationEmailController.update}"
+							styleClass="buttonBarra" validateClient="true">
+							<p:confirm icon="ui-icon-alert" />
+						</p:commandButton>
+
+						<p:spacer width="10" />
+
+						<p:commandButton value="#{msg.cancel}" icon="ui-icon-close"
+							action="email_configuration" styleClass="buttonBarra"
+							immediate="true" />
+					</f:facet>
+				</p:toolbar>
+
+
+				<h:panelGrid styleClass="panel" columns="1">
+
+					<h:panelGrid border="0" columns="1">
+						<p:messages id="messages" showDetail="false" autoUpdate="true"
+							globalOnly="false" />
+					</h:panelGrid>
+
+					<p:focus for="tabConf" />
+
+					<p:tabView styleClass="tabInvoice" id="tabConf">
+
+						<p:tab title="#{msg.ibo_welcome}">
+
+							<h:panelGrid columns="3">
+
+
+								<p:outputLabel value="#{msg.subject_line}" for="txtSubjW" />
+								<p:inputText onblur="this.value = this.value.trim()"
+									value="#{configurationEmailController.entityWelcome.subject}"
+									required="true" id="txtSubjW" maxlength="150" size="80"
+									requiredMessage="#{msg.ibo_welcome}/#{msg.subject_line}: #{msg.value_required}">
+									<p:clientValidator event="blur" />
+								</p:inputText>
+								<p:message for="txtSubjW" display="icon" />
+
+
+								<p:outputLabel value="#{msg.to}" for="txtToW" />
+								<p:inputText onblur="this.value = this.value.trim()"
+									requiredMessage=": #{msg.value_required}"
+									value="#{configurationEmailController.entityWelcome.to}"
+									required="false" id="txtToW" maxlength="100" size="80">
+									<p:clientValidator event="blur" />
+									<f:validator validatorId="severalEmailValidator" />
+								</p:inputText>
+								<p:message for="txtToW" display="icon" />
+
+
+								<p:outputLabel value="#{msg.bcc_to}" for="txtBccW" />
+								<p:inputText onblur="this.value = this.value.trim()"
+									value="#{configurationEmailController.entityWelcome.bcc}"
+									required="false" id="txtBccW" maxlength="100" size="80">
+									<f:validator validatorId="severalEmailValidator" />
+									<p:clientValidator event="blur" />
+								</p:inputText>
+								<p:message for="txtBccW" display="icon" />
+
+
+
+
+								<h:outputLabel value="#{msg.html_email}" rendered="false" />
+								<p:selectBooleanCheckbox rendered="false"
+									value="#{configurationEmailController.entityWelcome.html}"
+									id="txtHtmlW" />
+								<p:message for="txtHtmlW" display="icon" rendered="false" />
+
+
+								<p:outputLabel value="#{msg.email_content}" for="txtContentW" />
+
+
+							</h:panelGrid>
+							<h:panelGrid columns="2">
+								<p:editor id="txtContentW"
+									value="#{configurationEmailController.entityWelcome.content}"
+									width="700" height="500" widgetVar="editorWelcome">
+								</p:editor>
+								<p:message for="txtHtmlW" display="icon" />
+							</h:panelGrid>
+						</p:tab>
+						<p:tab title="#{msg.ibo_invoice}" onclick="alert('sdfsfd')">
+
+							<h:panelGrid columns="3">
+
+
+								<p:outputLabel value="#{msg.subject_line}" for="txtSubjI" />
+								<p:inputText onblur="this.value = this.value.trim()"
+									value="#{configurationEmailController.entityInvoice.subject}"
+									required="true" id="txtSubjI" maxlength="150" size="80"
+									requiredMessage="#{msg.ibo_invoice}/#{msg.subject_line}: #{msg.value_required}">
+									<p:clientValidator event="blur" />
+								</p:inputText>
+								<p:message for="txtSubjI" display="icon" />
+
+
+
+
+								<p:outputLabel value="#{msg.to}" for="txtToI" />
+								<p:inputText onblur="this.value = this.value.trim()"
+									value="#{configurationEmailController.entityInvoice.to}"
+									required="false" id="txtToI" maxlength="100" size="80">
+									<p:clientValidator event="blur" />
+									<f:validator validatorId="severalEmailValidator" />
+								</p:inputText>
+								<p:message for="txtToI" display="icon" />
+
+								<p:outputLabel value="#{msg.bcc_to}" for="txtBccI" />
+								<p:inputText onblur="this.value = this.value.trim()"
+									value="#{configurationEmailController.entityInvoice.bcc}"
+									required="false" id="txtBccI" maxlength="100" size="80">
+									<p:clientValidator event="blur" />
+									<f:validator validatorId="severalEmailValidator" />
+								</p:inputText>
+								<p:message for="txtBccI" display="icon" />
+
+
+								<h:outputLabel value="#{msg.html_email}" rendered="false" />
+								<p:selectBooleanCheckbox rendered="false"
+									value="#{configurationEmailController.entityInvoice.html}"
+									id="txtHtmlI" />
+								<p:message for="txtHtmlI" display="icon" rendered="false" />
+
+
+								<p:outputLabel value="#{msg.email_content}" for="txtContentI" />
+
+
+							</h:panelGrid>
+							<h:panelGrid columns="2">
+								<p:editor id="txtContentI"
+									value="#{configurationEmailController.entityInvoice.content}"
+									width="700" height="500" widgetVar="editorInvoice">
+								</p:editor>
+								<p:message for="txtContentI" display="icon" />
+							</h:panelGrid>
+						</p:tab>
+
+						<p:tab title="#{msg.finance_email}">
+
+							<h:panelGrid columns="3">
+
+
+								<p:outputLabel value="#{msg.subject_line}" for="txtSubjF" />
+								<p:inputText onblur="this.value = this.value.trim()"
+									value="#{configurationEmailController.entityFinance.subject}"
+									required="true" id="txtSubjF" maxlength="150" size="80"
+									requiredMessage="#{msg.finance_email}/#{msg.subject_line}: #{msg.value_required}">
+									<p:clientValidator event="blur" />
+								</p:inputText>
+								<p:message for="txtSubjF" display="icon" />
+
+
+								<p:outputLabel value="#{msg.to}" for="txtToF" />
+								<p:inputText onblur="this.value = this.value.trim()"
+									value="#{configurationEmailController.entityFinance.to}"
+									required="true" id="txtToF" maxlength="100" size="80"
+									requiredMessage="#{msg.finance_email}/#{msg.to}: #{msg.value_required}">
+									<p:clientValidator event="blur" />
+									<f:validator validatorId="severalEmailValidator" />
+								</p:inputText>
+								<p:message for="txtToF" display="icon" />
+
+
+								<p:outputLabel value="#{msg.bcc_to}" for="txtBccF" />
+								<p:inputText onblur="this.value = this.value.trim()"
+									value="#{configurationEmailController.entityFinance.bcc}"
+									required="false" id="txtBccF" maxlength="100" size="80">
+									<p:clientValidator event="blur" />
+									<f:validator validatorId="severalEmailValidator" />
+								</p:inputText>
+								<p:message for="txtBccF" display="icon" />
+
+
+
+
+								<h:outputLabel value="#{msg.html_email}" rendered="false" />
+								<p:selectBooleanCheckbox rendered="false"
+									value="#{configurationEmailController.entityFinance.html}"
+									id="txtHtmlF" />
+								<p:message for="txtHtmlF" display="icon" rendered="false" />
+
+
+								<p:outputLabel value="#{msg.email_content}" for="txtContentF" />
+
+
+							</h:panelGrid>
+							<h:panelGrid columns="2">
+								<p:editor id="txtContentF"
+									value="#{configurationEmailController.entityFinance.content}"
+									width="700" height="500" widgetVar="editorFinance">
+								</p:editor>
+								<p:message for="txtContentF" display="icon" />
+							</h:panelGrid>
+
+
+
+
+						</p:tab>
+					</p:tabView>
+
+
+
+
+					<p:fieldset legend="#{msg.available_keys}" toggleable="false">
+
+
+						<h:outputLabel value="#{msg.available_keys_content}" />
+
+						<p:dataTable var="key" id="availableKeys"
+							value="#{configurationEmailController.keys}">
+
+							<p:column headerText="Title" width="150">
+								<h:outputText value="#{key[0]}" />
+							</p:column>
+							<p:column headerText="Description">
+								<h:outputText value="#{key[1]}" />
+							</p:column>
+
+						</p:dataTable>
+
+
+					</p:fieldset>
+
+
+
+
+
+				</h:panelGrid>
+
+				<ui:include src="/secure/confirmation_modify.xhtml"></ui:include>
+			</h:form>
+		</sec:authorize>
+	</ui:define>
+
+</ui:composition>

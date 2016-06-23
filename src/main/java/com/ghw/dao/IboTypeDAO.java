@@ -1,0 +1,1 @@
+package com.ghw.dao;import com.ghw.model.IboType;public interface IboTypeDAO extends GenericDAO<IboType, String> {}

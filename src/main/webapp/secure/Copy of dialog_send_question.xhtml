@@ -1,0 +1,101 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:h="http://java.sun.com/jsf/html">
+
+	<p:dialog header="#{msg.send_question}" widgetVar="dlgDetail"
+		modal="true" closeOnEscape="true" id="tblDetail" resizable="false"
+		closable="false" showHeader="true" width="650px" height="600px"
+		minHeight="400">
+		<h:form id="form" onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit') return true; else return false;}">
+			<h:panelGrid width="100%">
+
+				<h:panelGrid border="0" columns="1">
+					<p:messages id="messages" showDetail="false" autoUpdate="true" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="3">
+
+					<p:outputLabel value="#{msg.from}" />
+					<p:outputLabel value="#{currentInvoiceController.from}" />
+					<p:outputLabel value="" />
+
+					<p:outputLabel value="#{msg.to}" for="txtToW" />
+					<p:inputText value="#{currentInvoiceController.to}" required="true"
+						id="txtToW" maxlength="100" size="40"  onblur="this.value = this.value.trim()"
+						requiredMessage="#{msg.to}: #{msg.value_required}">
+						<p:clientValidator event="blur" />
+						<f:validator validatorId="severalEmailValidator" />
+					</p:inputText>
+					<p:message for="txtToW" display="icon" />
+
+
+					<p:outputLabel value="#{msg.subject_line}" for="txtSubjW" />
+					<p:inputText value="#{currentInvoiceController.subject}"
+						required="true" id="txtSubjW" maxlength="150" size="40"  
+						onblur="this.value = this.value.trim()"
+						requiredMessage="#{msg.subject_line}: #{msg.value_required}">
+						<p:clientValidator event="blur" />
+					</p:inputText>
+					<p:message for="txtSubjW" display="icon" />
+
+					<p:outputLabel value="#{msg.bcc_to}" for="txtBccW" rendered="false" />
+					<p:inputText value="#{currentInvoiceController.bcc}"
+						rendered="false" required="false" id="txtBccW" maxlength="100"
+						size="40"  onblur="this.value = this.value.trim()">
+						<f:validator validatorId="severalEmailValidator" />
+						<p:clientValidator event="blur" />
+					</p:inputText>
+					<p:message for="txtBccW" display="icon" rendered="false" />
+
+					<p:outputLabel value="#{msg.email_content}" for="txtContentW" />
+
+				</h:panelGrid>
+
+				<h:panelGrid columns="2">
+
+					<p:inputTextarea rows="20" cols="75"
+						value="#{currentInvoiceController.content}" autoResize="true"
+						rendered="false"  onblur="this.value = this.value.trim()"/>
+
+					<p:editor id="txtContentW"
+						value="#{currentInvoiceController.content}" width="550"
+						height="250" widgetVar="editorWelcome" lazy="true">
+					</p:editor>
+					<p:message for="txtContentW" display="icon" rendered="false" />
+				</h:panelGrid>
+
+				<h:panelGrid columnClasses="panelAling" width="100%">
+					<h:panelGrid columns="3" columnClasses="panelAling">
+						<p:commandButton value="#{msg.send_question}"
+							icon="ui-icon-mail-closed" styleClass="buttonBarra"
+							actionListener="#{currentInvoiceController.sendQuestion}"
+							validateClient="true"
+							oncomplete="handleSendEmailRequest(xhr, status, args)"
+							update=":frmEmail" />
+
+						<p:spacer width="10" />
+
+						<p:commandButton value="Cancel" type="button"
+							onclick="PF('dlgDetail').hide()" immediate="true"
+							styleClass="buttonBarra" icon="ui-icon-close" />
+					</h:panelGrid>
+
+				</h:panelGrid>
+			</h:panelGrid>
+		</h:form>
+
+	</p:dialog>
+
+	<script type="text/javascript">
+		function handleSendEmailRequest(xhr, status, args) {
+			if (args.validationFailed || args.error) {
+
+			} else {
+				PF('dlgDetail').hide();
+			}
+		}
+	</script>
+
+</ui:composition>

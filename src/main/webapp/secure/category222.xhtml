@@ -1,0 +1,163 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+
+		<h:form id="form" onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit') return true; else return false;}">
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="#{msg.category}" />
+				</f:facet>
+
+				<f:facet name="right">
+					<sec:authorize access="hasAnyRole('SUPER','CATEGORY_A')">
+						<p:commandButton value="#{msg.add}" icon="ui-icon-plus"
+							action="#{categoryController.clean}" styleClass="buttonBarra"
+							onclick="PF('dlgCategory').show()" update="frmCategory" />
+					</sec:authorize>
+
+					<p:commandButton value="#{msg.print}" icon="ui-icon-print"
+						rendered="false"
+						actionListener="#{printController.printListTable}"
+						styleClass="buttonBarra" update="messages"
+						oncomplete="PF('dlgPrint').show();">
+						<f:attribute name="report" value="2" />
+						<f:attribute name="title" value="roles" />
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+
+			<p:growl id="msgs" showDetail="false"  />
+
+			<h:panelGrid styleClass="panel" columns="1" width="100%">
+
+
+				<p:remoteCommand name="refreshFooter"
+					update="form:uniTable:rowCount" />
+
+
+				<p:dataTable var="uni" value="#{categoryController.lazyModel}"
+					paginator="true" rows="20" paginatorPosition="bottom"
+					paginatorTemplate=" {RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {CurrentPageReport} "
+					rowsPerPageTemplate="5,10,15,20,25,30,40,50,100"
+					widgetVar="uniTableFil" id="uniTable" lazy="true"
+					resizableColumns="false" draggableColumns="true"
+					sortBy="#{uni.name}" sortOrder="ascending" editable="true"
+					disabledTextSelection="false" style="min-width: 800px !important">
+
+
+					<f:facet name="header">
+						<p:outputPanel>
+
+							<p:commandButton value="Filters" icon="ui-icon-search"
+								id="btnFilter" onclick="PF('dlgFilter').show();"
+								rendered="false" />
+
+							<p:spacer width="10" rendered="false" />
+
+
+							<p:commandButton value="Clear filters"
+								actionListener="#{categoryController.clearFilter}"
+								icon="ui-icon-close" id="btnReset" update="form:uniTable"></p:commandButton>
+
+							<p:spacer width="10"  rendered="false"/>
+
+							<p:commandButton id="toggler" type="button" value="Columns"
+								icon="ui-icon-calculator" rendered="false"/>
+							<p:columnToggler datasource="uniTable" trigger="toggler"  rendered="false"/>
+
+						</p:outputPanel>
+					</f:facet>
+
+					<p:ajax event="rowEdit" listener="#{categoryController.onRowEdit}"
+						update=":form:msgs">
+					</p:ajax>
+					<p:ajax event="rowEditCancel"
+						listener="#{categoryController.onRowCancel}" update=":form:msgs" />
+
+
+					<p:ajax event="filter" oncomplete="refreshFooter()"></p:ajax>
+					<f:facet name="footer">
+						<h:outputText id="rowCount"
+							value="#{msg.total_register} #{categoryController.lazyModel.rowCount}" />
+					</f:facet>
+
+
+					<p:column headerText="#{msg.name}" sortBy="#{uni.name}"
+						filterBy="#{uni.name}">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{uni.name}" />
+							</f:facet>
+							<f:facet name="input">
+
+								<p:inputText value="#{uni.name}" maxlength="50" required="true"
+									size="60" id="inpDescription"
+									onblur="this.value = this.value.trim()"
+									requiredMessage="#{emsg.description_empty}">
+									<p:clientValidator event="blur" />
+								</p:inputText>
+
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column headerText="#{msg.state}" sortBy="#{uni.state}"
+						width="100" filterBy="#{uni.state}">
+						<f:facet name="filter">
+							<p:selectOneMenu onchange="PF('uniTableFil').filter()"
+								id="cmbState" noSelectionOption="true">
+								<f:selectItem itemLabel="#{msg.select_all}" itemValue="#{null}"/>
+								<f:converter converterId="javax.faces.Boolean" />
+								<f:selectItem itemValue="true" itemLabel="#{msg.active}"></f:selectItem>
+								<f:selectItem itemValue="false" itemLabel="#{msg.deactive}"></f:selectItem>
+							</p:selectOneMenu>
+						</f:facet>
+						<h:outputText value="#{uni.state ? msg.active : msg.deactive}" />
+					</p:column>
+
+					<sec:authorize access="hasAnyRole('SUPER','CATEGORY_M')">
+						<p:column style="width:20px" toggleable="false">
+							<p:rowEditor rendered="#{uni.state}"/>
+						</p:column>
+					</sec:authorize>
+					<sec:authorize access="hasAnyRole('SUPER','CATEGORY_C')">
+						<p:column style="text-align: center" width="30" toggleable="false"
+							exportable="false">
+							<p:commandButton
+								icon="#{uni.state ? 'ui-icon-closethick' : 'ui-icon-check'}"
+								action="#{categoryController.changeState}" update="uniTable"
+								id="cmdState">
+								<f:setPropertyActionListener value="#{uni}"
+									target="#{categoryController.entity}" />
+								<p:confirm icon="ui-icon-alert" />
+							</p:commandButton>
+
+							<p:tooltip id="toolTipFade" for="cmdState"
+								value="#{uni.state ? msg.deactivate : msg.activate}" />
+						</p:column>
+					</sec:authorize>
+
+				</p:dataTable>
+
+
+
+				<ui:include src="/secure/confirmation_modify.xhtml"></ui:include>
+			</h:panelGrid>
+
+
+
+
+		</h:form>
+
+
+		<ui:include src="/secure/select_format.xhtml"></ui:include>
+		<ui:include src="/secure/dialog_add_category.xhtml"></ui:include>
+	</ui:define>
+
+</ui:composition>

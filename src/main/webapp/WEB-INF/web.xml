@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0">
+	<display-name>IMS</display-name>
+
+	<context-param>
+		<param-name>javax.faces.DEFAULT_SUFFIX</param-name>
+		<param-value>.xhtml</param-value>
+	</context-param>
+	<context-param>
+		<param-name>javax.faces.PROJECT_STAGE</param-name>
+		<param-value>Development</param-value>
+	</context-param>
+
+	<context-param>
+		<param-name>primefaces.THEME</param-name>
+		<param-value>greatheathworks</param-value>
+	</context-param>
+	<context-param>
+		<param-name>primefaces.CLIENT_SIDE_VALIDATION</param-name>
+		<param-value>true</param-value>
+	</context-param>
+
+	<context-param>
+		<param-name>javax.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL</param-name>
+		<param-value>true</param-value>
+	</context-param>
+
+
+	<welcome-file-list>
+		<welcome-file>public/login.jsf</welcome-file>
+	</welcome-file-list>
+
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>/faces/*</url-pattern>
+		<url-pattern>*.jsf</url-pattern>
+		<url-pattern>*.xhtml</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>PDF Servlet</servlet-name>
+		<servlet-class>net.sf.jasperreports.j2ee.servlets.PdfServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>XLS Servlet</servlet-name>
+		<servlet-class>net.sf.jasperreports.j2ee.servlets.XlsServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>RTF Servlet</servlet-name>
+		<servlet-class>net.sf.jasperreports.j2ee.servlets.RtfServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>PDF Servlet</servlet-name>
+		<url-pattern>/secure/export/pdf</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>XLS Servlet</servlet-name>
+		<url-pattern>/secure/export/xls</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>RTF Servlet</servlet-name>
+		<url-pattern>/secure/export/rtf</url-pattern>
+	</servlet-mapping>
+
+	<!-- <servlet-mapping> <servlet-name>Faces Servlet</servlet-name> <url-pattern>/secure/*</url-pattern> 
+		</servlet-mapping> -->
+
+
+	<!-- The definition of the Root Spring Container shared by all Servlets 
+		and Filters -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+					/WEB-INF/application-context.xml
+					/WEB-INF/security-context.xml
+				</param-value>
+	</context-param>
+
+
+	<session-config>
+		<session-timeout>120</session-timeout>
+	</session-config>
+
+	<!-- Spring Security Facelets Tag Library -->
+	<context-param>
+		<param-name>javax.faces.FACELETS_LIBRARIES</param-name>
+		<param-value>/WEB-INF/springsecurity.taglib.xml</param-value>
+	</context-param>
+
+	<!-- Spring Security -->
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>REQUEST</dispatcher><!-- mandatory to allow the managed bean 
+			to forward the request to the filter -->
+	</filter-mapping>
+
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+	<listener>
+		<listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+	</listener>
+
+	<listener>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
+
+
+	<error-page>
+		<exception-type>java.lang.Throwable</exception-type>
+		<location>/public/errorview.jsf</location>
+	</error-page>
+
+	<error-page>
+		<exception-type>javax.faces.application.ViewExpiredException</exception-type>
+		<location>/public/viewexpired.jsf</location>
+	</error-page>
+
+
+</web-app>

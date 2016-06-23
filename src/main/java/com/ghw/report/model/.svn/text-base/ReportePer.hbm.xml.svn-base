@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated May 28, 2008 8:05:09 AM by Hibernate Tools 3.2.0.b11 -->
+<hibernate-mapping package="data.reporte">
+	<class name="ReportePer" table="tbl_reporte_per" schema="public">
+		<id name="idReportePer" type="integer">
+			<column name="id_reporteper" />
+			<generator class="sequence">
+				<param name="sequence">
+					tbl_reporte_per_id_reporteper_seq
+				</param>
+			</generator>
+						
+		</id>
+		<!-- property name="idReporte" column="id_reporte" not-null="true" type="integer" /-->
+		<property name="nomReportePer" column="nom_reporteper" length="20" not-null="true" type="string"/>
+		<property name="descReportePer" column="desc_reporteper"  type="string"/>
+		<property name="reportePerJrXML" column="reporteperxml" not-null="true" type="string"/>
+		<!-- property name="reportData" column="reportData" length="20" type="binary"/ -->
+		<property name="filtro" column="filtro" not-null="false" type="string"/>
+		
+		<many-to-one name="reporte" class="Reporte" column="id_reporte" not-null="true" />
+		
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,156 @@
+package reporte.data;
+
+import java.io.StringWriter;
+
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.load.Persister;
+
+import dao.clases.FilterBase;
+
+public class ReportePer {
+
+	private Integer idReportePer;
+	private Integer idReporte;
+
+	private Reporte reporte;
+
+	private String nomReportePer = "";
+	private String descReportePer = "";
+	private String reportePerJrXML = "";
+
+	private String filtro;
+
+	// private Integer userId;
+	// private Integer empId;
+
+	// private byte[] reportData;
+	// private JrConfigurableFields configFields;
+
+	// public byte[] getReportData() {
+	// return reportData;
+	// }
+
+	// public void setReportData(byte[] reportData) {
+	// this.reportData = reportData;
+	// }
+
+	public JrConfigurableColumns getConfigColumns() {
+
+		Serializer s = new Persister();
+
+		try {
+			System.out.println("obteniendo configFields");
+			return s.read(JrConfigurableColumns.class, this.reportePerJrXML);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public void setConfigFields(JrConfigurableColumns configFields) {
+
+		Serializer s = new Persister();
+
+		try {
+
+			System.out.println("poniendo configFields");
+			StringWriter sw = new StringWriter();
+			s.write(configFields, sw);
+
+			// this.configFields = configFields;
+			this.reportePerJrXML = sw.toString();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public FilterBase getFilter() {
+		Serializer s = new Persister();
+
+		try {
+			System.out.println("obteniendo filter");
+			return s.read(FilterBase.class, this.filtro);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public void setFilter(FilterBase filter) {
+
+		Serializer s = new Persister();
+
+		try {
+
+			System.out.println("poniendo filter");
+			StringWriter sw = new StringWriter();
+			s.write(filter, sw);
+
+			// this.configFields = configFields;
+			this.reportePerJrXML = sw.toString();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public Integer getIdReportePer() {
+		return idReportePer;
+	}
+
+	public void setIdReportePer(Integer idReportePer) {
+		this.idReportePer = idReportePer;
+	}
+
+	public Integer getIdReporte() {
+		return idReporte;
+	}
+
+	public void setIdReporte(Integer idReporte) {
+		this.idReporte = idReporte;
+	}
+
+	public Reporte getReporte() {
+		return reporte;
+	}
+
+	public void setReporte(Reporte reporte) {
+		this.reporte = reporte;
+	}
+
+	public String getNomReportePer() {
+		return nomReportePer;
+	}
+
+	public void setNomReportePer(String nomReportePer) {
+		this.nomReportePer = nomReportePer;
+	}
+
+	public String getDescReportePer() {
+		return descReportePer;
+	}
+
+	public void setDescReportePer(String descReportePer) {
+		this.descReportePer = descReportePer;
+	}
+
+	public String getReportePerJrXML() {
+		return reportePerJrXML;
+	}
+
+	public void setReportePerJrXML(String reportePerJrXML) {
+		this.reportePerJrXML = reportePerJrXML;
+	}
+
+	public String getFiltro() {
+		return filtro;
+	}
+
+	public void setFiltro(String filtro) {
+		this.filtro = filtro;
+	}
+
+}

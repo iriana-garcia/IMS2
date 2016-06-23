@@ -1,0 +1,1 @@
+package com.ghw.dao;import com.ghw.model.IEntity;public interface IEntityDAO extends GenericDAO<IEntity, String> {}

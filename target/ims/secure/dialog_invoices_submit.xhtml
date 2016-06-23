@@ -1,0 +1,145 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+		<style>
+.myDataTable .ui-datatable-header {
+	text-align: left !important;
+}
+</style>
+		<p:dialog header="#{msg.invoices_approval}" widgetVar="dlgInvoices"
+			modal="true" closeOnEscape="true" id="dlgInvoicesId"
+			resizable="false" closable="true" showHeader="true" width="80%"
+			height="600px" minHeight="400" styleClass="myDataTable">
+			<h:form id="frmInvoices"
+				onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+				<h:panelGrid width="100%">
+					<h:outputText value="#{invoiceController.messageInvoices}"
+						escape="false" />
+
+					<p:spacer height="5" rendered="#{not empty invoiceController.problemInvoices}" />
+
+					<p:dataTable value="#{invoiceController.problemInvoices}"
+						rendered="#{not empty invoiceController.problemInvoices}"
+						var="uni">
+						<f:facet name="header">
+							<h:outputText value="#{msg.invoices_problem}" />
+						</f:facet>
+
+						<p:column headerText="#{msg.number}" width="100">
+							<h:outputText value="#{uni.invoiceNumber}">
+							</h:outputText>
+						</p:column>
+
+
+						<p:column headerText="#{msg.user_id}" width="100">
+							<h:outputText value="#{uni.iboNumber}">
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="#{msg.first_name}" width="100">
+							<h:outputText value="#{uni.firstName}">
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="#{msg.last_name}" width="120">
+							<h:outputText value="#{uni.lastName}">
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="#{msg.start_date}" width="130">
+							<h:outputText value="#{uni.schStartTimeFormat}">
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="#{msg.end_date}" width="130">
+							<h:outputText value="#{uni.schEndTimeFormat}">
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="#{msg.problem}" width="250">
+							<h:outputText value="#{uni.problemDescription}" />
+						</p:column>
+
+						<p:column headerText="#{msg.detail}">
+							<h:outputText value="#{uni.detailInvoice}">
+							</h:outputText>
+						</p:column>
+
+					</p:dataTable>
+
+					<p:spacer height="5" />
+
+					<p:dataTable value="#{invoiceController.invoices}"
+						rendered="#{not empty invoiceController.invoices}" var="uni">
+						<f:facet name="header">
+							<h:outputText value="#{msg.invoices_threshold}" />
+						</f:facet>
+
+						<p:subTable var="thr" value="#{uni.listThresholds}"
+							style="width:90%">
+
+							<f:facet name="header">
+								<h:outputText value="#{uni.dateRange} #{uni.user.fullName}" />
+							</f:facet>
+
+							<p:column width="10%">
+								<h:outputText value="#{thr.fieldAdicional}" />
+							</p:column>
+
+							<p:column width="20%">
+								<h:outputText value="#{thr.metric}" />
+							</p:column>
+							<p:column width="60%">
+								<h:outputText value="#{thr.description}" />
+							</p:column>
+						</p:subTable>
+
+					</p:dataTable>
+				</h:panelGrid>
+
+				<h:panelGrid width="100%">
+
+					<h:panelGrid columns="3" styleClass="panelGridCenter">
+
+						<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+							styleClass="buttonBarra"
+							actionListener="#{invoiceController.approvalInvoices}"
+							validateClient="true"
+							oncomplete="handleAddHoursRequest(xhr, status, args);checkSubmitButton()"
+							update=":frmInvoices,form:uniTable,form:btnSubmit" />
+
+						<p:spacer width="10" />
+
+						<p:commandButton value="Cancel" type="button"
+							onclick="PF('dlgInvoices').hide()" immediate="true"
+							styleClass="buttonBarra" icon="ui-icon-close" />
+
+
+					</h:panelGrid>
+				</h:panelGrid>
+
+			</h:form>
+		</p:dialog>
+
+
+		<script type="text/javascript">
+			function handleAddHoursRequest(xhr, status, args) {
+
+				if (args.validationFailed || args.error) {
+
+				} else {
+					PF('dlgInvoices').hide();
+				}
+
+			}
+		</script>
+
+
+	</sec:authorize>
+
+</ui:composition>

@@ -1,0 +1,398 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+
+
+		<style>
+.myCommandLink:hover {
+	color: #0066cc !important;
+	font-weight: bold;
+}
+</style>
+
+		<h:form id="form"
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="#{msg.invoices_problem}" />
+				</f:facet>
+
+				<f:facet name="right">
+
+					<p:commandButton value="#{msg.print}" icon="ui-icon-print"
+						actionListener="#{printController.printListTable}"
+						styleClass="buttonBarra" oncomplete="PF('dlgPrint').show();">
+						<f:attribute name="report" value="11" />
+						<f:attribute name="title" value="invoices_problem" />
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+
+
+
+			<h:panelGrid styleClass="panel" columns="1">
+
+
+				<h:panelGrid border="0" columns="1">
+					<p:messages id="messages" showDetail="false" autoUpdate="false" />
+				</h:panelGrid>
+
+				<p:remoteCommand name="refreshFooter"
+					update="form:uniTableProblem:rowCount" />
+
+				<p:remoteCommand name="refreshFormNoWork"
+					update=":dlgWorkNoInvoiceId" />
+
+				<p:dataTable var="uni" value="#{problemInvoiceController.lazyModel}"
+					paginator="true" rows="15" paginatorPosition="bottom"
+					paginatorTemplate=" {RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {CurrentPageReport}"
+					rowsPerPageTemplate="#{constant.rowsToShow}" selectionMode="single"
+					widgetVar="uniTableFilProblem" id="uniTableProblem" lazy="true"
+					resizableColumns="false" draggableColumns="true"
+					sortBy="#{uni.iboNumber}" sortOrder="descending" reflow="false"
+					disabledTextSelection="false" style="min-width: 1300px !important">
+
+					<f:facet name="header">
+						<p:outputPanel>
+
+
+							<p:spacer width="10" />
+							<p:commandButton value="Clear filters"
+								actionListener="#{problemInvoiceController.clearFilter}"
+								icon="ui-icon-close" id="btnReset"
+								update="form:uniTableProblem,form:uniTableProblem:cmbProblem"></p:commandButton>
+							<p:spacer width="10" rendered="false" />
+							<p:commandButton id="toggler" type="button" value="Columns"
+								icon="ui-icon-calculator" rendered="false" />
+							<p:columnToggler datasource="uniTableProblem" trigger="toggler"
+								rendered="false" />
+						</p:outputPanel>
+					</f:facet>
+
+					<p:ajax event="filter" oncomplete="refreshFooter()"></p:ajax>
+
+					<f:facet name="footer">
+						<h:outputText id="rowCount"
+							value="#{msg.total_register} #{problemInvoiceController.lazyModel.rowCount}" />
+					</f:facet>
+
+
+					<p:column headerText="#{msg.user_id}" sortBy="#{uni.iboNumber}"
+						width="100" filterBy="#{uni.iboNumber}"
+						filterStyle="width: 90% !important">
+						<h:outputText value="#{uni.iboNumber}">
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="#{msg.first_name}" sortBy="#{uni.firstName}"
+						width="100" filterBy="#{uni.firstName}"
+						filterStyle="width: 90% !important">
+						<h:outputText value="#{uni.firstName}">
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="#{msg.last_name}" sortBy="#{uni.lastName}"
+						width="120" filterBy="#{uni.lastName}"
+						filterStyle="width: 90% !important">
+						<h:outputText value="#{uni.lastName}">
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="#{msg.start_date}"
+						sortBy="#{uni.schStartTime}" width="130">
+						<h:outputText value="#{uni.schStartTimeFormat}">
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="#{msg.end_date}" sortBy="#{uni.schEndTime}"
+						width="130">
+						<h:outputText value="#{uni.schEndTimeFormat}">
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="#{msg.problem}" sortBy="#{uni.problemId}"
+						width="250" filterBy="#{uni.problemId}"
+						filterStyle="width: 90% !important">
+						<f:facet name="filter">
+							<p:selectOneMenu onchange="PF('uniTableFilProblem').filter()"
+								id="cmbProblem" style="width: 200px">
+								<f:selectItem itemLabel="#{msg.select_all}" itemValue="#{null}"
+									noSelectionOption="true" />
+								<f:selectItems value="#{problemInvoiceController.problemList}" />
+							</p:selectOneMenu>
+						</f:facet>
+
+
+						<p:commandLink id="cLinkNote" styleClass="myCommandLink"
+							action="#{problemInvoiceController.fixProblem}">
+							<h:outputText value="#{uni.problemDescription}" />
+							<f:setPropertyActionListener value="#{uni}"
+								target="#{problemInvoiceController.entity}" />
+						</p:commandLink>
+
+
+					</p:column>
+
+					<p:column headerText="#{msg.detail}">
+						<h:outputText value="#{uni.detail}">
+						</h:outputText>
+					</p:column>
+
+				</p:dataTable>
+
+
+
+			</h:panelGrid>
+
+
+		</h:form>
+
+		<ui:include src="/secure/select_format.xhtml"></ui:include>
+
+
+		<p:dialog header="#{msg.details}" widgetVar="dlgRateCero" modal="true"
+			closeOnEscape="true" id="dlgRateCeroId" resizable="false"
+			closable="true" showHeader="true" width="550px" height="200px"
+			minHeight="200">
+			<h:form id="frmRateCero"
+				onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+				<h:panelGrid width="100%">
+
+					<h:panelGrid border="0" columns="1">
+						<p:messages id="messagesRate" showDetail="false" autoUpdate="true"
+							globalOnly="false" />
+					</h:panelGrid>
+
+					<h:panelGrid columns="3">
+
+						<p:outputLabel for="rdbRate" value="Actions:" />
+						<p:selectOneRadio id="rdbRate"
+							value="#{problemInvoiceController.optionRate}">
+							<sec:authorize access="hasAnyRole('SUPER','USER_M')">
+								<f:selectItem itemLabel="Set User Rate" itemValue="User" />
+							</sec:authorize>
+							<sec:authorize access="hasAnyRole('SUPER','CA_M')">
+								<f:selectItem itemLabel="Set Program Rate" itemValue="Program" />
+							</sec:authorize>
+						</p:selectOneRadio>
+
+					</h:panelGrid>
+
+
+
+					<h:panelGrid width="100%">
+						<h:panelGrid columns="3" styleClass="panelGridCenter">
+
+							<p:commandButton value="#{msg.accept}" icon="ui-icon-disk"
+								styleClass="buttonBarra"
+								action="#{problemInvoiceController.fixRate}"
+								validateClient="true"
+								oncomplete="handleRateCeroRequest(xhr, status, args)"
+								update=":frmRateCero" />
+
+							<p:spacer width="10" />
+
+							<p:commandButton value="Cancel" type="button"
+								onclick="PF('dlgRateCero').hide()" immediate="true"
+								styleClass="buttonBarra" icon="ui-icon-close" />
+
+						</h:panelGrid>
+					</h:panelGrid>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog header="#{msg.details}" widgetVar="dlgEventNoProgram"
+			modal="true" closeOnEscape="true" id="dlgEventNoProgramId"
+			resizable="false" closable="true" showHeader="true" width="550px"
+			height="200px" minHeight="200">
+			<h:form id="frmEventNoProgram"
+				onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+				<h:panelGrid width="100%">
+
+					<h:panelGrid border="0" columns="1">
+						<p:messages id="messagesRate" showDetail="false" autoUpdate="true"
+							globalOnly="false" />
+					</h:panelGrid>
+
+					<h:panelGrid columns="3">
+
+						<p:outputLabel for="rdbRate" value="Actions:" />
+						<p:selectOneRadio id="rdbRate"
+							value="#{problemInvoiceController.optionEventNoProgram}">
+
+							<sec:authorize access="hasAnyRole('SUPER','CA_A')">
+								<f:selectItem itemLabel="Add Program" itemValue="Add" />
+							</sec:authorize>
+							<sec:authorize access="hasAnyRole('SUPER','CA_M')">
+								<f:selectItem itemLabel="Edit Program" itemValue="Edit"
+									itemDisabled="!hasAnyRole('SUPER','CA_M')" />
+
+								<p:ajax event="change" update="pngProgram" />
+							</sec:authorize>
+
+						</p:selectOneRadio>
+						<h:outputText value="" />
+
+					</h:panelGrid>
+
+					<sec:authorize access="hasAnyRole('SUPER','CA_M')">
+						<h:panelGrid columns="3" id="pngProgram">
+							<p:outputLabel value="#{msg.client_application}" for="cmbCA"
+								id="txtCA"
+								rendered="#{problemInvoiceController.optionEventNoProgram == 'Edit' ? 'true' : 'false'}" />
+							<p:selectOneMenu id="cmbCA"
+								rendered="#{problemInvoiceController.optionEventNoProgram == 'Edit' ? true : false}"
+								value="#{problemInvoiceController.program}"
+								converter="entityConverter" filter="true"
+								filterMatchMode="contains" style="width: 312px;" required="true"
+								requiredMessage="#{msg.client_application}: #{msg.value_required}">
+								<f:selectItem itemLabel="#{msg.select_one}" itemValue="#{null}"
+									noSelectionOption="true" />
+								<f:selectItems value="#{clientApplicationController.listActive}"
+									var="ca" itemLabel="#{ca.name}" itemValue="#{ca}" />
+								<p:clientValidator event="blur" />
+							</p:selectOneMenu>
+							<p:message for="cmbCA" display="icon"
+								rendered="#{problemInvoiceController.optionEventNoProgram == 'Edit' ? true : false}"
+								id="msgCa" />
+						</h:panelGrid>
+					</sec:authorize>
+
+					<h:panelGrid width="100%">
+						<h:panelGrid columns="3" styleClass="panelGridCenter">
+
+							<p:commandButton value="#{msg.accept}" icon="ui-icon-disk"
+								styleClass="buttonBarra"
+								action="#{problemInvoiceController.fixEventNoProgram}"
+								validateClient="true"
+								oncomplete="handleEventNoProgramRequest(xhr, status, args)"
+								update=":frmEventNoProgram" />
+
+							<p:spacer width="10" />
+
+							<p:commandButton value="Cancel" type="button"
+								onclick="PF('dlgEventNoProgram').hide()" immediate="true"
+								styleClass="buttonBarra" icon="ui-icon-close" />
+
+						</h:panelGrid>
+					</h:panelGrid>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+
+		<p:dialog header="#{msg.details}" widgetVar="dlgWorkNoInvoice"
+			modal="true" closeOnEscape="true" id="dlgWorkNoInvoiceId"
+			resizable="false" closable="true" showHeader="true" width="550px"
+			height="200px" minHeight="200">
+			<h:form id="frmWorkNoInvoice"
+				onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+				<h:panelGrid width="100%">
+
+					<h:panelGrid border="0" columns="1">
+						<p:messages id="messagesWorkNoInvoice" showDetail="false"
+							autoUpdate="true" globalOnly="false" />
+					</h:panelGrid>
+
+					<h:panelGrid columns="3">
+
+						<p:outputLabel for="rdbRate" value="Actions:" />
+						<p:selectOneRadio id="rdbRate"
+							value="#{problemInvoiceController.optionInvoice}" required="true"
+							requiredMessage="Actions: #{msg.value_required}">
+							<f:selectItems
+								value="#{problemInvoiceController.actionWorkWithoutInvoice}"
+								var="c" itemLabel="#{c[1]}" itemValue="#{c[0]}" />
+							<p:ajax event="change" update="pngInvoice" />
+						</p:selectOneRadio>
+						<p:message for="rdbRate" display="icon" />
+
+					</h:panelGrid>
+
+
+					<h:panelGrid columns="3" id="pngInvoice">
+						<p:outputLabel value="#{msg.invoice}" for="cmbInvoice"
+							rendered="#{problemInvoiceController.optionInvoice == 'AddInvoice' ? 'true' : 'false'}" />
+						<p:selectOneMenu id="cmbInvoice"
+							rendered="#{problemInvoiceController.optionInvoice == 'AddInvoice' ? true : false}"
+							value="#{problemInvoiceController.invoice}"
+							converter="entityConverter" filter="true"
+							filterMatchMode="contains" style="width: 312px;" required="true"
+							requiredMessage="#{msg.invoice}: #{msg.value_required}">
+							<f:selectItem itemLabel="#{msg.select_one}" itemValue="#{null}"
+								noSelectionOption="true" />
+							<f:selectItems value="#{problemInvoiceController.invoices}"
+								var="inv" itemLabel="#{inv.number}" itemValue="#{inv}" />
+							<p:clientValidator event="blur" />
+						</p:selectOneMenu>
+						<p:message for="cmbInvoice" display="icon"
+							rendered="#{problemInvoiceController.optionInvoice == 'AddInvoice' ? true : false}" />
+					</h:panelGrid>
+
+
+					<h:panelGrid width="100%">
+						<h:panelGrid columns="3" styleClass="panelGridCenter">
+
+							<p:commandButton value="#{msg.accept}" icon="ui-icon-disk"
+								styleClass="buttonBarra"
+								action="#{problemInvoiceController.fixWorkWithoutInvoice}"
+								validateClient="true"
+								oncomplete="handleWorkNoInvoiceRequest(xhr, status, args)"
+								update=":frmWorkNoInvoice" />
+
+							<p:spacer width="10" />
+
+							<p:commandButton value="Cancel" type="button"
+								onclick="PF('dlgWorkNoInvoice').hide()" immediate="true"
+								styleClass="buttonBarra" icon="ui-icon-close" />
+
+						</h:panelGrid>
+					</h:panelGrid>
+				</h:panelGrid>
+			</h:form>
+		</p:dialog>
+
+
+		<script type="text/javascript">
+			function handleWorkNoInvoiceRequest(xhr, status, args) {
+
+				if (args.validationFailed || args.error) {
+
+				} else {
+					PF('dlgWorkNoInvoice').hide();
+					PF('uniTableFilProblem').filter();
+				}
+
+			}
+
+			function handleRateCeroRequest(xhr, status, args) {
+
+				if (args.validationFailed || args.error) {
+
+				} else {
+					PF('dlgRateCero').hide();
+				}
+
+			}
+
+			function handleEventNoProgramRequest(xhr, status, args) {
+
+				if (args.validationFailed || args.error) {
+
+				} else {
+					PF('dlgEventNoProgram').hide();
+				}
+
+			}
+		</script>
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,12 @@
+package reporte.data;
+
+import java.io.Serializable;
+
+public class ReportColumn implements Serializable, Comparable {
+
+	public int compareTo(Object o) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+}

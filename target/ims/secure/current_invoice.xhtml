@@ -1,0 +1,616 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+
+		<style>
+.ui-spinner-input {
+	background-color: white !important;
+}
+
+.ui-datatable .ui-datatable-header {
+	text-align: left !important;
+}
+
+.myCommandLink:hover {
+	color: #0066cc !important;
+	font-weight: bold;
+}
+</style>
+
+		<h:form id="form"
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="#{msg.current_invoice}" />
+				</f:facet>
+
+				<f:facet name="right">
+
+					<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')"
+						ifNotGranted="IBO">
+
+						<p:commandButton value="#{msg.add} #{msg.incentive}"
+							icon="ui-icon-plus" onclick="PF('dlgIncentive').show()"
+							immediate="true" styleClass="buttonBarra" update="frmIncentive"
+							rendered="#{currentInvoiceController.invoice.editInvoice}"
+							actionListener="#{currentInvoiceController.cleanIncentive}">
+							<f:setPropertyActionListener value="true"
+								target="#{currentInvoiceController.insertedIncentive}" />
+
+						</p:commandButton>
+
+						<p:spacer width="10"
+							rendered="#{currentInvoiceController.invoice.editInvoice}" />
+
+
+						<p:commandButton value="#{msg.return_invoices}"
+							icon="ui-icon ui-icon-arrowreturnthick-1-e"
+							action="#{currentInvoiceController.cancelChangeGeneral}"
+							styleClass="buttonBarra" immediate="true" update="form"
+							rendered="#{not empty currentInvoiceController.back}" />
+
+						<p:spacer width="10"
+							rendered="#{not empty currentInvoiceController.back}" />
+					</sec:authorize>
+
+					<sec:authorize access="hasAnyRole('IBO')">
+
+						<p:commandButton value="#{msg.submit}" icon="ui-icon-check"
+							action="#{currentInvoiceController.submitInvoice}"
+							styleClass="buttonBarra" update="form" widgetVar="btnSubmit"
+							id="btnSubmitId"
+							rendered="#{currentInvoiceController.showButtonIbo}"
+							disabled="#{currentInvoiceController.disabledSubmit}">
+							<p:confirm icon="ui-icon-alert" />
+						</p:commandButton>
+
+						<p:spacer width="10"
+							rendered="#{currentInvoiceController.showButtonIbo}" />
+					</sec:authorize>
+
+					<!-- 
+					<p:commandButton id="btnMessage"
+						value="#{currentInvoiceController.invoice.buttonDescription}"
+						icon="ui-icon-help" styleClass="buttonBarra"
+						action="#{messageBoardController.openMessageBoard}"
+						oncomplete="PF('dlgDetail').show()" update="dlgDetailId"
+						rendered="#{not empty currentInvoiceController.invoice.id}">
+						<f:setPropertyActionListener
+							value="#{currentInvoiceController.invoice}"
+							target="#{messageBoardController.invoice}" />
+					</p:commandButton>
+
+					<p:spacer width="10" />
+ -->
+					<p:commandButton value="#{msg.print}" icon="ui-icon-print"
+						actionListener="#{printController.printInvoiceSearchDetail}"
+						styleClass="buttonBarra" update="messages"
+						oncomplete="PF('dlgPrint').show();"
+						rendered="#{not empty currentInvoiceController.invoice.id}">
+						<f:attribute name="report" value="7" />
+						<f:attribute name="invoice"
+							value="#{currentInvoiceController.invoice}" />
+					</p:commandButton>
+
+				</f:facet>
+			</p:toolbar>
+
+
+			<h:panelGrid styleClass="panel" columns="1">
+
+				<h:panelGrid border="0" columns="1">
+					<p:messages id="messages" showDetail="false" autoUpdate="false" />
+				</h:panelGrid>
+
+				<sec:authorize ifNotGranted="IBO">
+					<h:panelGrid columns="2">
+						<p:outputLabel value="#{msg.user}" for="cmbIbo"
+							rendered="#{currentInvoiceController.showUser}" />
+						<p:selectOneMenu id="cmbIbo"
+							rendered="#{currentInvoiceController.showUser}"
+							value="#{currentInvoiceController.user}"
+							converter="entityConverter" filter="true"
+							filterMatchMode="contains" style="width: 312px;">
+							<p:ajax listener="#{currentInvoiceController.onUserChange}"
+								update="form" ignoreAutoUpdate="true" />
+
+							<f:selectItem itemLabel="#{msg.select_one}" itemValue="#{null}" />
+							<f:selectItems value="#{profileController.listActiveIbo}"
+								var="ibo" itemLabel="#{ibo.nameSelectOne}" itemValue="#{ibo}" />
+						</p:selectOneMenu>
+					</h:panelGrid>
+				</sec:authorize>
+
+				<h:panelGrid columns="5" columnClasses="righted,bold,,righted,bold"
+					rendered="#{not empty currentInvoiceController.invoice &amp;&amp; empty currentInvoiceController.message}">
+
+
+					<h:outputText value="#{msg.user_id}" />
+					<h:outputText
+						value="#{currentInvoiceController.invoice.user.number}" />
+
+
+					<p:spacer width="15" />
+
+
+					<h:outputText value="#{msg.corporation_name}" />
+					<h:outputText
+						value="#{empty currentInvoiceController.invoice.user.corporationName ? '---' : currentInvoiceController.invoice.user.corporationName}" />
+
+
+					<h:outputText value="Full name" />
+					<h:outputText
+						value="#{currentInvoiceController.invoice.user.fullName}" />
+
+
+					<p:spacer width="15" />
+					<p:spacer width="15" />
+					<p:spacer width="15" />
+
+					<h:outputText value="#{msg.invoice_from}" />
+					<h:outputText
+						value="#{currentInvoiceController.invoice.startDateFormat}" />
+
+					<p:spacer width="15" />
+
+					<h:outputText value="#{msg.to}" />
+					<h:outputText
+						value="#{currentInvoiceController.invoice.endDateFormat}" />
+
+					<h:outputText value="#{msg.pay_date}" />
+					<h:outputText value="#{currentInvoiceController.invoice.payDate}">
+						<f:convertDateTime pattern="MM/dd/yyyy" />
+					</h:outputText>
+
+					<p:spacer width="15" />
+
+					<h:outputText value="#{msg.number}" />
+					<h:outputText value="#{currentInvoiceController.invoice.number}" />
+
+					<h:outputText value="#{msg.state}" />
+					<h:outputText
+						value="#{currentInvoiceController.invoice.state.name}" />
+
+					<p:spacer width="15" />
+
+					<h:outputText value="" />
+					<h:outputText value="" />
+
+
+					<h:outputText value="#{msg.import_total}" />
+					<h:outputText
+						value="#{currentInvoiceController.invoice.importTotal}"
+						id="otxImportTotal">
+						<f:convertNumber currencySymbol="$" type="currency"
+							minFractionDigits="#{applicationBean.systemConf.decimal}"
+							maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+					</h:outputText>
+
+					<p:spacer width="15" />
+
+					<h:outputText value="#{msg.admin_fee}" />
+					<h:outputText value="#{currentInvoiceController.invoice.adminFee}">
+						<f:convertNumber currencySymbol="$" type="currency"
+							minFractionDigits="#{applicationBean.systemConf.decimal}"
+							maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+					</h:outputText>
+
+
+
+				</h:panelGrid>
+
+				<p:growl id="msgs" showDetail="true" />
+
+
+
+				<p:dataTable var="uni"
+					value="#{currentInvoiceController.invoice.invoiceWork}"
+					paginator="false" widgetVar="uniTableFil" id="uniTable"
+					editable="true" style="min-width: 1000px !important"
+					rendered="#{not empty currentInvoiceController.invoice.invoiceWork}">
+
+
+					<p:column headerText="#{msg.start_date}" width="150">
+						<h:outputText value="#{uni.schStartTimeFormat}" />
+					</p:column>
+
+					<p:column headerText="#{msg.end_date}" width="150">
+						<h:outputText value="#{uni.schEndTimeFormat}" />
+					</p:column>
+
+
+					<p:column headerText="#{msg.client_application}" width="20%">
+						<h:outputText value="#{uni.descriptionTask}" />
+					</p:column>
+
+					<p:column headerText="#{msg.logged_time} (hours)" width="10%"
+						styleClass="righted">
+						<h:outputText value="#{uni.loggedTime} ">
+							<f:convertNumber
+								minFractionDigits="#{applicationBean.systemConf.decimal}"
+								maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="#{msg.not_ready_time} (hours)" width="10%"
+						styleClass="righted">
+						<h:outputText value="#{uni.totalNotReadyHours}">
+							<f:convertNumber
+								minFractionDigits="#{applicationBean.systemConf.decimal}"
+								maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="#{msg.actual_service} (hours)" width="10%"
+						styleClass="righted">
+						<h:outputText value="#{uni.totalReadyHours}">
+							<f:convertNumber
+								minFractionDigits="#{applicationBean.systemConf.decimal}"
+								maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+						</h:outputText>
+					</p:column>
+
+
+					<p:column headerText="#{msg.rate}" width="10%" styleClass="righted">
+						<h:outputText value="#{uni.amount}">
+							<f:convertNumber currencySymbol="$" type="currency"
+								minFractionDigits="#{applicationBean.systemConf.decimal}"
+								maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+						</h:outputText>
+					</p:column>
+
+					<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+						<p:column width="10%" headerText="#{msg.hours_added}"
+							styleClass="righted" rendered="false"
+							style="background-color: ##{applicationBean.systemConf.color}; color: ##{applicationBean.systemConf.fontColor}">
+							<h:outputText value="#{uni.hoursAdded}">
+								<f:convertNumber currencySymbol="$" type="currency"
+									minFractionDigits="#{applicationBean.systemConf.decimal}"
+									maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+							</h:outputText>
+						</p:column>
+					</sec:authorize>
+
+
+					<p:column headerText="#{msg.hours_added}" width="10%"
+						styleClass="righted">
+						<p:commandLink styleClass="myCommandLink"
+							actionListener="#{currentInvoiceController.showHoursAdded}">
+							<h:outputText value="#{uni.hoursAdded}">
+								<f:convertNumber
+									minFractionDigits="#{applicationBean.systemConf.decimal}"
+									maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+							</h:outputText>
+							<f:setPropertyActionListener value="#{uni}"
+								target="#{currentInvoiceController.invoiceWork}" />
+						</p:commandLink>
+					</p:column>
+
+
+					<p:column headerText="#{msg.service_revenue}" width="10%"
+						styleClass="righted">
+						<h:outputText value="#{uni.importTotal}">
+							<f:convertNumber currencySymbol="$" type="currency"
+								minFractionDigits="#{applicationBean.systemConf.decimal}"
+								maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+						</h:outputText>
+					</p:column>
+
+
+					<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+						<p:column style="text-align: center" width="30" toggleable="false"
+							exportable="false"
+							rendered="#{currentInvoiceController.invoice.editInvoice}">
+							<p:commandButton icon="ui-icon-pencil" id="cmdDetail"
+								oncomplete="PF('dlgHours').show();"
+								update="dlgHoursId,frmHours,frmHours:uniTable"
+								action="#{currentInvoiceController.chargeListHours}">
+								<f:setPropertyActionListener value="#{uni}"
+									target="#{currentInvoiceController.invoiceWork}" />
+							</p:commandButton>
+							<p:tooltip for="cmdDetail" value="#{msg.add}/#{msg.edit} Hours" />
+						</p:column>
+					</sec:authorize>
+
+
+					<p:columnGroup type="footer">
+						<p:row>
+							<p:column colspan="3"
+								style="text-align:right; font-weight: bold;"
+								footerText="Totals:"></p:column>
+							<p:column styleClass="boldAlingRight">
+								<f:facet name="footer">
+									<h:outputText value="#{currentInvoiceController.loggedTime}">
+										<f:convertNumber
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+							</p:column>
+							<p:column styleClass="boldAlingRight">
+								<f:facet name="footer">
+									<h:outputText
+										value="#{currentInvoiceController.totalNotReadyHours}">
+										<f:convertNumber
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+							</p:column>
+							<p:column styleClass="boldAlingRight">
+								<f:facet name="footer">
+									<h:outputText
+										value="#{currentInvoiceController.totalReadyHours}">
+										<f:convertNumber
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+
+							</p:column>
+							<p:column footerText="" />
+
+							<p:column styleClass="boldAlingRight">
+
+								<f:facet name="footer">
+									<h:outputText value="#{currentInvoiceController.hoursAdd}">
+										<f:convertNumber
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+							</p:column>
+
+
+							<p:column styleClass="boldAlingRight">
+								<f:facet name="footer">
+									<h:outputText value="#{currentInvoiceController.importTotal}">
+										<f:convertNumber currencySymbol="$" type="currency"
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+							</p:column>
+							<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+								<p:column styleClass="bold">
+									<f:facet name="footer">
+										<h:outputText value="" />
+									</f:facet>
+								</p:column>
+							</sec:authorize>
+						</p:row>
+					</p:columnGroup>
+
+				</p:dataTable>
+
+				<p:spacer height="5"
+					rendered="#{not empty currentInvoiceController.invoice.incentive}" />
+				<h:panelGrid id="pngIncentive" width="100%">
+					<p:dataTable var="uni"
+						value="#{currentInvoiceController.invoice.incentive}"
+						paginator="false" widgetVar="uniTableIncentive"
+						id="uniTableIncentive" editable="true"
+						style="min-width: 1000px !important"
+						rendered="#{not empty currentInvoiceController.invoice.incentive}">
+
+						<f:facet name="header">
+							<h:outputText value="#{msg.incentive}/#{msg.adjust}" />
+						</f:facet>
+
+						<p:column headerText="#{msg.date}" width="10%">
+							<h:outputText value="#{uni.date}">
+								<f:convertDateTime pattern="MM/dd/yyyy" />
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="#{msg.amount}" width="10%"
+							styleClass="righted">
+							<h:outputText value="#{uni.amount}">
+								<f:convertNumber currencySymbol="$" type="currency"
+									minFractionDigits="#{applicationBean.systemConf.decimal}"
+									maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="#{msg.type}" width="25">
+							<h:outputText value="#{uni.type}">
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="#{msg.descripcion}" width="30%">
+							<h:outputText value="#{uni.description}" />
+						</p:column>
+
+						<p:column headerText="#{msg.skill}" width="40%">
+							<h:outputText value="#{uni.skill.name}" />
+						</p:column>
+
+						<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+							<p:column style="text-align: center" width="30"
+								toggleable="false" exportable="false"
+								rendered="#{currentInvoiceController.invoice.editInvoice}">
+								<p:commandButton icon="ui-icon-pencil" id="cmdEdit"
+									oncomplete="PF('dlgIncentive').show();" update="dlgIncentiveId">
+									<f:setPropertyActionListener value="#{uni}"
+										target="#{currentInvoiceController.incentive}" />
+									<f:setPropertyActionListener value="#{uni.skill}"
+										target="#{currentInvoiceController.skill}" />
+									<f:setPropertyActionListener value="false"
+										target="#{currentInvoiceController.insertedIncentive}" />
+								</p:commandButton>
+								<p:tooltip for="cmdEdit" value="#{msg.edit}" />
+							</p:column>
+						</sec:authorize>
+
+						<p:column style="text-align: center;" width="30"
+							toggleable="false" exportable="false">
+							<p:commandButton icon="ui-icon-zoomin" id="cmdDetail"
+								oncomplete="PF('dlgIncentiveDetail').show();"
+								update="form:dlgIncentiveDetailId">
+								<f:setPropertyActionListener value="#{uni}"
+									target="#{currentInvoiceController.incentive}" />
+
+							</p:commandButton>
+
+							<p:tooltip for="cmdDetail" value="#{msg.details}" />
+						</p:column>
+
+					</p:dataTable>
+				</h:panelGrid>
+
+
+				<p:spacer height="5"
+					rendered="#{not empty currentInvoiceController.invoice.phoneSystemDetail}" />
+				<h:panelGrid id="pngPhoneSystem" width="100%">
+
+					<p:dataTable var="uni"
+						value="#{currentInvoiceController.invoice.phoneSystemDetail}"
+						scrollRows="100" scrollable="true" liveScroll="true"
+						scrollHeight="400" style="margin-bottom:0" widgetVar="uniTablePS"
+						id="uniTablePSId"
+						rendered="#{not empty currentInvoiceController.invoice.phoneSystemDetail}">
+
+						<f:facet name="header">
+							<h:outputText value="#{msg.phone_system_records}" />
+						</f:facet>
+
+						<p:column headerText="#{msg.start_date}">
+							<h:outputText value="#{uni.startDateFormat}" />
+						</p:column>
+
+						<p:column headerText="#{msg.end_date}">
+							<h:outputText value="#{uni.endDateFormat}" />
+						</p:column>
+
+						<p:column headerText="#{msg.from}">
+							<h:outputText value="#{uni.placeName}" />
+						</p:column>
+
+						<p:column headerText="#{msg.event_type}">
+							<h:outputText value="#{uni.eventTypeName}" />
+						</p:column>
+
+						<p:column headerText="#{msg.duration}">
+							<h:outputText value="#{uni.durationHours}" />
+						</p:column>
+
+						<p:column headerText="#{msg.reason_code}">
+							<h:outputText value="#{uni.stateDescription}" />
+						</p:column>
+
+						<p:column width="50">
+							<f:facet name="header">
+								<h:outputText value="#{msg.included}" id="clmQuestionHeader" />
+								<p:tooltip value="#{msg.included_invoice}"
+									for="clmQuestionHeader" />
+							</f:facet>
+							<p:outputPanel style="text-align: center;">
+								<h:graphicImage value="/img/checkmark.gif" width="16px"
+									rendered="#{uni.associateInvoice}" />
+							</p:outputPanel>
+						</p:column>
+
+					</p:dataTable>
+				</h:panelGrid>
+
+
+
+				<p:outputLabel value="#{currentInvoiceController.message}"
+					styleClass="info"></p:outputLabel>
+
+
+				<ui:include src="/secure/confirmation_modify.xhtml"></ui:include>
+
+				<ui:include src="/secure/confirmation_delete.xhtml"></ui:include>
+
+
+			</h:panelGrid>
+
+			<ui:include src="/secure/dialog_incentive.xhtml"></ui:include>
+		</h:form>
+
+		<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+			<p:dialog header="#{msg.confirm}" widgetVar="dlgConfirmationSave"
+				modal="true" closeOnEscape="true" id="tblConfirmationSave"
+				resizable="false" closable="false" showHeader="true" width="400px"
+				height="150px">
+
+				<h:form
+					onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit') return true; else return false;}">
+
+					<h:panelGrid width="100%">
+						<h:outputText value="#{msg.change_without_save}" />
+
+						<h:panelGrid columnClasses="panelAling" width="100%">
+							<h:panelGrid columns="3" columnClasses="panelAling">
+								<p:commandButton value="Save"
+									oncomplete="handleInvoiceRequest(xhr, status, args)"
+									immediate="true" styleClass="buttonBarra" icon="ui-icon-check"
+									actionListener="#{currentInvoiceController.saveChange}" />
+
+								<p:spacer width="10" />
+
+								<p:commandButton value="Cancel"
+									oncomplete="PF('dlgConfirmationSave').hide()" immediate="true"
+									styleClass="buttonBarra" icon="ui-icon-close"
+									actionListener="#{currentInvoiceController.cancelChange}" />
+							</h:panelGrid>
+						</h:panelGrid>
+					</h:panelGrid>
+				</h:form>
+			</p:dialog>
+
+
+			<ui:include src="/secure/dialog_add_hours.xhtml"></ui:include>
+
+
+			<ui:include src="/secure/dialog_add_incentive.xhtml"></ui:include>
+
+		</sec:authorize>
+
+		<!-- 
+		<ui:include src="/secure/dialog_send_question.xhtml" ></ui:include>
+ -->
+		<ui:include src="/secure/dialog_hours.xhtml"></ui:include>
+
+
+
+		<script type="text/javascript">
+			function handleSendEmailRequest(xhr, status, args) {
+				if (args.validationFailed || args.error) {
+
+				} else {
+					PF('dlgDetail').hide();
+				}
+			}
+
+			function handleInvoiceRequest(xhr, status, args) {
+				if (args.validationFailed || args.error) {
+
+				} else {
+					PF('dlgConfirmationSave').hide();
+				}
+			}
+
+			function handleIncentiveRequest(xhr, status, args) {
+
+				if (args.validationFailed || args.error) {
+
+				} else {
+					PF('dlgIncentive').hide();
+				}
+
+			}
+		</script>
+
+		<ui:include src="/secure/select_format.xhtml"></ui:include>
+	</ui:define>
+
+</ui:composition>

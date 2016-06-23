@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd"
+	version="2.2">
+
+
+	<!-- Enable Spring -->
+	<application>
+		<el-resolver>org.springframework.web.jsf.el.SpringBeanFacesELResolver
+		</el-resolver>
+	</application>
+
+
+	<application>
+		<el-resolver>
+			org.primefaces.application.exceptionhandler.PrimeExceptionHandlerELResolver
+		</el-resolver>
+	</application>
+
+	<factory>
+		<exception-handler-factory>
+			org.primefaces.application.exceptionhandler.PrimeExceptionHandlerFactory
+		</exception-handler-factory>
+	</factory>
+
+
+
+
+
+	<application>
+		<locale-config>
+			<default-locale>en</default-locale>
+		</locale-config>
+		<resource-bundle>
+			<base-name>message</base-name>
+			<var>msg</var>
+		</resource-bundle>
+		<resource-bundle>
+			<base-name>message_error</base-name>
+			<var>emsg</var>
+		</resource-bundle>
+	</application>
+
+
+	<navigation-rule>
+
+		<navigation-case>
+			<from-outcome>start</from-outcome>
+			<to-view-id>/public/login.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+
+		<navigation-case>
+			<from-outcome>loggedout</from-outcome>
+			<to-view-id>/public/login.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-case>
+			<from-outcome>default</from-outcome>
+			<to-view-id>/secure/default.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-case>
+			<from-outcome>logsystem</from-outcome>
+			<to-view-id>/secure/logsystem.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-case>
+			<from-outcome>invoices_problem</from-outcome>
+			<to-view-id>/secure/invoices_problem.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-rule>
+			<from-view-id>/secure/invoices_problem.xhtml
+			</from-view-id>
+			<navigation-case>
+				<from-outcome>user_edit</from-outcome>
+				<to-view-id>/secure/user_edit.xhtml
+				</to-view-id>
+				<redirect />
+			</navigation-case>
+
+			<navigation-case>
+				<from-outcome>program_edit</from-outcome>
+				<to-view-id>/secure/client_application_edit.xhtml
+				</to-view-id>
+				<redirect />
+			</navigation-case>
+		</navigation-rule>
+
+		<navigation-case>
+			<from-outcome>phonesystem</from-outcome>
+			<to-view-id>/secure/phonesystem.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-case>
+			<from-outcome>corporation_problem</from-outcome>
+			<to-view-id>/secure/corporation_problem.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+
+		<navigation-case>
+			<from-outcome>rol</from-outcome>
+			<to-view-id>/secure/rol.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-case>
+			<from-outcome>general_configuration</from-outcome>
+			<to-view-id>/secure/general_configuration.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-case>
+			<from-outcome>email_configuration</from-outcome>
+			<to-view-id>/secure/email_configuration.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-case>
+			<from-outcome>system_configuration</from-outcome>
+			<to-view-id>/secure/system_configuration.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-case>
+			<from-outcome>threshold</from-outcome>
+			<to-view-id>/secure/threshold.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+
+		<navigation-case>
+			<from-outcome>phone_system_skills</from-outcome>
+			<to-view-id>/secure/phone_system_skills.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+
+		<navigation-case>
+			<from-outcome>skills</from-outcome>
+			<to-view-id>/secure/skills.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+
+		<navigation-case>
+			<from-outcome>client_application</from-outcome>
+			<to-view-id>/secure/client_application.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-case>
+			<from-outcome>groups</from-outcome>
+			<to-view-id>/secure/groups.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-case>
+			<from-outcome>user</from-outcome>
+			<to-view-id>/secure/user.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-case>
+			<from-outcome>onboarding</from-outcome>
+			<to-view-id>/secure/onboarding.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-case>
+			<from-outcome>myaccount</from-outcome>
+			<to-view-id>/secure/myaccount.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-case>
+			<from-outcome>bank</from-outcome>
+			<to-view-id>/secure/bank_edit.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+
+		<navigation-case>
+			<from-outcome>current_invoice</from-outcome>
+			<to-view-id>/secure/current_invoice.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+
+		<navigation-case>
+			<from-outcome>invoices</from-outcome>
+			<to-view-id>/secure/invoices.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-case>
+			<from-outcome>message_board</from-outcome>
+			<to-view-id>/secure/message_board.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-case>
+			<from-outcome>invoices_history</from-outcome>
+			<to-view-id>/secure/invoices_history.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-case>
+			<from-outcome>category</from-outcome>
+			<to-view-id>/secure/category.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+
+		<navigation-case>
+			<from-outcome>pay_processed</from-outcome>
+			<to-view-id>/secure/pay_processed.xhtml</to-view-id>
+			<redirect />
+		</navigation-case>
+
+
+
+	</navigation-rule>
+
+
+	<navigation-rule>
+		<from-view-id>/secure/rol.xhtml
+		</from-view-id>
+
+		<navigation-case>
+			<from-outcome>add</from-outcome>
+			<to-view-id>/secure/rol_edit.xhtml
+			</to-view-id>
+			<redirect />
+		</navigation-case>
+
+		<navigation-case>
+			<from-outcome>edit</from-outcome>
+			<to-view-id>/secure/rol_edit.xhtml
+			</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+
+
+
+	<navigation-rule>
+		<from-view-id>/secure/general_configuration.xhtml
+		</from-view-id>
+		<navigation-case>
+			<from-outcome>edit</from-outcome>
+			<to-view-id>/secure/gen_conf_edit.xhtml
+			</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>/secure/email_configuration.xhtml
+		</from-view-id>
+		<navigation-case>
+			<from-outcome>edit</from-outcome>
+			<to-view-id>/secure/email_conf_edit.xhtml
+			</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>/secure/system_configuration.xhtml
+		</from-view-id>
+		<navigation-case>
+			<from-outcome>edit</from-outcome>
+			<to-view-id>/secure/system_conf_edit.xhtml
+			</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>/secure/client_application.xhtml
+		</from-view-id>
+		<navigation-case>
+			<from-outcome>add</from-outcome>
+			<to-view-id>/secure/client_application_edit.xhtml
+			</to-view-id>
+			<redirect />
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>edit</from-outcome>
+			<to-view-id>/secure/client_application_edit.xhtml
+			</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+
+	<navigation-rule>
+		<from-view-id>/secure/skills.xhtml
+		</from-view-id>
+		<navigation-case>
+			<from-outcome>add</from-outcome>
+			<to-view-id>/secure/skill_edit.xhtml
+			</to-view-id>
+			<redirect />
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>edit</from-outcome>
+			<to-view-id>/secure/skill_edit.xhtml
+			</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>/secure/groups.xhtml
+		</from-view-id>
+		<navigation-case>
+			<from-outcome>add</from-outcome>
+			<to-view-id>/secure/groups_edit.xhtml
+			</to-view-id>
+			<redirect />
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>edit</from-outcome>
+			<to-view-id>/secure/groups_edit.xhtml
+			</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+	<navigation-rule>
+		<from-view-id>/secure/user.xhtml
+		</from-view-id>
+		<navigation-case>
+			<from-outcome>add</from-outcome>
+			<to-view-id>/secure/user_edit.xhtml
+			</to-view-id>
+			<redirect />
+		</navigation-case>
+		<navigation-case>
+			<from-outcome>edit</from-outcome>
+			<to-view-id>/secure/user_edit.xhtml
+			</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+
+	<navigation-rule>
+		<from-view-id>/secure/onboarding.xhtml
+		</from-view-id>
+		<navigation-case>
+			<from-outcome>add</from-outcome>
+			<to-view-id>/secure/user_edit.xhtml
+			</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+
+	<navigation-rule>
+		<from-view-id>/secure/invoices.xhtml
+		</from-view-id>
+		<navigation-case>
+			<from-outcome>edit</from-outcome>
+			<to-view-id>/secure/current_invoice.xhtml
+			</to-view-id>
+			<redirect />
+		</navigation-case>
+	</navigation-rule>
+
+</faces-config>

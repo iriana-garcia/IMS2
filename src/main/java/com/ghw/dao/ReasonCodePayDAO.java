@@ -1,0 +1,1 @@
+package com.ghw.dao;import com.ghw.model.ReasonCodePay;public interface ReasonCodePayDAO extends GenericDAO<ReasonCodePay, String> {}

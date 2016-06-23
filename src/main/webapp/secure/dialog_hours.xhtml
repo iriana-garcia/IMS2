@@ -1,0 +1,42 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<p:dialog header="#{msg.hours_added}" widgetVar="dlgHoursDetail"
+		modal="true" closeOnEscape="true" id="dlgHoursDetailId"
+		resizable="false" closable="true" showHeader="true" width="750px"
+		height="400px" minHeight="300">
+		<h:panelGrid width="100%">
+
+			<p:dataTable var="uni"
+				value="#{currentInvoiceController.invoiceWork.hoursAddeds}"
+				widgetVar="uniTableFi3l" id="uniTable3"
+				disabledTextSelection="false" style="min-width: 600px !important"
+				rowKey="#{uni.id}">
+
+				<p:column headerText="#{msg.hours}" width="20%" styleClass="righted">
+					<h:outputText value="#{uni.hours}">
+						<f:convertNumber
+							minFractionDigits="#{applicationBean.systemConf.decimal}"
+							maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="#{msg.category}" width="30%">
+					<h:outputText value="#{uni.category.name}" />
+				</p:column>
+
+				<p:column headerText="#{msg.descripcion}" width="60%">
+					<h:outputText value="#{uni.description}" />
+				</p:column>
+
+			</p:dataTable>
+		</h:panelGrid>
+	</p:dialog>
+
+
+
+</ui:composition>

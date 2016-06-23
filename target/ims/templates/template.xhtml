@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+	<h:outputStylesheet name="theme.css" library="css" />
+	<title><ui:insert name="title">IMS v1.0</ui:insert></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<div class="encabezado">
+		<div class="banner"></div>
+	</div>
+</h:head>
+
+
+
+<body style="background: #e0e0e0">
+
+
+
+	<noscript>
+		<div>
+			<p>
+				JavaScript esta desabilitado o no es soportado por el navegador. <br />
+				Esta aplicacion web necesita JavaScript para funcionar
+				correctamente. <br /> Habilite JavaScript en las preferencias del
+				navegador o utilice un navegador con soporte para JavaScript
+			</p>
+		</div>
+	</noscript>
+
+	
+	<div id="app">
+
+
+		<div id="content">
+
+			<div id="menubar">
+
+				<ui:insert name="menu"></ui:insert>
+
+			</div>
+
+			<ui:insert name="body">aplicacion</ui:insert>
+			<ui:insert name="espere"></ui:insert>
+			<!-- <rich:messages layout="table"></rich:messages> -->
+		</div>
+	</div>
+
+	<div id="footer">
+		<ui:insert name="footer"></ui:insert>
+	</div>
+</body>
+</html>

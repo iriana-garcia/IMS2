@@ -1,0 +1,245 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+
+
+		<style>
+.myCommandLink:hover {
+	color: #0066cc !important;
+	font-weight: bold;
+}
+</style>
+
+
+
+		<h:form id="form"
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="#{msg.corporation_issues}" />
+				</f:facet>
+
+				<f:facet name="right">
+
+					<p:commandButton value="#{msg.print}" icon="ui-icon-print"
+						actionListener="#{printController.printListTable}"
+						styleClass="buttonBarra" oncomplete="PF('dlgPrint').show();">
+						<f:attribute name="report" value="12" />
+						<f:attribute name="title" value="corporation_issues" />
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+
+
+
+			<h:panelGrid styleClass="panel" columns="1">
+
+				<p:remoteCommand name="refreshFooter"
+					update="form:uniTable:rowCount" />
+
+				<p:dataTable var="uni" value="#{corporationController.lazyModel}"
+					paginator="true" rows="15" paginatorPosition="bottom"
+					paginatorTemplate=" {RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {CurrentPageReport}"
+					rowsPerPageTemplate="#{constant.rowsToShow}" selectionMode="single"
+					widgetVar="uniTableFil" id="uniTable" lazy="true"
+					resizableColumns="false" draggableColumns="true"
+					sortBy="#{uni.name}" sortOrder="descending" reflow="false"
+					disabledTextSelection="false" style="min-width: 800px !important" >
+
+					<f:facet name="header">
+						<p:outputPanel>
+							<p:commandButton value="Clear filters"
+								actionListener="#{corporationController.clearFilter}"
+								icon="ui-icon-close" id="btnReset"
+								update="form:uniTable,form:uniTable:cmbProblem"></p:commandButton>
+
+							<p:spacer width="10" rendered="false" />
+							<p:commandButton id="toggler" type="button" value="Columns"
+								icon="ui-icon-calculator" rendered="false" />
+							<p:columnToggler datasource="uniTable" trigger="toggler"
+								rendered="false" />
+						</p:outputPanel>
+					</f:facet>
+
+					<p:ajax event="filter" oncomplete="refreshFooter()"></p:ajax>
+
+					<f:facet name="footer">
+						<h:outputText id="rowCount"
+							value="#{msg.total_register} #{corporationController.lazyModel.rowCount}" />
+					</f:facet>
+
+					<p:column headerText="#{msg.name}" sortBy="#{uni.name}"
+						filterStyle="width: 90% !important" filterBy="#{uni.name}">
+						<h:outputText value="#{uni.name}" />
+					</p:column>
+
+					<p:column headerText="#{msg.ein}" sortBy="#{uni.ein}" width="100">
+						<h:outputText value="#{uni.ein}" />
+					</p:column>
+
+					<p:column headerText="#{msg.supplier_number}"
+						sortBy="#{uni.supplierNumber}" width="150">
+						<h:outputText value="#{uni.supplierNumber}" />
+					</p:column>
+
+					<p:column headerText="#{msg.problem}" sortBy="#{uni.problemId}"
+						width="400" filterBy="#{uni.problemId}"
+						filterStyle="width: 90% !important">
+						<f:facet name="filter">
+							<p:selectOneMenu onchange="PF('uniTableFil').filter()"
+								id="cmbProblem" style="width: 200px">
+								<f:selectItem itemLabel="#{msg.select_all}" itemValue="#{null}"
+									noSelectionOption="true" />
+								<f:selectItems value="#{corporationController.problemList}" />
+							</p:selectOneMenu>
+						</f:facet>
+
+						<sec:authorize
+							access="hasAnyRole('SUPER','USER_M','USER_A','BOARD_M','BOARD_A')">
+
+							<p:commandLink id="cLinkNote" styleClass="myCommandLink"
+								action="#{corporationController.fixProblem}"
+								update=":dlgIboCorporationId" oncomplete="PF('tblIboCorporation').unselectAllRows();">
+								<h:outputText value="#{uni.problemDescription}" />
+								<f:setPropertyActionListener value="#{uni}"
+									target="#{corporationController.entity}" />
+							</p:commandLink>
+						</sec:authorize>
+
+						<sec:authorize
+							access="!hasAnyRole('SUPER','USER_M','USER_A','BOARD_M','BOARD_A')">
+							<h:outputText value="#{uni.problemDescription}" />
+						</sec:authorize>
+					</p:column>
+
+
+
+				</p:dataTable>
+
+			</h:panelGrid>
+
+			<ui:include src="/secure/select_format.xhtml"></ui:include>
+
+
+			<p:dialog header="#{msg.details}" widgetVar="dlgBankNotFound"
+				modal="true" closeOnEscape="true" id="dlgBankNotFoundId"
+				resizable="false" closable="true" showHeader="true" width="550px"
+				height="200px" minHeight="200">
+				<h:panelGrid width="100%">
+
+					<h:panelGrid columns="1">
+						<p:outputLabel value="#{msg.bank_not_found}" />
+					</h:panelGrid>
+
+					<h:panelGrid width="100%">
+						<h:panelGrid columns="1" styleClass="panelGridCenter">
+
+							<p:commandButton value="#{msg.accept}" type="button"
+								onclick="PF('dlgBankNotFound').hide()" immediate="true"
+								styleClass="buttonBarra" icon="ui-icon-close" />
+
+						</h:panelGrid>
+					</h:panelGrid>
+				</h:panelGrid>
+
+			</p:dialog>
+
+
+		</h:form>
+
+		<p:dialog header="#{msg.select_principal_ibo}"
+			widgetVar="dlgIboCorporation" modal="true" closeOnEscape="false"
+			id="dlgIboCorporationId" resizable="false" closable="false"
+			showHeader="true" width="800px" height="450px" minHeight="300" onShow="PF('cmbAcept').disable()">
+
+			<h:form id="formIboCorpo"
+				onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+
+				<h:panelGrid border="0" columns="1">
+					<p:messages id="messagesCorporation" showDetail="false"
+						autoUpdate="true" globalOnly="false" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="3">
+
+					<p:dataTable id="dtaIbos" var="uni" widgetVar="tblIboCorporation"
+						value="#{corporationController.listIbosCorporation}"
+						selection="#{corporationController.newPrincipalIBO}"
+						rowKey="#{uni.id}" styleClass="myTable" scrollable="true"
+						scrollHeight="300">
+
+						<p:column selectionMode="single"
+							style="width:16px;text-align:center" />
+
+						<p:column headerText="#{msg.number}" width="90">
+							<h:outputText value="#{uni.number}" />
+						</p:column>
+						<p:column headerText="#{msg.full_name}">
+							<h:outputText value="#{uni.user.fullName}" />
+						</p:column>
+						<p:column headerText="#{msg.email}">
+							<h:outputText value="#{uni.user.email}" />
+						</p:column>
+					</p:dataTable>
+
+				</h:panelGrid>
+
+				<h:panelGrid width="100%">
+
+					<h:panelGrid columns="3" styleClass="panelGridCenter">
+
+						<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+							styleClass="buttonBarra" widgetVar="cmbAcept"
+							actionListener="#{corporationController.saveIboCorporation}"
+							validateClient="true" ignoreAutoUpdate="true"
+							oncomplete="handleRequestIboCorporation(xhr, status, args)"
+							id="cmbAccept" update="messagesCorporation" />
+
+						<p:spacer width="10" />
+						
+
+						<p:commandButton value="Cancel" icon="ui-icon-disk"
+							styleClass="buttonBarra" immediate="true"
+							actionListener="#{corporationController.cancelIboCorporation}"
+							oncomplete="PF('dlgIboCorporation').hide()" />
+
+					</h:panelGrid>
+				</h:panelGrid>
+
+			</h:form>
+		</p:dialog>
+
+		<script type="text/javascript">
+			function handleRequestIboCorporation(xhr, status, args) {
+
+				if (args.validationFailed || args.error) {
+
+				} else {
+					PF('dlgIboCorporation').hide();
+					PF('uniTableFil').filter()
+				}
+
+			}
+			
+			$(document).on("click", ".ui-radiobutton-box", function() {			
+
+				if ($("[type=radio]:checked").length > 0) {
+					PF('cmbAcept').enable();
+				}else{
+					PF('cmbAcept').disable();
+				}
+			
+			});
+		</script>
+		
+		
+
+	</ui:define>
+
+</ui:composition>

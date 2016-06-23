@@ -1,0 +1,87 @@
+package reporte.data;
+
+import java.io.Serializable;
+
+import util.Context;
+import dao.clases.FilterBase;
+
+public class ImpresionFiltro extends FilterBase implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	private Integer id_grupo;
+
+	private String nombre;
+	private String clase;
+	private String filtroBean;
+
+	/**
+	 * 1 : Defecto listado 2 : Defecto detalle
+	 */
+	private Integer defecto;
+
+	private Integer currentPage;
+
+	public Integer getId_grupo() {
+		return id_grupo;
+	}
+
+	public void setId_grupo(Integer id_grupo) {
+		this.id_grupo = id_grupo;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getClase() {
+		return clase;
+	}
+
+	public void setClase(String clase) {
+		this.clase = clase;
+	}
+
+	public String getFiltroBean() {
+		return filtroBean;
+	}
+
+	public void setFiltroBean(String filtroBean) {
+		this.filtroBean = filtroBean;
+	}
+
+	/**
+	 * 
+	 * @return Integer 1 : listado 2 : detalle
+	 */
+	public Integer getDefecto() {
+		return defecto;
+	}
+
+	/**
+	 * Para buscar el reporte por defecto del 1 : listado 2 : detalle
+	 * 
+	 * @param defecto
+	 *            Integer
+	 */
+	public void setDefecto(Integer defecto) {
+		this.defecto = defecto;
+	}
+
+	public Integer getCurrentPage() {
+		return currentPage;
+	}
+
+	public void setCurrentPage(Integer currentPage) {
+		this.currentPage = currentPage;
+	}
+
+	public FilterBase getFiltro() {
+		return (FilterBase) Context.getBean(getFiltroBean());
+	}
+
+}

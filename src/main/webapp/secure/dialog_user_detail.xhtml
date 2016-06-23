@@ -1,0 +1,220 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<p:dialog header="#{msg.details}" widgetVar="dlgDetail" modal="true"
+		closeOnEscape="true" id="tblDetail" resizable="false" closable="true"
+		showHeader="true" width="90%" height="600px">
+
+		<h:panelGrid columns="3" width="100%" id="grdGeneral"
+			columnClasses="widthColumnButton,,widthColumnButton">
+
+			<p:commandButton icon="ui-icon-seek-first"
+				actionListener="#{userController.loadDataBefore}"
+				update="grdGeneral" />
+
+			<h:panelGrid>
+
+				<h:panelGrid id="grdDetail" columns="4"
+					columnClasses="alingRight,bold,alingRight,bold">
+
+					<h:outputText value="#{msg.user_name}" />
+					<h:outputText value="#{userController.entity.name}" />
+
+
+					<h:outputText value="#{msg.state}" />
+					<h:outputText
+						value="#{userController.entity.state ? msg.active : msg.deactive}" />
+
+
+					<h:outputText value="#{msg.first_name}" />
+					<h:outputText value="#{userController.entity.firstName}" />
+
+					<h:outputText value="#{msg.middle_name}" />
+					<h:outputText value="#{userController.entity.middleName}" />
+
+
+					<h:outputText value="#{msg.last_name}" />
+					<h:outputText value="#{userController.entity.lastName}" />
+
+
+
+					<h:outputText value="#{msg.email}" />
+					<h:outputText value="#{userController.entity.email}" />
+
+
+					<h:outputText value="#{msg.created_date}" />
+					<h:outputText value="#{userController.entity.createdDateFormat}" />
+
+
+					<h:outputText value="#{msg.created_user}" />
+					<h:outputText value="#{userController.entity.userCreated.name}" />
+
+					<h:outputText value="#{msg.updated_date}" />
+					<h:outputText value="#{userController.entity.updateDateFormat}" />
+
+
+					<h:outputText value="#{msg.updated_user}" />
+					<h:outputText value="#{userController.entity.userUpdated.name}" />
+
+
+
+					<h:outputText value="#{msg.telephone_number}" />
+					<h:outputText value="#{userController.entity.phone}" />
+
+
+					<h:outputText value="#{msg.rol}" />
+					<h:outputText value="#{userController.entity.rol.name}" />
+
+
+					<h:outputText value="#{msg.last_login}" />
+					<h:outputText value="#{userController.entity.lastLoginFormat}" />
+
+
+					<h:outputText value="#{msg.user_type}" />
+					<h:outputText value="#{userController.entity.type.name}" />
+
+
+					<h:outputText value="#{msg.group} PA"
+						rendered="#{not empty userController.entity.group}" />
+					<h:outputText value="#{userController.entity.group.name}"
+						rendered="#{not empty userController.entity.group}" />
+
+
+					<h:outputText value="#{msg.ibo_type}"
+						rendered="#{userController.ibo}" />
+					<h:outputText value="#{userController.entity.ibo.type.name}"
+						rendered="#{userController.ibo}" />
+
+
+					<h:outputText value="#{msg.user_id}"
+						rendered="#{userController.ibo}" />
+					<h:outputText value="#{userController.entity.ibo.number}"
+						rendered="#{userController.ibo}" />
+
+
+					<h:outputText value="#{msg.status}"
+						rendered="#{userController.ibo}" />
+					<h:outputText value="#{userController.entity.ibo.iboState.name}"
+						rendered="#{userController.ibo}" />
+
+					<h:outputText value="#{msg.group} IBO"
+						rendered="#{userController.ibo}" />
+					<h:outputText value="#{userController.entity.ibo.group.name}"
+						rendered="#{userController.ibo}" />
+
+					<h:outputText value="#{msg.supplier_number}"
+						rendered="#{userController.ibo}" />
+					<h:outputText
+						value="#{userController.entity.ibo.corporation.supplierNumber}"
+						rendered="#{userController.ibo}" />
+
+					<h:outputText value="#{msg.rate}" rendered="#{userController.ibo}" />
+					<h:outputText value="#{userController.entity.ibo.amount}"
+						rendered="#{userController.ibo}">
+						<f:convertNumber currencySymbol="$" type="currency"
+							minFractionDigits="#{applicationBean.systemConf.decimal}"
+							maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+					</h:outputText>
+
+					<h:outputText value="#{msg.corporation_name}"
+						rendered="#{userController.ibo}" />
+					<h:outputText value="#{userController.entity.ibo.corporationName}"
+						rendered="#{userController.ibo}" />
+
+
+					<h:outputText value="#{msg.ein}" rendered="#{userController.ibo}" />
+					<h:outputText value="#{userController.entity.ibo.corporation.ein}"
+						rendered="#{userController.ibo}" />
+
+
+					<h:outputText value="#{msg.principal_owner}" rendered="false" />
+					<h:outputText value="#{userController.entity.ibo.princOwner}"
+						rendered="false" />
+
+
+					<h:outputText value="#{msg.principal_owner_title}"
+						rendered="#{userController.ibo}" />
+					<h:outputText value="#{userController.entity.ibo.princTitle}"
+						rendered="#{userController.ibo}" />
+
+
+					<h:outputText value="#{msg.principal_owner_email}" rendered="false" />
+					<h:outputText value="#{userController.entity.ibo.princEmail}"
+						rendered="false" />
+
+					<h:outputText value="#{msg.region}"
+						rendered="#{userController.ibo}" />
+					<h:outputText
+						value="#{userController.entity.ibo.regionDescription}"
+						rendered="#{userController.ibo}" />
+
+					<h:outputText value="#{msg.owner_type}"
+						rendered="#{userController.ibo}" />
+					<h:outputText value="#{userController.entity.ibo.ownerType}"
+						rendered="#{userController.ibo}" />
+
+					<h:outputText value="#{msg.country}"
+						rendered="#{userController.ibo}" />
+					<h:outputText value="#{userController.entity.ibo.country.name}"
+						rendered="#{userController.ibo}" />
+
+
+
+					<h:outputText value="#{msg.bank_information}"
+						rendered="#{userController.ibo}" />
+					<p:outputPanel rendered="#{userController.ibo}">
+						<h:graphicImage value="/img/checkmark.gif" width="16px"
+							rendered="#{userController.entity.goToBank}" />
+						<h:graphicImage value="/img/uncheck.png" width="16px"
+							rendered="#{!userController.entity.goToBank}" />
+					</p:outputPanel>
+
+					<h:outputText value="#{msg.address}"
+						rendered="#{userController.ibo}" />
+					<h:outputText
+						value="#{userController.entity.ibo.addressCountryFormat}"
+						rendered="#{userController.ibo}" escape="false" />
+
+
+				</h:panelGrid>
+
+
+
+				<p:dataTable var="ca" rendered="#{userController.ibo}"
+					value="#{userController.entity.ibo.listCa}" scrollable="true"
+					id="grdCa" styleClass="myTable">
+					<f:facet name="header">
+						<h:outputText value="#{msg.client_applications}" />
+					</f:facet>
+
+					<p:column headerText="#{msg.name}">
+						<h:outputText value="#{ca.name}" />
+					</p:column>
+
+					<p:column headerText="#{msg.amount}" styleClass="righted">
+						<h:outputText value="#{ca.amount}">
+							<f:convertNumber currencySymbol="$" type="currency"
+								minFractionDigits="#{applicationBean.systemConf.decimal}"
+								maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+						</h:outputText>
+					</p:column>
+				</p:dataTable>
+
+
+
+			</h:panelGrid>
+			<p:commandButton icon="ui-icon-seek-end"
+				actionListener="#{userController.loadDataNext}" update="grdGeneral" />
+
+
+		</h:panelGrid>
+	</p:dialog>
+
+
+
+
+</ui:composition>

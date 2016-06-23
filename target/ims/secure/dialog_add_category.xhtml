@@ -1,0 +1,81 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<sec:authorize access="hasAnyRole('SUPER','CATEGORY_A')">
+		<p:dialog header="#{msg.add} #{msg.category}" widgetVar="dlgCategory"
+			modal="true" closeOnEscape="true" id="dlgCategoryId"
+			resizable="false" closable="true" showHeader="true" width="500px"
+			height="300px" minHeight="400">
+			<h:form id="formCategory"
+				onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+
+				<h:panelGrid width="100%">
+
+
+					<h:panelGrid border="0" columns="1">
+						<p:messages id="mess" showDetail="false" autoUpdate="true"
+							globalOnly="false" />
+					</h:panelGrid>
+
+					<h:panelGrid columns="3" id="pngContex">
+
+						<p:outputLabel value="#{msg.name}" for="txtDescription" />
+						<p:inputText onblur="this.value = this.value.trim()"
+							value="#{categoryController.entity.name}" required="true"
+							id="txtDescription" maxlength="50" size="40"
+							requiredMessage="#{msg.name}: #{msg.value_required}">
+
+						</p:inputText>
+						<p:message for="txtDescription" display="icon" />
+
+					</h:panelGrid>
+
+
+
+					<h:panelGrid width="100%">
+
+						<h:panelGrid columns="3" styleClass="panelGridCenter">
+
+							<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+								styleClass="buttonBarra"
+								actionListener="#{categoryController.saveCategory}"
+								validateClient="true"
+								oncomplete="handleAddNotesRequest(xhr, status, args)"
+								update="formCategory,form:uniTable,mess" />
+
+
+							<p:spacer width="10" />
+
+							<p:commandButton value="Cancel" type="button"
+								onclick="PF('dlgCategory').hide()" immediate="true"
+								styleClass="buttonBarra" icon="ui-icon-close" />
+
+
+						</h:panelGrid>
+					</h:panelGrid>
+				</h:panelGrid>
+
+			</h:form>
+		</p:dialog>
+
+
+		<script type="text/javascript">
+			function handleAddNotesRequest(xhr, status, args) {
+
+				if (args.validationFailed || args.error) {
+
+				} else {
+					PF('dlgCategory').hide();
+				}
+
+			}
+		</script>
+
+
+	</sec:authorize>
+
+</ui:composition>

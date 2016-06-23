@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:sec="http://www.springframework.org/schema/security" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:c="http://www.springframework.org/schema/c" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-4.1.xsd
+     http://www.springframework.org/schema/tx
+	 http://www.springframework.org/schema/tx/spring-tx.xsd 
+	 http://www.springframework.org/schema/aop 
+	 http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/task
+	http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+
+
+	<context:annotation-config />
+	<context:spring-configured />
+
+	<task:annotation-driven />
+
+	<!-- Configuration describing the package consisting of all components -->
+	<context:component-scan base-package="com.ghw" />
+
+	<aop:aspectj-autoproxy />
+
+	<!-- Aspect -->
+	<bean id="logAspect" class="com.ghw.aop.LoggingAspect" />
+
+
+
+	<bean id="applicationContextProvider" class="com.ghw.util.ApplicationContextProvider" />
+
+	<!-- string encryptor -->
+	<bean id="strongEncryptor" class="org.jasypt.encryption.pbe.PooledPBEStringEncryptor">
+		<property name="algorithm">
+			<value>PBEWithMD5AndTripleDES</value>
+		</property>
+		<property name="password">
+			<value>centaur0,45jIosa</value>
+		</property>
+		<property name="poolSize">
+			<value>4</value>
+		</property>
+	</bean>
+
+	<bean id="hibernateStringEncryptor"
+		class="org.jasypt.hibernate4.encryptor.HibernatePBEStringEncryptor">
+		<property name="registeredName">
+			<value>strongHibernateStringEncryptor</value>
+		</property>
+		<property name="encryptor">
+			<ref bean="strongEncryptor" />
+		</property>
+	</bean>
+
+	<bean id="stringEncryptor" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
+		<property name="algorithm" value="PBEWithMD5AndDES" />
+		<property name="password" value="jasypt" />
+		<property name="keyObtentionIterations" value="1000" />
+	</bean>
+
+	<!-- Database-related Configuration to connect with database -->
+	<context:property-placeholder
+		location="file:C:/Program Files/Apache Software Foundation/Tomcat 7.0/conf/db.properties" />
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${driverClassName}" />
+		<property name="url" value="${url}" />
+		<property name="username" value="${user}" />
+		<property name="password" value="${password}" />
+	</bean>
+
+
+	<!-- Hibernate-related Configuration -->
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation">
+			<value>classpath:hibernate.cfg.xml</value>
+		</property>
+	</bean>
+
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate5.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+
+
+	<!-- Transaction related configuration for working with database -->
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<!-- Connection to VCS -->
+
+	<bean id="dataSourceVCS"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://vcsdb.cqc9muygoi54.us-west-2.rds.amazonaws.com/VCSdb" />
+		<property name="username" value="ifernandez" />
+		<property name="password" value="Welcome01" />
+	</bean>
+
+	<bean name="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<constructor-arg>
+			<ref bean="dataSourceVCS" />
+		</constructor-arg>
+	</bean>
+
+
+	<bean id="dataSourceDirectDeposit"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://10.1.1.245:3306/greathealthworks" />
+		<property name="username" value="root" />
+		<property name="password" value="*ThkBig!db" />
+	</bean>
+
+
+
+</beans>

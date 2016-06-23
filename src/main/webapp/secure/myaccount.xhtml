@@ -1,0 +1,286 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+
+
+		<h:form id="form"
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="#{msg.my_account}" />
+				</f:facet>
+
+				<f:facet name="right">
+					<sec:authorize access="hasAnyRole('IBO')">
+						<p:commandButton value="#{msg.update_banking_information}"
+							rendered="#{myAccountController.showBank}" icon="ui-icon-pencil"
+							action="bank" styleClass="buttonBarra" />
+					</sec:authorize>
+
+					<sec:authorize access="hasAnyRole('SUPER')">
+						<p:commandButton value="#{msg.reset_password}"
+							icon="ui-icon-pencil" onclick="PF('dlgPass').show();"
+							styleClass="buttonBarra" />
+					</sec:authorize>
+				</f:facet>
+			</p:toolbar>
+
+
+			<h:panelGrid styleClass="panel" columns="1">
+
+				<h:panelGrid style="width:800px;min-width: 300px !important;"
+					border="0">
+
+
+					<h:panelGrid id="grdDetail" columns="4"
+						columnClasses="alingRight,bold,alingRight,bold">
+
+						<h:outputText value="#{msg.user_id}" />
+						<h:outputText value="#{myAccountController.entity.ibo.number}" />
+
+						<h:outputText value="#{msg.user_name}" />
+						<h:outputText value="#{myAccountController.entity.name}" />
+
+
+						<h:outputText value="#{msg.first_name}" />
+						<h:outputText value="#{myAccountController.entity.firstName}" />
+
+						<h:outputText value="#{msg.middle_name}" />
+						<h:outputText value="#{myAccountController.entity.middleName}" />
+
+
+						<h:outputText value="#{msg.last_name}" />
+						<h:outputText value="#{myAccountController.entity.lastName}" />
+
+
+						<h:outputText value="#{msg.email}" />
+						<h:outputText value="#{myAccountController.entity.email}" />
+
+
+						<h:outputText value="#{msg.telephone_number}" />
+						<h:outputText value="#{myAccountController.entity.phone}" />
+
+
+						<h:outputText value="#{msg.rol}" />
+						<h:outputText value="#{myAccountController.entity.rol.name}" />
+
+
+						<h:outputText value="#{msg.last_login}" />
+						<h:outputText
+							value="#{myAccountController.entity.lastLoginFormat}" />
+
+
+						<h:outputText value="#{msg.user_type}" rendered="false" />
+						<h:outputText value="#{myAccountController.entity.type.name}"
+							rendered="false" />
+
+
+						<h:outputText value="#{msg.group}"
+							rendered="#{myAccountController.pa}" />
+						<h:outputText value="#{myAccountController.entity.group.name}"
+							rendered="#{myAccountController.pa}" />
+
+
+						<h:outputText value="#{msg.ibo_type}"
+							rendered="#{myAccountController.ibo}" />
+						<h:outputText value="#{myAccountController.entity.ibo.type.name}"
+							rendered="#{myAccountController.ibo}" />
+
+
+						<h:outputText value="#{msg.status}"
+							rendered="#{myAccountController.ibo}" />
+						<h:outputText
+							value="#{myAccountController.entity.ibo.iboState.name}"
+							rendered="#{myAccountController.ibo}" />
+
+						<h:outputText value="#{msg.group}"
+							rendered="#{myAccountController.ibo}" />
+						<h:outputText value="#{myAccountController.entity.ibo.group.name}"
+							rendered="#{myAccountController.ibo}" />
+
+
+
+						<h:outputText value="#{msg.principal_owner_email}"
+							rendered="false" />
+						<h:outputText value="#{myAccountController.entity.ibo.princEmail}"
+							rendered="false" />
+
+						<h:outputText value="#{msg.region}"
+							rendered="#{myAccountController.ibo}" />
+						<h:outputText
+							value="#{myAccountController.entity.ibo.regionDescription}"
+							rendered="#{myAccountController.ibo}" />
+
+
+
+						<h:outputText value="#{msg.rate}"
+							rendered="#{myAccountController.ibo}" />
+						<h:outputText value="#{myAccountController.entity.ibo.amount}"
+							rendered="#{myAccountController.ibo}">
+							<f:convertNumber currencySymbol="$" type="currency"
+								minFractionDigits="#{applicationBean.systemConf.decimal}"
+								maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+						</h:outputText>
+
+
+						<h:outputText value="#{msg.country}"
+							rendered="#{myAccountController.ibo}" />
+						<h:outputText
+							value="#{myAccountController.entity.ibo.country.name}"
+							rendered="#{myAccountController.ibo}" />
+
+
+						<h:outputText value="#{msg.principal_owner_title}"
+							rendered="#{myAccountController.ibo}" />
+						<h:outputText value="#{myAccountController.entity.ibo.princTitle}"
+							rendered="#{myAccountController.ibo}" />
+
+
+						<h:outputText value="#{msg.corporation_name}"
+							rendered="#{myAccountController.ibo}" />
+						<h:outputText
+							value="#{myAccountController.entity.ibo.corporation.name}"
+							rendered="#{myAccountController.ibo}" />
+
+
+						<h:outputText value="#{msg.ein}"
+							rendered="#{myAccountController.ibo}" />
+						<h:outputText
+							value="#{myAccountController.entity.ibo.corporation.ein}"
+							rendered="#{myAccountController.ibo}" />
+
+
+						<h:outputText value="#{msg.principal_owner}" rendered="false" />
+						<h:outputText value="#{myAccountController.entity.ibo.princOwner}"
+							rendered="false" />
+
+						<h:outputText value="#{msg.bank_information}"
+							rendered="#{myAccountController.ibo }" />
+						<p:outputPanel rendered="#{myAccountController.ibo}">
+							<h:graphicImage value="/img/checkmark.gif" width="16px"
+								rendered="#{myAccountController.entity.goToBank}" />
+							<h:graphicImage value="/img/uncheck.png" width="16px"
+								rendered="#{!myAccountController.entity.goToBank}" />
+						</p:outputPanel>
+
+
+
+						<h:outputText value="#{msg.address}"
+							rendered="#{myAccountController.ibo}" />
+						<h:outputText
+							value="#{myAccountController.entity.ibo.addressCountryFormat}"
+							rendered="#{myAccountController.ibo}" escape="false" />
+
+
+					</h:panelGrid>
+
+					<p:dataTable var="ca" rendered="#{myAccountController.ibo}"
+						value="#{myAccountController.entity.ibo.listCa}" scrollable="true"
+						id="grdCa" styleClass="myTable">
+						<f:facet name="header">
+							<h:outputText value="#{msg.client_applications}" />
+						</f:facet>
+
+						<p:column headerText="#{msg.name}" width="80%">
+							<h:outputText value="#{ca.name}" />
+						</p:column>
+
+
+						<p:column headerText="#{msg.rate}" styleClass="righted"
+							width="20%">
+							<h:outputText value="#{ca.amount}">
+								<f:convertNumber currencySymbol="$" type="currency"
+									minFractionDigits="2"
+									maxFractionDigits="2" />
+							</h:outputText>
+						</p:column>
+					</p:dataTable>
+
+				</h:panelGrid>
+
+				<ui:include src="/secure/confirmation_delete.xhtml"></ui:include>
+			</h:panelGrid>
+
+
+
+		</h:form>
+
+		<h:form
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+			<p:dialog header="#{msg.reset_password}" widgetVar="dlgPass"
+				modal="true" height="400" width="600px" focus="btnCancel"
+				id="dialPass" resizable="false" closeOnEscape="true">
+
+				<h:panelGrid border="0" columns="1">
+					<p:messages id="messages" showDetail="false" autoUpdate="true"
+						globalOnly="false" />
+				</h:panelGrid>
+
+				<h:panelGrid columns="3" id="panel">
+
+					<p:outputLabel value="#{msg.old_password}" for="txtPasswordOld" />
+					<p:password value="#{myAccountController.oldPassword}"
+						id="txtPasswordOld" maxlength="50" required="true"
+						styleClass="largeControls"
+						requiredMessage="#{msg.old_password}: #{msg.value_required}">
+						<p:clientValidator event="blur" />
+					</p:password>
+					<p:message for="txtPasswordOld" display="icon" />
+
+					<p:outputLabel value="#{msg.password}" for="txtPassword" />
+					<p:password value="#{myAccountController.entity.password}"
+						id="txtPassword" maxlength="50" match="pwd2" required="true"
+						styleClass="largeControls"
+						requiredMessage="#{msg.password}: #{msg.value_required}">
+						<p:clientValidator event="blur" />
+					</p:password>
+					<p:message for="txtPassword" display="icon" />
+
+					<p:outputLabel value="#{msg.confirm_pass}" for="pwd2" />
+					<p:password value="#{myAccountController.entity.password}"
+						id="pwd2" maxlength="50" match="pwd2" styleClass="largeControls"
+						required="true"
+						requiredMessage="#{msg.confirm_pass}: #{msg.value_required}">
+						<p:clientValidator event="blur" />
+					</p:password>
+					<p:message for="pwd2" display="icon" />
+				</h:panelGrid>
+
+
+				<p:spacer height="15" width="20"></p:spacer>
+
+				<h:panelGrid width="100%">
+
+					<h:panelGrid columns="3" styleClass="panelGridCenter">
+
+
+						<p:commandButton value="#{msg.save}" icon="ui-icon-disk"
+							action="#{myAccountController.updatePassword}"
+							styleClass="buttonBarra" validateClient="true"
+							update="panel,messages" oncomplete="PF('dlgPass').hide();">
+						</p:commandButton>
+
+
+						<p:commandButton value="Cancel" type="button" id="btnCancel"
+							onclick="PF('dlgPass').hide();" />
+
+
+
+					</h:panelGrid>
+				</h:panelGrid>
+
+			</p:dialog>
+
+		</h:form>
+
+
+		<ui:include src="/secure/select_format.xhtml"></ui:include>
+	</ui:define>
+
+</ui:composition>

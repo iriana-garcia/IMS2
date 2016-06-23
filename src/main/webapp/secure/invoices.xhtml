@@ -1,0 +1,671 @@
+<ui:composition template="/secure/default.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:sec="http://www.springframework.org/security/tags">
+
+	<ui:define name="body">
+
+		<style>
+.ui-spinner-input {
+	background-color: white !important;
+}
+
+.myCommandLink:hover {
+	color: #0066cc !important;
+	font-weight: bold;
+}
+
+.pngRol tbody td {
+	border-width: 0px;
+}
+
+.col1 {
+	width: 45px;
+}
+
+.col2 {
+	width: 15px;
+}
+</style>
+
+
+		<script>
+			$(document).ready(function() {
+				PF('btnSubmitW').disable();
+			});
+
+			$(document).on("click", ".ui-chkbox-box", function() {
+
+				if ($("[type=checkbox]:checked").length > 0) {
+					PF('btnSubmitW').enable();
+				} else {
+					PF('btnSubmitW').disable();
+				}
+
+			});
+
+			function checkSubmitButton() {
+
+				if ($("[type=checkbox]:checked").length > 0) {
+					PF('btnSubmitW').enable();
+				} else {
+					PF('btnSubmitW').disable();
+				}
+			}
+		</script>
+
+
+		<h:form id="form"
+			onkeypress="if( event.keyCode == 13){if(document.activeElement.type == 'submit' || document.activeElement.type == 'button' || document.activeElement.type == 'reset') return true; else return false;}">
+			<p:toolbar>
+				<f:facet name="left">
+					<h:outputText value="#{msg.invoices}" />
+				</f:facet>
+
+				<f:facet name="right">
+
+					<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+						<p:commandButton value="#{msg.submit}/#{msg.resubmit}"
+							icon="ui-icon-check" id="btnSubmit" widgetVar="btnSubmitW"
+							action="#{invoiceController.showSubmitInvoice}"
+							styleClass="buttonBarra" update="frmInvoices,frmInvoicesMess">
+						</p:commandButton>
+
+						<p:spacer width="10" />
+
+
+						<p:commandButton value="#{msg.send_finance}"
+							icon="ui-icon-arrowreturnthick-1-e"
+							action="#{invoiceController.sentFinance}"
+							styleClass="buttonBarra" update=":dlgInvoicesProcessedID"
+							disabled="#{!invoiceController.showSendFinance}">
+							<p:confirm icon="ui-icon-alert" />
+						</p:commandButton>
+
+
+						<p:spacer width="10" />
+
+					</sec:authorize>
+
+
+					<p:commandButton value="#{msg.print}" icon="ui-icon-print"
+						actionListener="#{printController.printListTable}"
+						styleClass="buttonBarra" oncomplete="PF('dlgPrint').show();">
+						<f:attribute name="report" value="8" />
+						<f:attribute name="title" value="invoices" />
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+
+			<p:growl id="growl" showDetail="true" />
+
+			<h:panelGrid styleClass="panel" columns="1" id="btnMessage">
+
+
+				<h:panelGrid border="0" columns="1">
+					<p:messages id="messages" showDetail="false" autoUpdate="false" />
+				</h:panelGrid>
+
+				<h:panelGrid>
+
+					<h:outputText value="#{invoiceFilter.dateRange}" styleClass="bold"
+						id="txtRangeDate" />
+				</h:panelGrid>
+
+				<p:remoteCommand name="refreshFooter"
+					update="form:uniTable:rowCount,form:uniTable:totalPage,form:uniTable:totalPage2,form:uniTable:totalPage3,form:uniTable:totalPage4,form:uniTable:totalPage5,form:uniTable:totalPage6,form:uniTable:totalPage7,form:uniTable:totalPage8,form:uniTable:totalPage9,form:uniTable:totalPage10,form:uniTable:totalPage11,form:uniTable:totalPage12" />
+
+				<p:remoteCommand name="refreshRow" update="form:uniTable" />
+
+				<p:growl id="msgs" showDetail="false" />
+
+				<p:dataTable var="uni" value="#{invoiceController.lazyModel}"
+					paginator="true" rows="15" paginatorPosition="bottom"
+					paginatorTemplate=" {RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {CurrentPageReport}"
+					rowsPerPageTemplate="#{constant.rowsToShow}"
+					widgetVar="uniTableFil" id="uniTable" lazy="true"
+					resizableColumns="false" draggableColumns="false"
+					sortBy="#{uni.user.number}" sortOrder="ascending" reflow="false"
+					disabledTextSelection="false" style="min-width: 1500px !important"
+					editable="true" editMode="cell"
+					selection="#{invoiceController.selectedInvoices}"
+					rowKey="#{uni.id}" disabledSelection="#{!uni.readySubmit}"
+					rowIndexVar="indice">
+
+					<p:ajax event="filter" oncomplete="refreshFooter()"></p:ajax>
+					<p:ajax event="page" oncomplete="refreshFooter()"></p:ajax>
+
+					<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+
+						<p:ajax event="cellEdit"
+							listener="#{invoiceController.onCellEdit}" update="form:msgs">
+						</p:ajax>
+
+					</sec:authorize>
+
+
+					<f:facet name="header">
+						<p:outputPanel>
+
+							<p:commandButton value="Filters" icon="ui-icon-search"
+								id="btnFilter" onclick="PF('dlgFilter').show();" />
+
+							<p:spacer width="10" />
+
+							<p:commandButton value="Clear filters"
+								actionListener="#{invoiceController.clearFilter}"
+								icon="ui-icon-close" id="btnReset"
+								update="form:uniTable,form:uniTable:cmbSta,form:dialFilter,form:txtRangeDate"></p:commandButton>
+							<p:spacer width="10" rendered="false" />
+
+							<p:commandButton id="toggler" type="button" value="Columns"
+								icon="ui-icon-calculator" rendered="false" />
+							<p:columnToggler datasource="uniTable" trigger="toggler"
+								rendered="false" />
+						</p:outputPanel>
+					</f:facet>
+
+
+					<f:facet name="footer">
+
+						<h:outputText id="rowCount"
+							value="#{msg.total_register} #{invoiceController.lazyModel.rowCount}" />
+					</f:facet>
+
+					<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+						<p:column selectionMode="multiple"
+							style="width:16px;text-align:center" />
+					</sec:authorize>
+
+					<p:column headerText="#{msg.date}" sortBy="#{uni.start}"
+						width="130">
+						<p:commandLink action="#{invoiceController.modifyInvoice}"
+							id="cLinkDate" styleClass="myCommandLink">
+							<h:outputText value="#{uni.dateRange}">
+							</h:outputText>
+							<f:setPropertyActionListener value="#{uni}"
+								target="#{invoiceController.entity}" />
+							<p:tooltip for="cLinkDate" value="#{msg.edit}" />
+						</p:commandLink>
+					</p:column>
+
+					<p:column headerText="#{msg.user_id}" sortBy="#{uni.user.number}"
+						width="100" filterBy="#{uni.user.number}"
+						filterStyle="width: 90% !important">
+						<h:outputText value="#{uni.user.number}">
+						</h:outputText>
+					</p:column>
+
+
+					<p:column headerText="#{msg.user}"
+						filterStyle="width: 90% !important" sortBy="#{uni.user.nameTable}"
+						filterBy="#{uni.user.nameTable}"
+						style="background-color: ##{uni.thresholds.get('5') == null ? uni.thresholds.get('6').color : uni.thresholds.get('5').color};color: ##{uni.thresholds.get('5') == null ? uni.thresholds.get('6').fontColor : uni.thresholds.get('5').fontColor}">
+						<p:outputPanel id="outCorporation">
+							<h:outputText value="#{uni.user.nameTable}" />
+						</p:outputPanel>
+						<p:tooltip for="outCorporation"
+							value="#{uni.thresholds.get('5') == null ? uni.thresholds.get('6').description : uni.thresholds.get('5').description}" />
+					</p:column>
+
+					<p:column headerText="#{msg.actual_service}"
+						sortBy="#{uni.actualService}" width="80"
+						style="background-color: ##{uni.thresholds.get('4').color}; color: ##{uni.thresholds.get('4').fontColor}">
+
+						<p:outputPanel id="clmActual" style="text-align: right;">
+							<h:outputText value="#{uni.actualService}">
+								<f:convertNumber
+									minFractionDigits="#{applicationBean.systemConf.decimal}"
+									maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+							</h:outputText>
+						</p:outputPanel>
+
+						<p:tooltip for="clmActual"
+							value="#{uni.thresholds.get('4').description}" />
+					</p:column>
+
+					<p:column headerText="#{msg.service_amount}"
+						sortBy="#{uni.serviceRevenue}" width="80"
+						style="background-color: ##{uni.thresholds.get('1').color}; color: ##{uni.thresholds.get('1').fontColor}">
+
+						<p:outputPanel id="clmServiceAmount" style="text-align: right;">
+							<h:outputText value="#{uni.serviceRevenue}">
+								<f:convertNumber currencySymbol="$" type="currency"
+									minFractionDigits="#{applicationBean.systemConf.decimal}"
+									maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+							</h:outputText>
+						</p:outputPanel>
+						<p:tooltip for="clmServiceAmount"
+							value="#{uni.thresholds.get('1').description}" />
+					</p:column>
+
+					<p:column headerText="#{msg.hours_added}"
+						sortBy="#{uni.hoursAdded}" width="60"
+						style="background-color: ##{uni.thresholds.get('4').color}; color: ##{uni.thresholds.get('4').fontColor}">
+						<p:outputPanel id="clmHourAdd" style="text-align: right;">
+							<h:outputText value="#{uni.hoursAdded}">
+								<f:convertNumber
+									minFractionDigits="#{applicationBean.systemConf.decimal}"
+									maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+							</h:outputText>
+						</p:outputPanel>
+
+						<p:tooltip for="clmHourAdd"
+							value="#{uni.thresholds.get('4').description}" />
+					</p:column>
+					<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+						<p:column headerText="#{msg.admin_fee}" sortBy="#{uni.adminFee}"
+							width="60"
+							style="background-color: ##{applicationBean.systemConf.color}; color: ##{applicationBean.systemConf.fontColor}">
+
+							<p:cellEditor style="text-align: right;">
+								<f:facet name="output">
+									<p:outputPanel style="text-align: right;">
+										<h:outputText value="#{uni.adminFee}">
+											<f:convertNumber currencySymbol="$" type="currency"
+												minFractionDigits="#{applicationBean.systemConf.decimal}"
+												maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+										</h:outputText>
+									</p:outputPanel>
+								</f:facet>
+								<f:facet name="input">
+									<h:panelGrid border="0" styleClass="pngRol" columns="2"
+										width="60px" columnClasses="col1,col2">
+										<p:inputText value="#{uni.adminFee}" required="true"
+											id="txtFee" styleClass="inputNumber"
+											disabled="#{!uni.editInvoice}" size="2"
+											requiredMessage="#{msg.admin_fee}: #{msg.value_required}">
+											<pe:keyFilter mask="pnum"
+												inputRegEx="/^[\d]{0,5}\.[\d]{0,2}$|^[\d]{0,5}$|^$/"
+												preventPaste="false" />
+											<p:clientValidator event="blur" />
+										</p:inputText>
+										<p:message for="txtFee" display="icon" />
+									</h:panelGrid>
+
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+					</sec:authorize>
+					<sec:authorize access="!hasAnyRole('SUPER','INVOICES_M')">
+						<p:column headerText="#{msg.admin_fee}" sortBy="#{uni.adminFee}"
+							width="80">
+							<p:outputPanel style="text-align: right;">
+								<h:outputText value="#{uni.adminFee}">
+									<f:convertNumber currencySymbol="$" type="currency"
+										minFractionDigits="#{applicationBean.systemConf.decimal}"
+										maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+								</h:outputText>
+							</p:outputPanel>
+						</p:column>
+					</sec:authorize>
+
+					<p:column sortBy="#{uni.totalIncentive}" width="70"
+						style="background-color: ##{uni.thresholds.get('2').color}; color: ##{uni.thresholds.get('2').fontColor}">
+
+						<f:facet name="header">
+							<h:outputText value="Inc/Adj" id="hedIncentive" />
+							<p:tooltip value="#{msg.incentive}/#{msg.adjust}"
+								for="hedIncentive" />
+						</f:facet>
+
+						<p:outputPanel id="clmIncentive" style="text-align: right;">
+							<h:outputText value="#{uni.totalIncentive}">
+								<f:convertNumber currencySymbol="$" type="currency"
+									minFractionDigits="#{applicationBean.systemConf.decimal}"
+									maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+							</h:outputText>
+						</p:outputPanel>
+						<p:tooltip for="clmIncentive"
+							value="#{uni.thresholds.get('2').description}" />
+					</p:column>
+
+					<p:column headerText="#{msg.service_revenue}"
+						sortBy="#{uni.importTotal}" width="80"
+						style="background-color: ##{uni.thresholds.get('3').color}; color: ##{uni.thresholds.get('3').fontColor}">
+						<p:outputPanel id="clmImportTotal" style="text-align: right;">
+							<h:outputText value="#{uni.importTotal}">
+								<f:convertNumber currencySymbol="$" type="currency"
+									minFractionDigits="#{applicationBean.systemConf.decimal}"
+									maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+							</h:outputText>
+						</p:outputPanel>
+
+						<p:tooltip for="clmImportTotal"
+							value="#{uni.thresholds.get('3').description}" />
+					</p:column>
+
+					<p:column headerText="#{msg.status}" sortBy="#{uni.state.name}"
+						width="100" filterBy="#{uni.state.id}">
+						<f:facet name="filter">
+							<p:selectOneMenu onchange="PF('uniTableFil').filter()"
+								id="cmbSta" style="width:80px">
+								<f:selectItem itemLabel="#{msg.select_all}" itemValue="#{null}"
+									noSelectionOption="true" />
+								<f:selectItems
+									value="#{invoiceStateController.listOrderExceptCancel}"
+									var="type" itemLabel="#{type.name}" itemValue="#{type.id}" />
+							</p:selectOneMenu>
+						</f:facet>
+						<h:outputText value="#{uni.state.name}" />
+					</p:column>
+
+					<p:column headerText="#{msg.date_submitted}" width="130"
+						sortBy="#{uni.lastDateSubmitted}">
+						<h:outputText value="#{uni.lastDateSubmitted}" />
+					</p:column>
+					<!-- 
+					<p:column width="40" toggleable="false" sortBy="#{uni.haveE}">
+
+						<f:facet name="header">
+							<h:graphicImage value="/img/question.png" width="16px"
+								id="clmQuestionHeader" />
+							<p:tooltip value="#{msg.question}" for="clmQuestionHeader" />
+						</f:facet>
+
+						<p:commandLink styleClass="myCommandLink" id="cmlQUestion"
+							oncomplete="PF('dlgDetail').show()"
+							action="#{messageBoardController.openMessageBoard}"
+							update=":dlgDetailId,:frmEmail">
+
+							<h:outputText value="#{uni.questionStatus}" />
+							<f:setPropertyActionListener value="#{uni}"
+								target="#{messageBoardController.invoice}" />
+						</p:commandLink>
+
+					</p:column>
+ -->
+					<p:column width="40" toggleable="false" sortBy="#{uni.note}">
+						<f:facet name="header">
+
+							<h:graphicImage value="/img/note-2-16.ico" width="16px"
+								id="clmNoteHeader" />
+							<p:tooltip value="#{msg.note}" for="clmNoteHeader" />
+						</f:facet>
+
+						<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+							<p:commandLink id="cLinkNote" styleClass="myCommandLink"
+								oncomplete="PF('dlgNotes').show()" update=":dlgNotesId">
+
+								<h:outputText value="#{uni.noteDescription}" />
+
+								<f:setPropertyActionListener value="#{uni}"
+									target="#{invoiceController.entity}" />
+								<f:setPropertyActionListener value="#{empty uni.note}"
+									target="#{invoiceController.editNote}" />
+							</p:commandLink>
+						</sec:authorize>
+
+						<sec:authorize access="!hasAnyRole('SUPER','INVOICES_M')">
+							<h:outputText value="#{uni.noteDescription}" />
+						</sec:authorize>
+
+
+
+					</p:column>
+
+
+					<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+
+						<p:column style="text-align: center" width="30" toggleable="false"
+							exportable="false">
+							<p:commandButton icon="ui-icon-check" id="cmbEdit"
+								action="#{invoiceController.approvalInvoice}" type="submit"
+								disabled="#{!uni.readySubmit}" update=":dlgInvoiceId">
+								<f:setPropertyActionListener value="#{uni}"
+									target="#{invoiceController.entity}" />
+								<p:confirm icon="ui-icon-alert" />
+							</p:commandButton>
+
+							<p:tooltip id="toolTipFadeM" for="cmbEdit"
+								value="#{uni.state.id == '2' ?  msg.submit : msg.resubmit}" />
+						</p:column>
+					</sec:authorize>
+
+					<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+						<p:column style="text-align: center" width="30" toggleable="false"
+							exportable="false" rendered="false">
+							<p:commandButton icon="ui-icon-plus"
+								action="#{userController.changeState}" update="uniTable"
+								id="cmdNote">
+								<f:setPropertyActionListener value="#{uni}"
+									target="#{userController.entity}" />
+							</p:commandButton>
+							<p:tooltip for="cmdNote" value="#{msg.add} #{msg.note}" />
+						</p:column>
+					</sec:authorize>
+
+
+					<p:column style="text-align: center" width="30" toggleable="false"
+						exportable="false">
+						<p:commandButton icon="ui-icon-zoomin"
+							action="#{invoiceController.loadData}" id="cmdDetail"
+							update="form:dlgDetailInvoiceId"
+							oncomplete="PF('dlgDetailInvoice').show();PF('tabDetailInv').select(0)">
+							<f:setPropertyActionListener value="#{uni}"
+								target="#{invoiceController.entity}" />
+						</p:commandButton>
+
+						<p:tooltip for="cmdDetail" value="#{msg.details}" />
+					</p:column>
+
+
+					<p:columnGroup type="footer" id="rowTotalPage">
+
+						<p:row>
+
+							<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+								<p:column colspan="4"
+									style="text-align:right; font-weight: bold;"
+									footerText="Page Totals:" />
+							</sec:authorize>
+							<sec:authorize access="!hasAnyRole('SUPER','INVOICES_M')">
+								<p:column colspan="3"
+									style="text-align:right; font-weight: bold;"
+									footerText="Page Totals:" />
+							</sec:authorize>
+
+
+							<p:column styleClass="boldAlingRight">
+								<f:facet name="footer">
+									<h:outputText
+										value="#{invoiceController.lazyModel.totalPageActualService}"
+										id="totalPage">
+										<f:convertNumber
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+							</p:column>
+
+							<p:column styleClass="boldAlingRight">
+								<f:facet name="footer">
+									<h:outputText
+										value="#{invoiceController.lazyModel.totalPageServiceAmount}"
+										id="totalPage2">
+										<f:convertNumber currencySymbol="$" type="currency"
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+							</p:column>
+							<p:column styleClass="boldAlingRight">
+								<f:facet name="footer">
+									<h:outputText
+										value="#{invoiceController.lazyModel.totalPageHours}"
+										id="totalPage3">
+										<f:convertNumber
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+							</p:column>
+							<p:column styleClass="boldAlingRight">
+								<f:facet name="footer">
+									<h:outputText
+										value="#{invoiceController.lazyModel.totalPageAdminFee}"
+										id="totalPage4">
+										<f:convertNumber currencySymbol="$" type="currency"
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+							</p:column>
+							<p:column styleClass="boldAlingRight">
+								<f:facet name="footer">
+									<h:outputText
+										value="#{invoiceController.lazyModel.totalPageIncentive}"
+										id="totalPage5">
+										<f:convertNumber currencySymbol="$" type="currency"
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+							</p:column>
+
+
+							<p:column styleClass="boldAlingRight">
+								<f:facet name="footer">
+									<h:outputText
+										value="#{invoiceController.lazyModel.totalPageServiceRevenue}"
+										id="totalPage6">
+										<f:convertNumber currencySymbol="$" type="currency"
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+							</p:column>
+							<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+								<p:column footerText="" colspan="5" />
+							</sec:authorize>
+							<sec:authorize access="!hasAnyRole('SUPER','INVOICES_M')">
+								<p:column footerText="" colspan="4" />
+							</sec:authorize>
+						</p:row>
+
+
+						<p:row>
+							<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+								<p:column colspan="4"
+									style="text-align:right; font-weight: bold;"
+									footerText="Totals:" />
+							</sec:authorize>
+
+							<sec:authorize access="!hasAnyRole('SUPER','INVOICES_M')">
+								<p:column colspan="3"
+									style="text-align:right; font-weight: bold;"
+									footerText="Totals:" />
+							</sec:authorize>
+
+
+
+							<p:column styleClass="boldAlingRight">
+								<f:facet name="footer">
+									<h:outputText
+										value="#{invoiceController.lazyModel.totalActualService}"
+										id="totalPage7">
+										<f:convertNumber
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+							</p:column>
+
+							<p:column styleClass="boldAlingRight">
+								<f:facet name="footer">
+									<h:outputText
+										value="#{invoiceController.lazyModel.totalServiceAmount}"
+										id="totalPage8">
+										<f:convertNumber currencySymbol="$" type="currency"
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+							</p:column>
+							<p:column styleClass="boldAlingRight">
+								<f:facet name="footer">
+									<h:outputText value="#{invoiceController.lazyModel.totalHours}"
+										id="totalPage9">
+										<f:convertNumber
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+							</p:column>
+							<p:column styleClass="boldAlingRight">
+								<f:facet name="footer">
+									<h:outputText
+										value="#{invoiceController.lazyModel.totalAdminFee}"
+										id="totalPage10">
+										<f:convertNumber currencySymbol="$" type="currency"
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+							</p:column>
+							<p:column styleClass="boldAlingRight">
+								<f:facet name="footer">
+									<h:outputText
+										value="#{invoiceController.lazyModel.totalIncentive}"
+										id="totalPage11">
+										<f:convertNumber currencySymbol="$" type="currency"
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+							</p:column>
+
+
+							<p:column styleClass="boldAlingRight">
+								<f:facet name="footer">
+									<h:outputText
+										value="#{invoiceController.lazyModel.totalServiceRevenue}"
+										id="totalPage12">
+										<f:convertNumber currencySymbol="$" type="currency"
+											minFractionDigits="#{applicationBean.systemConf.decimal}"
+											maxFractionDigits="#{applicationBean.systemConf.decimal}" />
+									</h:outputText>
+								</f:facet>
+							</p:column>
+							<sec:authorize access="hasAnyRole('SUPER','INVOICES_M')">
+								<p:column footerText="" colspan="5" />
+							</sec:authorize>
+							<sec:authorize access="!hasAnyRole('SUPER','INVOICES_M')">
+								<p:column footerText="" colspan="4" />
+							</sec:authorize>
+						</p:row>
+					</p:columnGroup>
+
+
+
+				</p:dataTable>
+
+
+			</h:panelGrid>
+
+
+			<ui:include src="/secure/confirmation_modify.xhtml"></ui:include>
+			<ui:include src="/secure/select_format.xhtml"></ui:include>
+
+
+			<ui:include src="/secure/dialog_invoice_filter.xhtml"></ui:include>
+			<ui:include src="/secure/dialog_invoice_detail.xhtml"></ui:include>
+
+		</h:form>
+		<ui:include src="/secure/dialog_add_notes.xhtml"></ui:include>
+		<ui:include src="/secure/dialog_send_question.xhtml"></ui:include>
+
+
+		<ui:include src="/secure/dialog_invoice_submit.xhtml"></ui:include>
+		<ui:include src="/secure/dialog_invoices_submit.xhtml"></ui:include>
+		<ui:include src="/secure/dialog_invoice_submit_onlymessage.xhtml"></ui:include>
+
+
+
+	</ui:define>
+
+</ui:composition>

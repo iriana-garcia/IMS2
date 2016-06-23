@@ -1,0 +1,21 @@
+<ui:composition template="/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<ui:define name="menuFlotante">
+		<h:form styleClass="textomio1">
+		</h:form>
+	</ui:define>
+	<ui:define name="menu">
+		<ui:include src="/public/menu.xhtml" />
+	</ui:define>
+
+	<ui:define name="body">
+	</ui:define>
+	
+	<ui:define name="footer">
+		<h:outputText value="#{msg.license}" styleClass="copyright"></h:outputText>
+	</ui:define>
+</ui:composition>
